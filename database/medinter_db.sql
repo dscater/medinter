@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 30-03-2026 a las 20:59:18
+-- Tiempo de generación: 02-04-2026 a las 20:40:17
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -20,6 +20,64 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `medinter_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `certificados`
+--
+
+CREATE TABLE `certificados` (
+  `id` bigint UNSIGNED NOT NULL,
+  `cliente_id` bigint UNSIGNED NOT NULL,
+  `precio` decimal(24,2) NOT NULL,
+  `tipo_certificado_id` bigint UNSIGNED NOT NULL,
+  `tipo_pago` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `archivo1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `archivo2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `sucursal_id` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `certificado_emitidos`
+--
+
+CREATE TABLE `certificado_emitidos` (
+  `id` bigint UNSIGNED NOT NULL,
+  `fecha` date NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `tipo_certificado_id` bigint UNSIGNED NOT NULL,
+  `conteo` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `clientes`
+--
+
+CREATE TABLE `clientes` (
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `paterno` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `materno` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ci` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ci_exp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `complemento` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_nac` date NOT NULL,
+  `cel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_registro` date DEFAULT NULL,
+  `status` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -89,7 +147,43 @@ CREATE TABLE `migrations` (
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '2024_01_31_165641_create_configuracions_table', 1),
 (2, '2024_11_02_153317_create_users_table', 1),
-(3, '2024_11_02_153318_create_historial_accions_table', 1);
+(3, '2024_11_02_153318_create_historial_accions_table', 1),
+(4, '2026_04_02_203426_create_sucursals_table', 2),
+(5, '2026_04_02_203435_create_clientes_table', 2),
+(6, '2026_04_02_203441_create_tipo_certificados_table', 2),
+(7, '2026_04_02_203448_create_certificados_table', 2),
+(8, '2026_04_02_203452_create_certificado_emitidos_table', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `sucursals`
+--
+
+CREATE TABLE `sucursals` (
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(900) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_registro` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_certificados`
+--
+
+CREATE TABLE `tipo_certificados` (
+  `id` bigint UNSIGNED NOT NULL,
+  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `precio` decimal(24,2) NOT NULL,
+  `descripcion` varchar(1200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fecha_registro` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -130,6 +224,30 @@ INSERT INTO `users` (`id`, `usuario`, `nombre`, `paterno`, `materno`, `ci`, `ci_
 --
 
 --
+-- Indices de la tabla `certificados`
+--
+ALTER TABLE `certificados`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `certificados_cliente_id_foreign` (`cliente_id`),
+  ADD KEY `certificados_tipo_certificado_id_foreign` (`tipo_certificado_id`),
+  ADD KEY `certificados_user_id_foreign` (`user_id`),
+  ADD KEY `certificados_sucursal_id_foreign` (`sucursal_id`);
+
+--
+-- Indices de la tabla `certificado_emitidos`
+--
+ALTER TABLE `certificado_emitidos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `certificado_emitidos_user_id_foreign` (`user_id`),
+  ADD KEY `certificado_emitidos_tipo_certificado_id_foreign` (`tipo_certificado_id`);
+
+--
+-- Indices de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `configuracions`
 --
 ALTER TABLE `configuracions`
@@ -149,6 +267,19 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `sucursals`
+--
+ALTER TABLE `sucursals`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `sucursals_nombre_unique` (`nombre`);
+
+--
+-- Indices de la tabla `tipo_certificados`
+--
+ALTER TABLE `tipo_certificados`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `users`
 --
 ALTER TABLE `users`
@@ -157,6 +288,24 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `certificados`
+--
+ALTER TABLE `certificados`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `certificado_emitidos`
+--
+ALTER TABLE `certificado_emitidos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `configuracions`
@@ -174,7 +323,19 @@ ALTER TABLE `historial_accions`
 -- AUTO_INCREMENT de la tabla `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `sucursals`
+--
+ALTER TABLE `sucursals`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_certificados`
+--
+ALTER TABLE `tipo_certificados`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
@@ -185,6 +346,22 @@ ALTER TABLE `users`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `certificados`
+--
+ALTER TABLE `certificados`
+  ADD CONSTRAINT `certificados_cliente_id_foreign` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
+  ADD CONSTRAINT `certificados_sucursal_id_foreign` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursals` (`id`),
+  ADD CONSTRAINT `certificados_tipo_certificado_id_foreign` FOREIGN KEY (`tipo_certificado_id`) REFERENCES `tipo_certificados` (`id`),
+  ADD CONSTRAINT `certificados_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Filtros para la tabla `certificado_emitidos`
+--
+ALTER TABLE `certificado_emitidos`
+  ADD CONSTRAINT `certificado_emitidos_tipo_certificado_id_foreign` FOREIGN KEY (`tipo_certificado_id`) REFERENCES `tipo_certificados` (`id`),
+  ADD CONSTRAINT `certificado_emitidos_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Filtros para la tabla `historial_accions`
