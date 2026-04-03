@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Controllers\CertificadoController;
+use App\Http\Controllers\CertificadoEmitidoController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\TipoCertificadoController;
+use App\Http\Controllers\TipoPagoController;
+use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +69,45 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::resource("usuarios", UsuarioController::class)->only(
         ["index", "store"]
     );
+
+    // TIPO USUARIOS
+    Route::get("tipo_usuarios/listado", [TipoUsuarioController::class, 'listado'])->name("tipo_usuarios.listado");
+
+    // SUCURSALES
+    Route::get("sucursals/paginado", [SucursalController::class, 'paginado'])->name("sucursals.paginado");
+    Route::get("sucursals/listado", [SucursalController::class, 'listado'])->name("sucursals.listado");
+    Route::resource("sucursals", SucursalController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // CLIENTES
+    Route::post("clientes/nuevo", [ClienteController::class, 'nuevo'])->name("clientes.nuevo");
+    Route::get("clientes/paginado", [ClienteController::class, 'paginado'])->name("clientes.paginado");
+    Route::get("clientes/listado", [ClienteController::class, 'listado'])->name("clientes.listado");
+    Route::get("clientes/byCi", [ClienteController::class, 'byCi'])->name("clientes.byCi");
+    Route::resource("clientes", ClienteController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // TIPO CERTIFICADOS
+    Route::get("tipo_certificados/paginado", [TipoCertificadoController::class, 'paginado'])->name("tipo_certificados.paginado");
+    Route::get("tipo_certificados/listado", [TipoCertificadoController::class, 'listado'])->name("tipo_certificados.listado");
+    Route::resource("tipo_certificados", TipoCertificadoController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // CERTIFICADOS
+    Route::get("certificados/paginado", [CertificadoController::class, 'paginado'])->name("certificados.paginado");
+    Route::get("certificados/listado", [CertificadoController::class, 'listado'])->name("certificados.listado");
+    Route::resource("certificados", CertificadoController::class)->only(
+        ["index", "store", "create", "edit", "show", "update", "destroy"]
+    );
+
+    // CERTIFICADOS EMITIDOS
+    Route::get("certificado_emitidos/verificaCantidad", [CertificadoEmitidoController::class, 'verificaCantidad'])->name("certificado_emitidos.verificaCantidad");
+
+    // TIPO PAGO
+    Route::get("tipo_pagos/listado", [TipoPagoController::class, 'listado'])->name("tipo_pagos.listado");
 
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");

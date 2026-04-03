@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 02-04-2026 a las 20:40:17
+-- Tiempo de generación: 03-04-2026 a las 23:45:47
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -37,6 +37,9 @@ CREATE TABLE `certificados` (
   `archivo2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `sucursal_id` bigint UNSIGNED NOT NULL,
+  `fecha_registro` date DEFAULT NULL,
+  `hora_registro` time DEFAULT NULL,
+  `status` int NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -57,6 +60,15 @@ CREATE TABLE `certificado_emitidos` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `certificado_emitidos`
+--
+
+INSERT INTO `certificado_emitidos` (`id`, `fecha`, `user_id`, `tipo_certificado_id`, `conteo`, `created_at`, `updated_at`) VALUES
+(1, '2026-04-03', 1, 1, 0, '2026-04-04 03:06:20', '2026-04-04 03:06:20'),
+(2, '2026-04-03', 1, 2, 0, '2026-04-04 03:06:21', '2026-04-04 03:06:21'),
+(3, '2026-04-03', 1, 3, 0, '2026-04-04 03:06:22', '2026-04-04 03:06:22');
+
 -- --------------------------------------------------------
 
 --
@@ -71,13 +83,28 @@ CREATE TABLE `clientes` (
   `ci` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ci_exp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `complemento` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fecha_nac` date NOT NULL,
-  `cel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_nac` date DEFAULT NULL,
+  `cel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `fecha_registro` date DEFAULT NULL,
   `status` int NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id`, `nombre`, `paterno`, `materno`, `ci`, `ci_exp`, `complemento`, `fecha_nac`, `cel`, `fecha_registro`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'JUAN', 'PEREZ', 'MAMANI', '123456', 'LP', 'CD', '2000-01-01', '67676767', '2026-04-03', 1, '2026-04-04 00:14:52', '2026-04-04 00:14:52'),
+(2, 'EDUARDO', 'RAMIRES', '', '123456', 'SC', '', '1999-01-01', NULL, '2026-04-03', 1, '2026-04-04 00:17:56', '2026-04-04 00:17:56'),
+(3, 'DANIELA', 'QUISPE', 'QUISPE', '543433', 'CB', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 00:18:41', '2026-04-04 00:18:41'),
+(4, 'MARCOS', 'CHOQUE', '', '3453453', 'SC', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:29:13', '2026-04-04 02:29:13'),
+(5, 'HERNAN', 'ROSALES', '', '1234567', 'LP', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:38:04', '2026-04-04 02:38:04'),
+(6, 'FRANZ', 'SALINAS', '', '435534', 'LP', '', '2000-01-01', '756756756', '2026-04-03', 1, '2026-04-04 02:40:45', '2026-04-04 02:40:45'),
+(7, 'LUIS', 'CACERES', 'MARTINEZ', '567567567', 'LP', 'ED', '1999-01-01', '676767676', '2026-04-03', 1, '2026-04-04 02:42:12', '2026-04-04 02:42:12'),
+(8, 'JAIME', 'ROSALES', '', '7686786', 'CB', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:46:49', '2026-04-04 02:46:49'),
+(9, 'ALEX', 'MAGALLANES', 'SOLIZ', '76867867', 'OR', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:47:29', '2026-04-04 02:47:29');
 
 -- --------------------------------------------------------
 
@@ -128,6 +155,46 @@ CREATE TABLE `historial_accions` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `historial_accions`
+--
+
+INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `datos_original`, `datos_nuevo`, `modulo`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
+(1, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 1, \"nombre\": \"SUCURSAL 1\", \"created_at\": \"2026-04-03T19:28:07.000000Z\", \"updated_at\": \"2026-04-03T19:28:07.000000Z\", \"descripcion\": \"SUCURSAL 1\"}', NULL, 'SUCURSALES', '2026-04-03', '19:28:07', '2026-04-03 23:28:07', '2026-04-03 23:28:07'),
+(2, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 2, \"nombre\": \"SUCURSAL 2\", \"created_at\": \"2026-04-03T19:28:14.000000Z\", \"updated_at\": \"2026-04-03T19:28:14.000000Z\", \"descripcion\": \"\"}', NULL, 'SUCURSALES', '2026-04-03', '19:28:14', '2026-04-03 23:28:14', '2026-04-03 23:28:14'),
+(3, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 1, \"nombre\": \"TIPO CERTIFICADO 1\", \"precio\": \"90\", \"created_at\": \"2026-04-03T19:44:24.000000Z\", \"updated_at\": \"2026-04-03T19:44:24.000000Z\", \"descripcion\": \"DESC TIPO 1\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '19:44:24', '2026-04-03 23:44:24', '2026-04-03 23:44:24'),
+(4, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN PRODUCTO', '{\"id\": 1, \"nombre\": \"TIPO CERTIFICADO 1\", \"precio\": \"90.00\", \"created_at\": \"2026-04-03T19:44:24.000000Z\", \"updated_at\": \"2026-04-03T19:44:24.000000Z\", \"descripcion\": \"DESC TIPO 1\", \"fecha_registro\": \"2026-04-03\"}', '{\"id\": 1, \"nombre\": \"TIPO CERTIFICADO 1ASD\", \"precio\": \"100\", \"created_at\": \"2026-04-03T19:44:24.000000Z\", \"updated_at\": \"2026-04-03T19:45:00.000000Z\", \"descripcion\": \"DESC TIPO 1ASD\", \"fecha_registro\": \"2026-04-03\"}', 'SUCURSALES', '2026-04-03', '19:45:00', '2026-04-03 23:45:00', '2026-04-03 23:45:00'),
+(5, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 1, \"nombre\": \"TIPO CERTIFICADO 1\", \"precio\": \"90\", \"created_at\": \"2026-04-03T19:45:20.000000Z\", \"updated_at\": \"2026-04-03T19:45:20.000000Z\", \"descripcion\": \"DESC TIPO 1\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '19:45:21', '2026-04-03 23:45:21', '2026-04-03 23:45:21'),
+(6, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 2, \"nombre\": \"TIPO CERTIFCADO 2\", \"precio\": \"60\", \"created_at\": \"2026-04-03T19:47:30.000000Z\", \"updated_at\": \"2026-04-03T19:47:30.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '19:47:30', '2026-04-03 23:47:30', '2026-04-03 23:47:30'),
+(7, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"id\": 3, \"nombre\": \"TIPO CERTIFICADO 2\", \"precio\": \"50\", \"created_at\": \"2026-04-03T19:47:44.000000Z\", \"updated_at\": \"2026-04-03T19:47:44.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '19:47:44', '2026-04-03 23:47:44', '2026-04-03 23:47:44'),
+(8, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN PRODUCTO', '{\"id\": 3, \"nombre\": \"TIPO CERTIFICADO 2\", \"precio\": \"50.00\", \"created_at\": \"2026-04-03T19:47:44.000000Z\", \"updated_at\": \"2026-04-03T19:47:44.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', '{\"id\": 3, \"nombre\": \"TIPO CERTIFICADO 3\", \"precio\": \"50.00\", \"created_at\": \"2026-04-03T19:47:44.000000Z\", \"updated_at\": \"2026-04-03T19:48:02.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', 'SUCURSALES', '2026-04-03', '19:48:02', '2026-04-03 23:48:02', '2026-04-03 23:48:02'),
+(9, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN PRODUCTO', '{\"id\": 2, \"nombre\": \"TIPO CERTIFCADO 2\", \"precio\": \"60.00\", \"created_at\": \"2026-04-03T19:47:30.000000Z\", \"updated_at\": \"2026-04-03T19:47:30.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', '{\"id\": 2, \"nombre\": \"TIPO CERTIFICADO 2\", \"precio\": \"60.00\", \"created_at\": \"2026-04-03T19:47:30.000000Z\", \"updated_at\": \"2026-04-03T19:48:06.000000Z\", \"descripcion\": \"\", \"fecha_registro\": \"2026-04-03\"}', 'SUCURSALES', '2026-04-03', '19:48:06', '2026-04-03 23:48:06', '2026-04-03 23:48:06'),
+(10, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"123456\", \"id\": 1, \"cel\": \"67676767\", \"ci_exp\": \"LP\", \"nombre\": \"JUAN\", \"materno\": \"MAMANI\", \"paterno\": \"PEREZ\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-03T20:14:52.000000Z\", \"updated_at\": \"2026-04-03T20:14:52.000000Z\", \"complemento\": \"CD\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '20:14:52', '2026-04-04 00:14:52', '2026-04-04 00:14:52'),
+(11, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"123456\", \"id\": 2, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"EDUARDO\", \"materno\": \"\", \"paterno\": \"RAMIRES\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-03T20:17:56.000000Z\", \"updated_at\": \"2026-04-03T20:17:56.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '20:17:56', '2026-04-04 00:17:56', '2026-04-04 00:17:56'),
+(12, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"543433\", \"id\": 3, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"DANIELA\", \"materno\": \"QUISPE\", \"paterno\": \"QUISPE\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T20:18:41.000000Z\", \"updated_at\": \"2026-04-03T20:18:41.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '20:18:41', '2026-04-04 00:18:41', '2026-04-04 00:18:41'),
+(13, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"3453453\", \"id\": 4, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"MARCOS\", \"materno\": \"\", \"paterno\": \"CHOQUE\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:29:13.000000Z\", \"updated_at\": \"2026-04-03T22:29:13.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:29:13', '2026-04-04 02:29:13', '2026-04-04 02:29:13'),
+(14, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"1234567\", \"id\": 5, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"HERNAN\", \"materno\": \"\", \"paterno\": \"ROSALES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:38:04.000000Z\", \"updated_at\": \"2026-04-03T22:38:04.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:38:04', '2026-04-04 02:38:04', '2026-04-04 02:38:04'),
+(15, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"435534\", \"id\": 6, \"cel\": \"756756756\", \"ci_exp\": \"LP\", \"nombre\": \"FRANZ\", \"materno\": \"\", \"paterno\": \"SALINAS\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-03T22:40:45.000000Z\", \"updated_at\": \"2026-04-03T22:40:45.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:40:45', '2026-04-04 02:40:45', '2026-04-04 02:40:45'),
+(16, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"567567567\", \"id\": 7, \"cel\": \"676767676\", \"ci_exp\": \"LP\", \"nombre\": \"LUIS\", \"materno\": \"MARTINEZ\", \"paterno\": \"CACERES\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-03T22:42:12.000000Z\", \"updated_at\": \"2026-04-03T22:42:12.000000Z\", \"complemento\": \"ED\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:42:12', '2026-04-04 02:42:12', '2026-04-04 02:42:12'),
+(17, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"7686786\", \"id\": 8, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"JAIME\", \"materno\": \"\", \"paterno\": \"ROSALES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:46:49.000000Z\", \"updated_at\": \"2026-04-03T22:46:49.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:46:49', '2026-04-04 02:46:49', '2026-04-04 02:46:49'),
+(18, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"76867867\", \"id\": 9, \"cel\": null, \"ci_exp\": \"OR\", \"nombre\": \"ALEX\", \"materno\": \"SOLIZ\", \"paterno\": \"MAGALLANES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:47:29.000000Z\", \"updated_at\": \"2026-04-03T22:47:29.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:47:29', '2026-04-04 02:47:29', '2026-04-04 02:47:29');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `login_users`
+--
+
+CREATE TABLE `login_users` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `sucursal_id` bigint UNSIGNED NOT NULL,
+  `fecha` date NOT NULL,
+  `hora` time NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -152,7 +219,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2026_04_02_203435_create_clientes_table', 2),
 (6, '2026_04_02_203441_create_tipo_certificados_table', 2),
 (7, '2026_04_02_203448_create_certificados_table', 2),
-(8, '2026_04_02_203452_create_certificado_emitidos_table', 2);
+(8, '2026_04_02_203452_create_certificado_emitidos_table', 2),
+(9, '2026_04_03_195001_create_login_users_table', 3);
 
 -- --------------------------------------------------------
 
@@ -169,6 +237,14 @@ CREATE TABLE `sucursals` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `sucursals`
+--
+
+INSERT INTO `sucursals` (`id`, `nombre`, `descripcion`, `fecha_registro`, `created_at`, `updated_at`) VALUES
+(1, 'SUCURSAL 1', 'SUCURSAL 1', '2026-04-03', '2026-04-03 23:28:07', '2026-04-03 23:28:07'),
+(2, 'SUCURSAL 2', '', '2026-04-03', '2026-04-03 23:28:14', '2026-04-03 23:28:14');
+
 -- --------------------------------------------------------
 
 --
@@ -184,6 +260,15 @@ CREATE TABLE `tipo_certificados` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_certificados`
+--
+
+INSERT INTO `tipo_certificados` (`id`, `nombre`, `precio`, `descripcion`, `fecha_registro`, `created_at`, `updated_at`) VALUES
+(1, 'TIPO CERTIFICADO 1', 90.00, 'DESC TIPO 1', '2026-04-03', '2026-04-03 23:45:20', '2026-04-03 23:45:20'),
+(2, 'TIPO CERTIFICADO 2', 60.00, '', '2026-04-03', '2026-04-03 23:47:30', '2026-04-03 23:48:06'),
+(3, 'TIPO CERTIFICADO 3', 50.00, '', '2026-04-03', '2026-04-03 23:47:44', '2026-04-03 23:48:02');
 
 -- --------------------------------------------------------
 
@@ -217,7 +302,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `usuario`, `nombre`, `paterno`, `materno`, `ci`, `ci_exp`, `dir`, `correo`, `fono`, `password`, `acceso`, `tipo`, `foto`, `fecha_registro`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin', 'admin', '', '0', '', '', '', '', '$2y$12$65d4fgZsvBV5Lc/AxNKh4eoUdbGyaczQ4sSco20feSQANshNLuxSC', 1, 'ADMINISTRADOR', NULL, '2025-10-01', 1, '2026-02-17 22:21:27', '2026-02-17 22:21:27');
+(1, 'admin', 'admin', 'admin', '', '0', '', '', '', '', '$2y$12$65d4fgZsvBV5Lc/AxNKh4eoUdbGyaczQ4sSco20feSQANshNLuxSC', 1, 'ADMINISTRADOR', NULL, '2025-10-01', 1, '2026-02-17 22:21:27', '2026-02-17 22:21:27'),
+(2, 'JPERES', 'JUAN', 'PERES', 'MAMANI', '123456', 'LP', 'LOS PEDREGALES', 'juan@gmail.com', '67676767', '$2y$12$XBzFSGL5NsnnoM4EBz3uduveQcrStDx6BtrdGxXSmeNEY0VnqdTte', 1, 'MÉDICO', '21775258381.jpg', '2026-04-03', 1, '2026-04-04 03:19:41', '2026-04-04 03:22:40'),
+(3, 'MGONZALES', 'MARIA', 'GONZALES', '', '1234567', 'LP', '', NULL, '6767676', '$2y$12$okLv9H49WTpjRipKuglJO.iS4QPMl62lvwhtbJGG/EtQ5aJaLJ3bi', 1, 'SECRETARIA', '31775258613.jpg', '2026-04-03', 1, '2026-04-04 03:23:20', '2026-04-04 03:23:55'),
+(4, 'GMARTINEZ', 'GEOVANA', 'MARTINEZ', 'MARTINEZ', '32234234', 'CB', '', NULL, '67676767', '$2y$12$hqaROKdsJFiFWcbuTXm7tugbl1s3LR6Rt3hA4JZ2JTdr/dJGIa0Ou', 1, 'MÉDICO', '41775258996.jpg', '2026-04-03', 1, '2026-04-04 03:29:56', '2026-04-04 03:29:56');
 
 --
 -- Índices para tablas volcadas
@@ -261,6 +349,12 @@ ALTER TABLE `historial_accions`
   ADD KEY `historial_accions_user_id_foreign` (`user_id`);
 
 --
+-- Indices de la tabla `login_users`
+--
+ALTER TABLE `login_users`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `migrations`
 --
 ALTER TABLE `migrations`
@@ -299,13 +393,13 @@ ALTER TABLE `certificados`
 -- AUTO_INCREMENT de la tabla `certificado_emitidos`
 --
 ALTER TABLE `certificado_emitidos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `configuracions`
@@ -317,31 +411,37 @@ ALTER TABLE `configuracions`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT de la tabla `login_users`
+--
+ALTER TABLE `login_users`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `sucursals`
 --
 ALTER TABLE `sucursals`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_certificados`
 --
 ALTER TABLE `tipo_certificados`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas

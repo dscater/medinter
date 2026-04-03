@@ -32,8 +32,53 @@ const headers = [
         sortable: true,
     },
     {
+        label: "NOMBRE",
+        key: "nombre",
+        sortable: true,
+    },
+    {
+        label: "AP. PATERNO",
+        key: "paterno",
+        sortable: true,
+    },
+    {
+        label: "AP. MATERNO",
+        key: "materno",
+        sortable: true,
+    },
+    {
+        label: "C.I.",
+        key: "full_ci",
+        sortable: true,
+    },
+    {
+        label: "CORREO",
+        key: "correo",
+        sortable: true,
+    },
+    {
+        label: "DIRECCIÓN",
+        key: "dir",
+        sortable: true,
+    },
+    {
+        label: "CELULAR",
+        key: "fono",
+        sortable: true,
+    },
+    {
         label: "TIPO",
         key: "tipo",
+        sortable: true,
+    },
+    {
+        label: "FOTO",
+        key: "foto",
+        sortable: true,
+    },
+    {
+        label: "ACCESO",
+        key: "acceso",
         sortable: true,
     },
     {

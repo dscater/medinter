@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string("ci");
             $table->string("ci_exp");
             $table->string("complemento");
-            $table->date("fecha_nac");
-            $table->string("cel");
+            $table->date("fecha_nac")->nullable();
+            $table->string("cel")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->integer("status")->default(1);
             $table->timestamps();

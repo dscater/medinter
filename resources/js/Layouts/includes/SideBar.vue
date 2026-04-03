@@ -124,21 +124,50 @@ onUnmounted(() => {});
                         v-if="
                             permisos == '*' ||
                             permisos.includes('usuarios.index') ||
-                            permisos.includes('ventas.index') ||
-                            permisos.includes('productos.index')
+                            permisos.includes('clientes.index') ||
+                            permisos.includes('sucursals.index') ||
+                            permisos.includes('tipo_certificados.index') ||
+                            permisos.includes('certificados.index')
                         "
                     >
                         ADMINISTRACIÓN
                     </li>
-                    <!-- <ItemMenu
+                    <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('productos.index')
+                            permisos.includes('certificados.index')
                         "
-                        :label="'Productos'"
-                        :ruta="'productos.index'"
+                        :label="'Certificados'"
+                        :ruta="'certificados.index'"
+                        :icon="'fa fa-clipboard-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('clientes.index')
+                        "
+                        :label="'Clientes'"
+                        :ruta="'clientes.index'"
+                        :icon="'fa fa-user-friends'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('tipo_certificados.index')
+                        "
+                        :label="'Tipo de Certificados'"
+                        :ruta="'tipo_certificados.index'"
                         :icon="'fa fa-list'"
-                    ></ItemMenu> -->
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('sucursals.index')
+                        "
+                        :label="'Sucursales'"
+                        :ruta="'sucursals.index'"
+                        :icon="'fa fa-building'"
+                    ></ItemMenu>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||

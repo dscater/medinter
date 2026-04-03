@@ -21,30 +21,53 @@ class PermisoService
             "usuarios.destroy",
             "usuarios.password",
 
-            "productos.paginado",
-            "productos.index",
-            "productos.listado",
-            "productos.create",
-            "productos.store",
-            "productos.edit",
-            "productos.show",
-            "productos.update",
-            "productos.destroy",
-            "productos.barras",
-            "productos.byCodigo",
+            "tipo_usuarios.listado",
 
-            "ventas.paginado",
-            "ventas.index",
-            "ventas.listado",
-            "ventas.create",
-            "ventas.store",
-            "ventas.edit",
-            "ventas.show",
-            "ventas.update",
-            "ventas.destroy",
-            "ventas.historial",
-            "ventas.paginadoHistorial",
-            "ventas.exportarPDF",
+            "sucursals.paginado",
+            "sucursals.index",
+            "sucursals.listado",
+            "sucursals.create",
+            "sucursals.store",
+            "sucursals.edit",
+            "sucursals.show",
+            "sucursals.update",
+            "sucursals.destroy",
+
+            "clientes.paginado",
+            "clientes.index",
+            "clientes.listado",
+            "clientes.byCi",
+            "clientes.create",
+            "clientes.store",
+            "clientes.nuevo",
+            "clientes.edit",
+            "clientes.show",
+            "clientes.update",
+            "clientes.destroy",
+
+            "tipo_certificados.paginado",
+            "tipo_certificados.index",
+            "tipo_certificados.listado",
+            "tipo_certificados.create",
+            "tipo_certificados.store",
+            "tipo_certificados.edit",
+            "tipo_certificados.show",
+            "tipo_certificados.update",
+            "tipo_certificados.destroy",
+
+            "tipo_pagos.listado",
+
+            "certificados.paginado",
+            "certificados.index",
+            "certificados.listado",
+            // "certificados.create",
+            // "certificados.store",
+            "certificados.edit",
+            "certificados.show",
+            "certificados.update",
+            "certificados.destroy",
+
+            "certificado_emitidos.verificaCantidad",
 
             "configuracions.index",
             "configuracions.create",
@@ -58,29 +81,42 @@ class PermisoService
             "reportes.r_ventas",
 
         ],
-        "VENDEDOR" => [
-            "ventas.paginado",
-            "ventas.index",
-            "ventas.listado",
-            "ventas.create",
-            "ventas.store",
-            "ventas.show",
-            "ventas.historial",
-            "ventas.paginadoHistorial",
-            "ventas.exportarPDF",
+        "GERENTE" => [],
+        "SECRETARIA" => [],
+        "MÉDICO" => [
+            "clientes.paginado",
+            "clientes.index",
+            "clientes.listado",
+            "clientes.byCi",
+            "clientes.create",
+            "clientes.store",
+            "clientes.nuevo",
+            "clientes.edit",
+            "clientes.show",
+            "clientes.update",
+            "clientes.destroy",
 
-            "qrs.index",
-            "qrs.getQr",
+            "tipo_pagos.listado",
 
-            "reportes.ventas",
-            "reportes.r_ventas",
+            "certificados.paginado",
+            "certificados.index",
+            "certificados.listado",
+            "certificados.create",
+            "certificados.store",
+            "certificados.edit",
+            "certificados.show",
+            "certificados.update",
+            "certificados.destroy",
+
+            "certificado_emitidos.verificaCantidad",
         ],
     ];
 
 
-    public function middleWarePostulante()
+
+    public function getTiposUsuarios()
     {
-        return $this->arrayPermisos["POSTULANTE"];
+        return array_keys($this->arrayPermisos);
     }
 
     /**

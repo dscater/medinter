@@ -158,11 +158,25 @@ class UserService
     public function crear(array $datos): User
     {
         $user = User::create([
-            "usuario" => mb_strtoupper($datos["usuario"]),
-            "password" => $datos["password"],
+            "usuario" => $this->getNombreUsuario($datos["nombre"], $datos["paterno"]),
+            "nombre" => mb_strtoupper($datos["nombre"]),
+            "paterno" => mb_strtoupper($datos["paterno"]),
+            "materno" => mb_strtoupper($datos["materno"]),
+            "dir" => mb_strtoupper($datos["dir"]),
+            "ci" => $datos["ci"],
+            "ci_exp" => mb_strtoupper($datos["ci_exp"]),
+            "correo" => $datos["correo"],
+            "fono" => $datos["fono"],
+            "acceso" => $datos["acceso"],
+            "password" => $datos["ci"],
             "tipo" => mb_strtoupper($datos["tipo"]),
+            "fecha_registro" => date("Y-m-d")
         ]);
 
+        // cargar foto
+        if (isset($datos["foto"]) && !is_string($datos["foto"])) {
+            $this->cargarFoto($user, $datos["foto"]);
+        }
         return $user;
     }
 
@@ -176,13 +190,23 @@ class UserService
     public function actualizar(array $datos, User $user): User
     {
         $user->update([
-            "usuario" => mb_strtoupper($datos["usuario"]),
+            "usuario" => $this->getNombreUsuario($datos["nombre"], $datos["paterno"]),
+            "nombre" => mb_strtoupper($datos["nombre"]),
+            "paterno" => mb_strtoupper($datos["paterno"]),
+            "materno" => mb_strtoupper($datos["materno"]),
+            "dir" => mb_strtoupper($datos["dir"]),
+            "ci" => $datos["ci"],
+            "ci_exp" => mb_strtoupper($datos["ci_exp"]),
+            "correo" => $datos["correo"],
+            "fono" => $datos["fono"],
+            "acceso" => $datos["acceso"],
             "tipo" => mb_strtoupper($datos["tipo"]),
         ]);
 
-        if (!empty($datos["password"])) {
-            $user->password = $datos["password"];
-            $user->save();
+
+        // cargar foto
+        if (isset($datos["foto"]) && !is_string($datos["foto"])) {
+            $this->cargarFoto($user, $datos["foto"]);
         }
 
         return $user;
@@ -212,7 +236,7 @@ class UserService
     public function cargarFoto(User $user, UploadedFile $foto): void
     {
         if ($user->foto) {
-            \File::delete(public_path("imgs/users/" . $this->user->foto));
+            \File::delete(public_path("imgs/users/" . $user->foto));
         }
 
         $nombre = $user->id . time();
