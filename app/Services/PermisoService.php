@@ -94,9 +94,16 @@ class PermisoService
             "clientes.edit",
             "clientes.show",
             "clientes.update",
-            "clientes.destroy",
+            // "clientes.destroy",
 
             "tipo_pagos.listado",
+
+            "sucursals.listado",
+
+            "login_users.verificaSucursal",
+            "login_users.asignaSucursal",
+
+            "tipo_certificados.listado",
 
             "certificados.paginado",
             "certificados.index",

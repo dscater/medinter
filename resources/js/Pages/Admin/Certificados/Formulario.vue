@@ -3,8 +3,15 @@ import { useForm, usePage } from "@inertiajs/vue3";
 import { useCertificados } from "@/composables/certificados/useCertificados";
 import { watch, ref, computed, onMounted, nextTick, onBeforeMount } from "vue";
 import Formulario from "../Clientes/Formulario.vue";
+import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
+const { props: propsPage } = usePage();
+const loginUserStore = useLoginUserStore();
 const props = defineProps({
     certificado: {
+        type: Object,
+        default: { id: 0 },
+    },
+    cliente: {
         type: Object,
         default: { id: 0 },
     },
@@ -43,6 +50,8 @@ const enviarFormulario = () => {
             ? route("certificados.store")
             : route("certificados.update", form.id);
 
+    if (propsPage.auth.user.tipo == "MÉDICO")
+        form["sucursal_id"] = loginUserStore.getLoginUser.sucursal_id;
     form.post(url, {
         preserveScroll: true,
         forceFormData: true,
@@ -210,7 +219,14 @@ const detectarTipoCertificado = () => {
     }
 };
 
-onMounted(() => {});
+onMounted(() => {
+    form = useForm(oCertificado.value);
+    if (form.id && form.id != 0) {
+        txtCi.value = props.cliente.ci;
+        buscarClienteByCi();
+        seleccionaCliente(props.cliente);
+    }
+});
 
 onBeforeMount(() => {
     cargarTipoCertificados();
@@ -424,7 +440,14 @@ onBeforeMount(() => {
                     <div class="col-12">
                         <div class="row">
                             <div class="col-md-6 mt-2">
-                                <label class="">Cargar Archivo 1</label>
+                                <label class=""
+                                    >Cargar Archivo 1
+                                    <a
+                                        v-if="form.url_archivo1"
+                                        href=""
+                                        class="btn btn-sm btn-outline-primary"
+                                        ><i class="fa fa-download"></i></a
+                                ></label>
                                 <input
                                     type="file"
                                     class="form-control"
@@ -444,7 +467,14 @@ onBeforeMount(() => {
                                 </ul>
                             </div>
                             <div class="col-md-6 mt-2">
-                                <label class="">Cargar Archivo 2</label>
+                                <label class=""
+                                    >Cargar Archivo 2
+                                    <a
+                                        v-if="form.url_archivo1"
+                                        href=""
+                                        class="btn btn-sm btn-outline-primary"
+                                        ><i class="fa fa-download"></i></a
+                                ></label>
                                 <input
                                     type="file"
                                     class="form-control"

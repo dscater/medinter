@@ -4,6 +4,8 @@ import { usePage, Link } from "@inertiajs/vue3";
 import { onMounted, onUnmounted, ref } from "vue";
 import { useSideBar } from "@/composables/useSidebar.js";
 import { useConfiguracionStore } from "@/stores/configuracion/configuracionStore";
+import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
+const loginUserStore = useLoginUserStore();
 const configuracionStore = useConfiguracionStore();
 
 const { props } = usePage();
@@ -51,6 +53,15 @@ onUnmounted(() => {});
                     @click="toggleSidebar"
                     ><i class="fas fa-bars"></i
                 ></a>
+            </li>
+            <li
+                class="nav-item d-none d-sm-inline-block"
+                v-if="props.auth.user.tipo == 'MÉDICO'"
+            >
+                <span class="nav-link">
+                    <i class="fa fa-building"></i>
+                    {{ loginUserStore.getLoginUser?.sucursal?.nombre }}
+                </span>
             </li>
             <!-- <li class="nav-item d-none d-sm-inline-block">
                 <Link :href="route('pagos.create')" class="nav-link">Nuevo Pago</Link>

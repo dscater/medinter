@@ -32,23 +32,43 @@ const headers = [
         width: "4%",
     },
     {
-        label: "NOMBRE",
-        key: "nombre",
+        label: "CLIENTE",
+        key: "cliente",
         sortable: true,
     },
     {
-        label: "PRECIO BS.",
+        label: "TIPO DE CERTIFICADO",
+        key: "tipo_certificado.nombre",
+        sortable: true,
+    },
+    {
+        label: "COSTO BS.",
         key: "precio",
         sortable: true,
     },
     {
-        label: "DESCRIPCIÓN",
-        key: "descripcion",
+        label: "TIPO DE PAGO",
+        key: "tipo_pago",
+        sortable: true,
+    },
+    {
+        label: "SUCURSAL",
+        key: "sucursal.nombre",
+        sortable: true,
+    },
+    {
+        label: "USUARIO",
+        key: "user",
         sortable: true,
     },
     {
         label: "FECHA REGISTRO",
         key: "fecha_registro",
+        sortable: true,
+    },
+    {
+        label: "DESCARGAR",
+        key: "descargar",
         sortable: true,
     },
     {
@@ -83,7 +103,7 @@ const updateDatatable = async () => {
 const eliminarCertificado = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
-        html: `<strong>${item.nombre}</strong>`,
+        html: `<strong>Nro. de registro: ${item.id}</strong>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -183,6 +203,50 @@ const eliminarCertificado = (item) => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
+                            <template #descargar="{ item }">
+                                <a
+                                    v-if="item.url_archivo1"
+                                    :href="item.url_archivo1"
+                                    class="btn btn-xs btn-outline-primary"
+                                    target="_blank"
+                                    ><i class="fa fa-download"></i> Archivo 1</a
+                                >
+                                <br />
+                                <a
+                                    v-if="item.url_archivo2"
+                                    :href="item.url_archivo2"
+                                    class="btn btn-xs btn-outline-primary"
+                                    target="_blank"
+                                    ><i class="fa fa-download"></i> Archivo 2</a
+                                >
+                            </template>
+
+                            <template #cliente="{ item }">
+                                <span
+                                    >{{ item.cliente.nombre }}
+                                    {{ item.cliente.paterno }}
+                                    {{ item.cliente.materno }}
+                                </span>
+                                <br />
+                                <span
+                                    >{{ item.cliente.ci }}
+                                    {{
+                                        item.cliente.complemento
+                                            ? " - " + item.cliente.complemento
+                                            : ""
+                                    }}
+                                    {{ item.cliente.ci_exp }}</span
+                                >
+                            </template>
+
+                            <template #user="{ item }">
+                                <span
+                                    >{{ item.user.nombre }}
+                                    {{ item.user.paterno }}
+                                    {{ item.user.materno }}
+                                </span>
+                            </template>
+
                             <template #accion="{ item }">
                                 <template
                                     v-if="
@@ -198,15 +262,16 @@ const eliminarCertificado = (item) => {
                                         content="Editar"
                                         placement="left-start"
                                     >
-                                        <button
-                                            class="btn btn-warning"
-                                            @click="
-                                                setCertificado(item);
-                                                accion_formulario = 1;
-                                                muestra_formulario = true;
+                                        <Link
+                                            :href="
+                                                route(
+                                                    'certificados.edit',
+                                                    item.id,
+                                                )
                                             "
+                                            class="btn btn-warning"
                                         >
-                                            <i class="fa fa-pen"></i></button
+                                            <i class="fa fa-pen"></i></Link
                                     ></el-tooltip>
                                 </template>
 

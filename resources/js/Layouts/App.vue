@@ -6,16 +6,14 @@ import Footer from "./includes/Footer.vue";
 import NavBar from "./includes/NavBar.vue";
 import SideBar from "./includes/SideBar.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
+import LoginUser from "@/Components/LoginUser.vue";
+import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
 const appStore = useAppStore();
 const { auth } = usePage().props;
 
-const verificaLogin = () => {
-    axios.get(route("verificaLogin")).then((response) => {
-        if (!response.data.sw) {
-            window.location.href = route("login");
-        }
-    });
-};
+const loginUserStore = useLoginUserStore();
+const muestra_login_user = ref(false);
+const accion_login_user = ref(0);
 
 let inactivityTimer = null;
 // const INACTIVITY_LIMIT = 60 * 1000; // 1 minuto en ms
@@ -49,9 +47,18 @@ onMounted(() => {
     // resetTimer();
 });
 
-onBeforeMount(() => {
-    // verificaLogin();
+const verificaSucursalUSuario = async () => {
+    await loginUserStore.verificaLoginUser();
+    if (!loginUserStore.login_user) {
+        muestra_login_user.value = true;
+    }
+};
+
+onBeforeMount(async () => {
     appStore.initUserInfo();
+    if (appStore.user.tipo == "MÉDICO") {
+        await verificaSucursalUSuario();
+    }
     // window.removeEventListener("mousemove", resetTimer);
     // window.removeEventListener("keydown", resetTimer);
     // window.removeEventListener("click", resetTimer);
@@ -68,6 +75,12 @@ onBeforeMount(() => {
             <i class="fa fa-spin fa-spinner fa-4x"></i>
         </template>
     </div>
+
+    <LoginUser
+        :muestra_formulario="muestra_login_user"
+        :accion_formulario="accion_login_user"
+        @envio-formulario="muestra_login_user = false"
+    ></LoginUser>
 
     <div class="wrapper" v-if="auth.user.tipo != 'POSTULANTE'">
         <NavBar></NavBar>

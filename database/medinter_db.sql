@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 03-04-2026 a las 23:45:47
+-- Tiempo de generación: 06-04-2026 a las 14:28:10
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -44,6 +44,34 @@ CREATE TABLE `certificados` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Volcado de datos para la tabla `certificados`
+--
+
+INSERT INTO `certificados` (`id`, `cliente_id`, `precio`, `tipo_certificado_id`, `tipo_pago`, `archivo1`, `archivo2`, `user_id`, `sucursal_id`, `fecha_registro`, `hora_registro`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 90.00, 1, 'EFECTIVO', 'archivo111775482303.docx', 'archivo211775482303.docx', 2, 1, '2026-04-06', '09:31:43', 1, '2026-04-06 17:31:43', '2026-04-06 17:31:43'),
+(2, 3, 60.00, 2, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:40:25', 1, '2026-04-06 17:40:25', '2026-04-06 17:40:25'),
+(3, 4, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:41:33', 1, '2026-04-06 17:41:33', '2026-04-06 17:41:33'),
+(4, 5, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:41:49', 1, '2026-04-06 17:41:49', '2026-04-06 17:41:49'),
+(5, 6, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:42:05', 1, '2026-04-06 17:42:05', '2026-04-06 17:42:05'),
+(6, 7, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:42:20', 1, '2026-04-06 17:42:20', '2026-04-06 17:42:20'),
+(7, 8, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:42:33', 1, '2026-04-06 17:42:33', '2026-04-06 17:42:33'),
+(8, 9, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:42:46', 1, '2026-04-06 17:42:46', '2026-04-06 17:42:46'),
+(9, 2, 90.00, 1, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:43:10', 1, '2026-04-06 17:43:10', '2026-04-06 17:43:10'),
+(10, 10, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:43:42', 1, '2026-04-06 17:43:42', '2026-04-06 17:43:42'),
+(11, 11, 0.00, 1, 'EFECTIVO', 'archivo1111775483063.docx', NULL, 2, 1, '2026-04-06', '09:44:23', 1, '2026-04-06 17:44:23', '2026-04-06 17:44:23'),
+(12, 12, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:44:59', 1, '2026-04-06 17:44:59', '2026-04-06 17:44:59'),
+(13, 13, 90.00, 1, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:45:18', 1, '2026-04-06 17:45:18', '2026-04-06 17:45:18'),
+(14, 14, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:45:38', 1, '2026-04-06 17:45:38', '2026-04-06 17:45:38'),
+(15, 15, 90.00, 1, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:45:58', 1, '2026-04-06 17:45:58', '2026-04-06 17:45:58'),
+(16, 16, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:46:21', 1, '2026-04-06 17:46:21', '2026-04-06 17:46:21'),
+(17, 17, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:46:40', 1, '2026-04-06 17:46:40', '2026-04-06 17:46:40'),
+(18, 18, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:46:54', 1, '2026-04-06 17:46:54', '2026-04-06 17:46:54'),
+(19, 19, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:47:10', 1, '2026-04-06 17:47:10', '2026-04-06 17:47:10'),
+(20, 20, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:47:35', 1, '2026-04-06 17:47:35', '2026-04-06 17:47:35'),
+(21, 21, 0.00, 1, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:47:59', 1, '2026-04-06 17:47:59', '2026-04-06 17:47:59'),
+(22, 22, 90.00, 1, 'EFECTIVO', NULL, NULL, 4, 2, '2026-04-06', '10:22:33', 1, '2026-04-06 18:22:33', '2026-04-06 18:22:33');
+
 -- --------------------------------------------------------
 
 --
@@ -65,9 +93,9 @@ CREATE TABLE `certificado_emitidos` (
 --
 
 INSERT INTO `certificado_emitidos` (`id`, `fecha`, `user_id`, `tipo_certificado_id`, `conteo`, `created_at`, `updated_at`) VALUES
-(1, '2026-04-03', 1, 1, 0, '2026-04-04 03:06:20', '2026-04-04 03:06:20'),
-(2, '2026-04-03', 1, 2, 0, '2026-04-04 03:06:21', '2026-04-04 03:06:21'),
-(3, '2026-04-03', 1, 3, 0, '2026-04-04 03:06:22', '2026-04-04 03:06:22');
+(1, '2026-04-06', 2, 1, 20, '2026-04-06 17:31:31', '2026-04-06 17:47:59'),
+(2, '2026-04-06', 2, 2, 1, '2026-04-06 17:40:21', '2026-04-06 17:40:25'),
+(3, '2026-04-06', 4, 1, 1, '2026-04-06 18:22:31', '2026-04-06 18:22:33');
 
 -- --------------------------------------------------------
 
@@ -104,7 +132,20 @@ INSERT INTO `clientes` (`id`, `nombre`, `paterno`, `materno`, `ci`, `ci_exp`, `c
 (6, 'FRANZ', 'SALINAS', '', '435534', 'LP', '', '2000-01-01', '756756756', '2026-04-03', 1, '2026-04-04 02:40:45', '2026-04-04 02:40:45'),
 (7, 'LUIS', 'CACERES', 'MARTINEZ', '567567567', 'LP', 'ED', '1999-01-01', '676767676', '2026-04-03', 1, '2026-04-04 02:42:12', '2026-04-04 02:42:12'),
 (8, 'JAIME', 'ROSALES', '', '7686786', 'CB', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:46:49', '2026-04-04 02:46:49'),
-(9, 'ALEX', 'MAGALLANES', 'SOLIZ', '76867867', 'OR', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:47:29', '2026-04-04 02:47:29');
+(9, 'ALEX', 'MAGALLANES', 'SOLIZ', '76867867', 'OR', '', NULL, NULL, '2026-04-03', 1, '2026-04-04 02:47:29', '2026-04-04 02:47:29'),
+(10, 'JORGE', 'ALVA', 'CORTEZ', '6544565', 'LP', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:43:35', '2026-04-06 17:43:35'),
+(11, 'FRANCO', 'GONZALES', '', '34534543', 'SC', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:44:02', '2026-04-06 17:44:02'),
+(12, 'ELVIS', 'CHOQUE', 'CHOQUE', '45645645', 'CB', '', '2000-09-21', '65756565', '2026-04-06', 1, '2026-04-06 17:44:50', '2026-04-06 17:44:50'),
+(13, 'SANDRA', 'MARTINEZ', '', '53535345', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:45:13', '2026-04-06 17:45:13'),
+(14, 'CARLOS', 'CONTRERAS', '', '4353454', 'LP', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:45:34', '2026-04-06 17:45:34'),
+(15, 'SANDRA', 'MARCEL', '', '45335345', 'LP', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:45:51', '2026-04-06 17:45:51'),
+(16, 'CESAR', 'VILLANUEVA', '', '5345345', 'LP', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:46:16', '2026-04-06 17:46:16'),
+(17, 'CRISTIAN', 'CORTEZ', '', '54646456', 'LP', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:46:36', '2026-04-06 17:46:36'),
+(18, 'JUAN', 'CARVAJAL', '', '5464645', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:46:50', '2026-04-06 17:46:50'),
+(19, 'GRACIELA', 'CONDORI', '', '34534544', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:06', '2026-04-06 17:47:06'),
+(20, 'JORGE LUIS', 'GARNICA', '', '34534534', 'SC', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:30', '2026-04-06 17:47:30'),
+(21, 'FELIX', 'CARVAJAL', '', '4564565', 'SC', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:48', '2026-04-06 17:47:48'),
+(22, 'FRANCO', 'VALVIDIESO', '', '465645645', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 18:22:27', '2026-04-06 18:22:27');
 
 -- --------------------------------------------------------
 
@@ -177,7 +218,43 @@ INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `dato
 (15, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"435534\", \"id\": 6, \"cel\": \"756756756\", \"ci_exp\": \"LP\", \"nombre\": \"FRANZ\", \"materno\": \"\", \"paterno\": \"SALINAS\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-03T22:40:45.000000Z\", \"updated_at\": \"2026-04-03T22:40:45.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:40:45', '2026-04-04 02:40:45', '2026-04-04 02:40:45'),
 (16, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"567567567\", \"id\": 7, \"cel\": \"676767676\", \"ci_exp\": \"LP\", \"nombre\": \"LUIS\", \"materno\": \"MARTINEZ\", \"paterno\": \"CACERES\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-03T22:42:12.000000Z\", \"updated_at\": \"2026-04-03T22:42:12.000000Z\", \"complemento\": \"ED\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:42:12', '2026-04-04 02:42:12', '2026-04-04 02:42:12'),
 (17, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"7686786\", \"id\": 8, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"JAIME\", \"materno\": \"\", \"paterno\": \"ROSALES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:46:49.000000Z\", \"updated_at\": \"2026-04-03T22:46:49.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:46:49', '2026-04-04 02:46:49', '2026-04-04 02:46:49'),
-(18, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"76867867\", \"id\": 9, \"cel\": null, \"ci_exp\": \"OR\", \"nombre\": \"ALEX\", \"materno\": \"SOLIZ\", \"paterno\": \"MAGALLANES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:47:29.000000Z\", \"updated_at\": \"2026-04-03T22:47:29.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:47:29', '2026-04-04 02:47:29', '2026-04-04 02:47:29');
+(18, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN PRODUCTO', '{\"ci\": \"76867867\", \"id\": 9, \"cel\": null, \"ci_exp\": \"OR\", \"nombre\": \"ALEX\", \"materno\": \"SOLIZ\", \"paterno\": \"MAGALLANES\", \"fecha_nac\": null, \"created_at\": \"2026-04-03T22:47:29.000000Z\", \"updated_at\": \"2026-04-03T22:47:29.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-03\"}', NULL, 'SUCURSALES', '2026-04-03', '22:47:29', '2026-04-04 02:47:29', '2026-04-04 02:47:29'),
+(19, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 2, \"precio\": \"90.00\", \"user_id\": 2, \"archivo1\": \"archivo121775482238.docx\", \"archivo2\": \"archivo221775482238.docx\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"1\", \"created_at\": \"2026-04-06T13:30:38.000000Z\", \"updated_at\": \"2026-04-06T13:30:38.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:30:38\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:30:38', '2026-04-06 17:30:38', '2026-04-06 17:30:38'),
+(20, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 1, \"precio\": \"90.00\", \"user_id\": 2, \"archivo1\": \"archivo111775482303.docx\", \"archivo2\": \"archivo211775482303.docx\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"1\", \"created_at\": \"2026-04-06T13:31:43.000000Z\", \"updated_at\": \"2026-04-06T13:31:43.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:31:43\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:31:43', '2026-04-06 17:31:43', '2026-04-06 17:31:43'),
+(21, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 2, \"precio\": \"60.00\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"3\", \"created_at\": \"2026-04-06T13:40:25.000000Z\", \"updated_at\": \"2026-04-06T13:40:25.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:40:25\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"2\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:40:25', '2026-04-06 17:40:25', '2026-04-06 17:40:25'),
+(22, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 3, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"4\", \"created_at\": \"2026-04-06T13:41:33.000000Z\", \"updated_at\": \"2026-04-06T13:41:33.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:41:33\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:41:33', '2026-04-06 17:41:33', '2026-04-06 17:41:33'),
+(23, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 4, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"5\", \"created_at\": \"2026-04-06T13:41:49.000000Z\", \"updated_at\": \"2026-04-06T13:41:49.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:41:49\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:41:49', '2026-04-06 17:41:49', '2026-04-06 17:41:49'),
+(24, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 5, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"6\", \"created_at\": \"2026-04-06T13:42:05.000000Z\", \"updated_at\": \"2026-04-06T13:42:05.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:42:05\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:42:05', '2026-04-06 17:42:05', '2026-04-06 17:42:05'),
+(25, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 6, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"7\", \"created_at\": \"2026-04-06T13:42:20.000000Z\", \"updated_at\": \"2026-04-06T13:42:20.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:42:20\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:42:20', '2026-04-06 17:42:20', '2026-04-06 17:42:20'),
+(26, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 7, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"8\", \"created_at\": \"2026-04-06T13:42:33.000000Z\", \"updated_at\": \"2026-04-06T13:42:33.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:42:33\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:42:33', '2026-04-06 17:42:33', '2026-04-06 17:42:33'),
+(27, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 8, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"9\", \"created_at\": \"2026-04-06T13:42:46.000000Z\", \"updated_at\": \"2026-04-06T13:42:46.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:42:46\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:42:46', '2026-04-06 17:42:46', '2026-04-06 17:42:46'),
+(28, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 9, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"2\", \"created_at\": \"2026-04-06T13:43:10.000000Z\", \"updated_at\": \"2026-04-06T13:43:10.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:43:10\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:43:10', '2026-04-06 17:43:10', '2026-04-06 17:43:10'),
+(29, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"6544565\", \"id\": 10, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"JORGE\", \"materno\": \"CORTEZ\", \"paterno\": \"ALVA\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:43:35.000000Z\", \"updated_at\": \"2026-04-06T13:43:35.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:43:35', '2026-04-06 17:43:35', '2026-04-06 17:43:35'),
+(30, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 10, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"10\", \"created_at\": \"2026-04-06T13:43:42.000000Z\", \"updated_at\": \"2026-04-06T13:43:42.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:43:42\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:43:42', '2026-04-06 17:43:42', '2026-04-06 17:43:42'),
+(31, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"34534543\", \"id\": 11, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"FRANCO\", \"materno\": \"\", \"paterno\": \"GONZALES\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:44:02.000000Z\", \"updated_at\": \"2026-04-06T13:44:02.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:44:02', '2026-04-06 17:44:02', '2026-04-06 17:44:02'),
+(32, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 11, \"precio\": \"0\", \"user_id\": 2, \"archivo1\": \"archivo1111775483063.docx\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"11\", \"created_at\": \"2026-04-06T13:44:23.000000Z\", \"updated_at\": \"2026-04-06T13:44:23.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:44:23\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:44:23', '2026-04-06 17:44:23', '2026-04-06 17:44:23'),
+(33, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"45645645\", \"id\": 12, \"cel\": \"65756565\", \"ci_exp\": \"CB\", \"nombre\": \"ELVIS\", \"materno\": \"CHOQUE\", \"paterno\": \"CHOQUE\", \"fecha_nac\": \"2000-09-21\", \"created_at\": \"2026-04-06T13:44:50.000000Z\", \"updated_at\": \"2026-04-06T13:44:50.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:44:50', '2026-04-06 17:44:50', '2026-04-06 17:44:50'),
+(34, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 12, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"12\", \"created_at\": \"2026-04-06T13:44:59.000000Z\", \"updated_at\": \"2026-04-06T13:44:59.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:44:59\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:44:59', '2026-04-06 17:44:59', '2026-04-06 17:44:59'),
+(35, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"53535345\", \"id\": 13, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"SANDRA\", \"materno\": \"\", \"paterno\": \"MARTINEZ\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:45:13.000000Z\", \"updated_at\": \"2026-04-06T13:45:13.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:45:14', '2026-04-06 17:45:14', '2026-04-06 17:45:14'),
+(36, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 13, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"13\", \"created_at\": \"2026-04-06T13:45:18.000000Z\", \"updated_at\": \"2026-04-06T13:45:18.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:45:18\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:45:18', '2026-04-06 17:45:18', '2026-04-06 17:45:18'),
+(37, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"4353454\", \"id\": 14, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"CARLOS\", \"materno\": \"\", \"paterno\": \"CONTRERAS\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:45:34.000000Z\", \"updated_at\": \"2026-04-06T13:45:34.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:45:34', '2026-04-06 17:45:34', '2026-04-06 17:45:34'),
+(38, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 14, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"14\", \"created_at\": \"2026-04-06T13:45:38.000000Z\", \"updated_at\": \"2026-04-06T13:45:38.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:45:38\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:45:38', '2026-04-06 17:45:38', '2026-04-06 17:45:38'),
+(39, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"45335345\", \"id\": 15, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"SANDRA\", \"materno\": \"\", \"paterno\": \"MARCEL\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:45:51.000000Z\", \"updated_at\": \"2026-04-06T13:45:51.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:45:51', '2026-04-06 17:45:51', '2026-04-06 17:45:51'),
+(40, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 15, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"15\", \"created_at\": \"2026-04-06T13:45:58.000000Z\", \"updated_at\": \"2026-04-06T13:45:58.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:45:58\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:45:58', '2026-04-06 17:45:58', '2026-04-06 17:45:58'),
+(41, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"5345345\", \"id\": 16, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"CESAR\", \"materno\": \"\", \"paterno\": \"VILLANUEVA\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:46:16.000000Z\", \"updated_at\": \"2026-04-06T13:46:16.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:46:16', '2026-04-06 17:46:16', '2026-04-06 17:46:16'),
+(42, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 16, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"16\", \"created_at\": \"2026-04-06T13:46:21.000000Z\", \"updated_at\": \"2026-04-06T13:46:21.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:46:21\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:46:21', '2026-04-06 17:46:21', '2026-04-06 17:46:21'),
+(43, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"54646456\", \"id\": 17, \"cel\": null, \"ci_exp\": \"LP\", \"nombre\": \"CRISTIAN\", \"materno\": \"\", \"paterno\": \"CORTEZ\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:46:36.000000Z\", \"updated_at\": \"2026-04-06T13:46:36.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:46:36', '2026-04-06 17:46:36', '2026-04-06 17:46:36'),
+(44, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 17, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"17\", \"created_at\": \"2026-04-06T13:46:40.000000Z\", \"updated_at\": \"2026-04-06T13:46:40.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:46:40\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:46:40', '2026-04-06 17:46:40', '2026-04-06 17:46:40'),
+(45, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"5464645\", \"id\": 18, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"JUAN\", \"materno\": \"\", \"paterno\": \"CARVAJAL\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:46:50.000000Z\", \"updated_at\": \"2026-04-06T13:46:50.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:46:50', '2026-04-06 17:46:50', '2026-04-06 17:46:50'),
+(46, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 18, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"18\", \"created_at\": \"2026-04-06T13:46:54.000000Z\", \"updated_at\": \"2026-04-06T13:46:54.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:46:54\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:46:54', '2026-04-06 17:46:54', '2026-04-06 17:46:54'),
+(47, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"34534544\", \"id\": 19, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"GRACIELA\", \"materno\": \"\", \"paterno\": \"CONDORI\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:47:06.000000Z\", \"updated_at\": \"2026-04-06T13:47:06.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:47:06', '2026-04-06 17:47:06', '2026-04-06 17:47:06'),
+(48, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 19, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"19\", \"created_at\": \"2026-04-06T13:47:10.000000Z\", \"updated_at\": \"2026-04-06T13:47:10.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:47:10\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:47:10', '2026-04-06 17:47:10', '2026-04-06 17:47:10'),
+(49, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"34534534\", \"id\": 20, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"JORGE LUIS\", \"materno\": \"\", \"paterno\": \"GARNICA\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:47:30.000000Z\", \"updated_at\": \"2026-04-06T13:47:30.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:47:30', '2026-04-06 17:47:30', '2026-04-06 17:47:30'),
+(50, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 20, \"precio\": \"90.00\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"20\", \"created_at\": \"2026-04-06T13:47:35.000000Z\", \"updated_at\": \"2026-04-06T13:47:35.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:47:35\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:47:35', '2026-04-06 17:47:35', '2026-04-06 17:47:35'),
+(51, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"4564565\", \"id\": 21, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"FELIX\", \"materno\": \"\", \"paterno\": \"CARVAJAL\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:47:48.000000Z\", \"updated_at\": \"2026-04-06T13:47:48.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:47:48', '2026-04-06 17:47:48', '2026-04-06 17:47:48'),
+(52, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 21, \"precio\": \"0\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"21\", \"created_at\": \"2026-04-06T13:47:59.000000Z\", \"updated_at\": \"2026-04-06T13:47:59.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:47:59\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:47:59', '2026-04-06 17:47:59', '2026-04-06 17:47:59'),
+(53, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN PRODUCTO', '{\"ci\": \"465645645\", \"id\": 22, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"FRANCO\", \"materno\": \"\", \"paterno\": \"VALVIDIESO\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T14:22:27.000000Z\", \"updated_at\": \"2026-04-06T14:22:27.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '14:22:27', '2026-04-06 18:22:27', '2026-04-06 18:22:27'),
+(54, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 22, \"precio\": \"90.00\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"22\", \"created_at\": \"2026-04-06T14:22:33.000000Z\", \"updated_at\": \"2026-04-06T14:22:33.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"10:22:33\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '14:22:33', '2026-04-06 18:22:33', '2026-04-06 18:22:33');
 
 -- --------------------------------------------------------
 
@@ -194,6 +271,14 @@ CREATE TABLE `login_users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `login_users`
+--
+
+INSERT INTO `login_users` (`id`, `user_id`, `sucursal_id`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
+(1, 2, 1, '2026-04-06', '08:57:24', '2026-04-06 16:57:24', '2026-04-06 16:57:24'),
+(2, 4, 2, '2026-04-06', '10:22:10', '2026-04-06 18:22:10', '2026-04-06 18:22:10');
 
 -- --------------------------------------------------------
 
@@ -387,7 +472,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `certificados`
 --
 ALTER TABLE `certificados`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `certificado_emitidos`
@@ -399,7 +484,7 @@ ALTER TABLE `certificado_emitidos`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `configuracions`
@@ -411,13 +496,13 @@ ALTER TABLE `configuracions`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT de la tabla `login_users`
 --
 ALTER TABLE `login_users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`

@@ -24,16 +24,40 @@ class Certificado extends Model
 
     public function getUrlArchivo2Attribute()
     {
-        return asset("files/certificados/" . $this->archivo2);
+        if ($this->archivo2)
+            return asset("files/certificados/" . $this->archivo2);
+
+        return "";
     }
 
     public function getUrlArchivo1Attribute()
     {
-        return asset("files/certificados/" . $this->archivo1);
+        if ($this->archivo1)
+            return asset("files/certificados/" . $this->archivo1);
+
+        return "";
     }
 
     public function getFechaRegistroTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha_registro));
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
+    public function tipo_certificado()
+    {
+        return $this->belongsTo(TipoCertificado::class, 'tipo_certificado_id');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_id');
     }
 }

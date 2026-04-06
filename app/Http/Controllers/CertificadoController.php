@@ -21,7 +21,7 @@ use Inertia\Response as ResponseInertia;
 
 class CertificadoController extends Controller
 {
-    public function __construct(private CertificadoService $tipo_certificadoService) {}
+    public function __construct(private CertificadoService $certificadoService) {}
 
     /**
      * Página index
@@ -34,14 +34,14 @@ class CertificadoController extends Controller
     }
 
     /**
-     * Listado de tipo_certificados
+     * Listado de certificados
      *
      * @return JsonResponse
      */
     public function listado(): JsonResponse
     {
         return response()->JSON([
-            "tipo_certificados" => $this->tipo_certificadoService->listado()
+            "certificados" => $this->certificadoService->listado()
         ]);
     }
 
@@ -69,11 +69,11 @@ class CertificadoController extends Controller
             ];
         }
 
-        $tipo_certificados = $this->tipo_certificadoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $certificados = $this->certificadoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
         return response()->JSON([
-            "data" => $tipo_certificados->items(),
-            "total" => $tipo_certificados->total(),
-            "lastPage" => $tipo_certificados->lastPage()
+            "data" => $certificados->items(),
+            "total" => $certificados->total(),
+            "lastPage" => $certificados->lastPage()
         ]);
     }
 
@@ -83,7 +83,7 @@ class CertificadoController extends Controller
     }
 
     /**
-     * Registrar un nuevo tipo_certificado
+     * Registrar un nuevo certificado
      *
      * @param CertificadoStoreRequest $request
      * @return RedirectResponse|Response
@@ -93,9 +93,9 @@ class CertificadoController extends Controller
         DB::beginTransaction();
         try {
             // crear el Certificado
-            $this->tipo_certificadoService->crear($request->validated());
+            $this->certificadoService->crear($request->validated());
             DB::commit();
-            return redirect()->route("tipo_certificados.index")->with("bien", "Registro realizado");
+            return redirect()->route("certificados.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
             DB::rollBack();
             throw ValidationException::withMessages([
@@ -104,25 +104,40 @@ class CertificadoController extends Controller
         }
     }
 
+
     /**
-     * Mostrar un tipo_certificado
+     * Editar un certificado
      *
-     * @param Certificado $tipo_certificado
-     * @return JsonResponse
+     * @param Certificado $certificado
+     * @return ResponseInertia
      */
-    public function show(Certificado $tipo_certificado): JsonResponse
+    public function edit(Certificado $certificado): ResponseInertia
     {
-        return response()->JSON($tipo_certificado);
+
+        $cliente = $certificado->cliente;
+        return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
     }
 
-    public function update(Certificado $tipo_certificado, CertificadoUpdateRequest $request)
+
+    /**
+     * Mostrar un certificado
+     *
+     * @param Certificado $certificado
+     * @return JsonResponse
+     */
+    public function show(Certificado $certificado): JsonResponse
+    {
+        return response()->JSON($certificado);
+    }
+
+    public function update(Certificado $certificado, CertificadoUpdateRequest $request)
     {
         DB::beginTransaction();
         try {
-            // actualizar tipo_certificado
-            $this->tipo_certificadoService->actualizar($request->validated(), $tipo_certificado);
+            // actualizar certificado
+            $this->certificadoService->actualizar($request->validated(), $certificado);
             DB::commit();
-            return redirect()->route("tipo_certificados.index")->with("bien", "Registro actualizado");
+            return redirect()->route("certificados.index")->with("bien", "Registro actualizado");
         } catch (\Exception $e) {
             DB::rollBack();
             // Log::debug($e->getMessage());
@@ -133,16 +148,16 @@ class CertificadoController extends Controller
     }
 
     /**
-     * Eliminar tipo_certificado
+     * Eliminar certificado
      *
-     * @param Certificado $tipo_certificado
+     * @param Certificado $certificado
      * @return JsonResponse|Response
      */
-    public function destroy(Certificado $tipo_certificado): JsonResponse|Response
+    public function destroy(Certificado $certificado): JsonResponse|Response
     {
         DB::beginTransaction();
         try {
-            $this->tipo_certificadoService->eliminar($tipo_certificado);
+            $this->certificadoService->eliminar($certificado);
             DB::commit();
             return response()->JSON([
                 'sw' => true,

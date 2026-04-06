@@ -5,6 +5,17 @@ import { useCertificados } from "@/composables/certificados/useCertificados";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import Formulario from "./Formulario.vue";
+const props = defineProps({
+    certificado: {
+        type: Object,
+        default: {},
+        required: true,
+    },
+    cliente: {
+        type: Object,
+        default: {},
+    },
+});
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
@@ -14,7 +25,10 @@ onBeforeMount(() => {
 const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
 onMounted(() => {
     appStore.stopLoading();
-    limpiarCertificado();
+});
+
+onBeforeMount(() => {
+    setCertificado(props.certificado);
 });
 </script>
 <template>
@@ -23,7 +37,7 @@ onMounted(() => {
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Certificados > Nuevo</h1>
+                    <h1 class="m-0">Certificados > Editar</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -36,7 +50,7 @@ onMounted(() => {
                                 >Certificados</Link
                             >
                         </li>
-                        <li class="breadcrumb-item active">Nuevo</li>
+                        <li class="breadcrumb-item active">Editar</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -66,11 +80,12 @@ onMounted(() => {
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <i class="fa fa-plus"></i> Nuevo Certificado
+                                <i class="fa fa-edit"></i> Editar Certificado
                             </div>
                             <div class="card-body pt-1">
                                 <Formulario
                                     :certificado="oCertificado"
+                                    :cliente="cliente"
                                 ></Formulario>
                             </div>
                         </div>

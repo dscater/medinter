@@ -101,7 +101,8 @@ onUnmounted(() => {});
                 </div>
                 <div class="info">
                     <Link :href="route('profile.edit')" class="d-block">
-                        {{ usuario?.usuario }}
+                        {{ usuario?.nombre }} {{ usuario?.paterno }}
+                        {{ usuario?.materno }}<br />
                     </Link>
                 </div>
             </div>

@@ -21,8 +21,8 @@ export const useCertificados = () => {
             oCertificado.value.precio = item.precio;
             oCertificado.value.tipo_certificado_id = item.tipo_certificado_id;
             oCertificado.value.tipo_pago = item.tipo_pago;
-            oCertificado.value.archivo1 = item.archivo1;
-            oCertificado.value.archivo2 = item.archivo2;
+            oCertificado.value.url_archivo1 = item.url_archivo1;
+            oCertificado.value.url_archivo2 = item.url_archivo2;
             oCertificado.value.user_id = item.user_id;
             oCertificado.value.sucursal_id = item.sucursal_id;
             oCertificado.value._method = "PUT";

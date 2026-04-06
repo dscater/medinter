@@ -5,6 +5,7 @@ use App\Http\Controllers\CertificadoEmitidoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioController;
+use App\Http\Controllers\LoginUserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SucursalController;
@@ -69,6 +70,10 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::resource("usuarios", UsuarioController::class)->only(
         ["index", "store"]
     );
+
+    // LOGIN USER
+    Route::get("login_users/verificaSucursal", [LoginUserController::class, 'verificaSucursal'])->name("login_users.verificaSucursal");
+    Route::post("login_users/asignaSucursal", [LoginUserController::class, 'asignaSucursal'])->name("login_users.asignaSucursal");
 
     // TIPO USUARIOS
     Route::get("tipo_usuarios/listado", [TipoUsuarioController::class, 'listado'])->name("tipo_usuarios.listado");

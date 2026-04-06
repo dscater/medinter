@@ -26,7 +26,7 @@ class CertificadoUpdateRequest extends FormRequest
             "cliente_id" => "required",
             "precio" => "required|numeric|decimal:0,2|min:0",
             "tipo_certificado_id" => "required",
-            "tipo_pago" => "requried",
+            "tipo_pago" => "required",
             "archivo1" => "nullable|file|max:2048",
             "archivo2" => "nullable|file|max:2048",
             "sucursal_id" => "required",
