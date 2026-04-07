@@ -5,7 +5,7 @@ defineOptions({
 });
 import Content from "@/Components/Content.vue";
 import { onMounted, ref, computed, onBeforeMount } from "vue";
-import { usePage, Head, useForm } from "@inertiajs/vue3";
+import { usePage, Head, useForm, Link } from "@inertiajs/vue3";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useConfiguracionStore } from "@/stores/configuracion/configuracionStore";
 const appStore = useAppStore();
@@ -34,6 +34,12 @@ if (props_page.configuracion != null) {
         id: 0,
         nombre_sistema: "",
         alias: "",
+        razon_social: "",
+        nit: "",
+        dir: "",
+        fono: "",
+        actividad: "",
+        correo: "",
         url_logo: "",
         logo: "",
     });
@@ -107,8 +113,26 @@ onMounted(() => {
 });
 </script>
 <template>
-    <Head title="Parametrización"></Head>
+    <Head title="Configuración"></Head>
     <Content>
+        <template #header>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Configuración</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <Link :href="route('inicio')">Inicio</Link>
+                        </li>
+                        <li class="breadcrumb-item active">Configuración</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </template>
         <form @submit.prevent="enviarFormulario()">
             <div class="row">
                 <div class="col-md-4 form-group mb-3">
@@ -133,6 +157,74 @@ onMounted(() => {
                     />
                     <span class="text-danger" v-if="form.errors?.alias">{{
                         form.errors.alias
+                    }}</span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="required">Razón Social</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.razon_social"
+                    />
+                    <span
+                        class="text-danger"
+                        v-if="form.errors?.razon_social"
+                        >{{ form.errors.razon_social }}</span
+                    >
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="">Nit</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.nit"
+                    />
+                    <span class="text-danger" v-if="form.errors?.nit">{{
+                        form.errors.nit
+                    }}</span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="">Dirección</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.dir"
+                    />
+                    <span class="text-danger" v-if="form.errors?.dir">{{
+                        form.errors.dir
+                    }}</span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="">Teléfono/Celular</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.fono"
+                    />
+                    <span class="text-danger" v-if="form.errors?.fono">{{
+                        form.errors.fono
+                    }}</span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="">Actividad Económica</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.actividad"
+                    />
+                    <span class="text-danger" v-if="form.errors?.actividad">{{
+                        form.errors.actividad
+                    }}</span>
+                </div>
+                <div class="col-md-4 form-group mb-3">
+                    <label class="">Correo</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        v-model="form.correo"
+                    />
+                    <span class="text-danger" v-if="form.errors?.correo">{{
+                        form.errors.correo
                     }}</span>
                 </div>
                 <div class="col-md-4 form-group mb-3">

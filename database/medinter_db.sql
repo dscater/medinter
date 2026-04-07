@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 06-04-2026 a las 14:28:10
+-- Tiempo de generación: 07-04-2026 a las 00:39:00
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -159,10 +159,9 @@ CREATE TABLE `configuracions` (
   `alias` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `razon_social` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `dir` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fono` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `web` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `actividad` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dir` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fono` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `actividad` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `correo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `logo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -173,8 +172,8 @@ CREATE TABLE `configuracions` (
 -- Volcado de datos para la tabla `configuracions`
 --
 
-INSERT INTO `configuracions` (`id`, `nombre_sistema`, `alias`, `razon_social`, `nit`, `dir`, `fono`, `web`, `actividad`, `correo`, `logo`, `created_at`, `updated_at`) VALUES
-(1, 'MEDINTER', 'SC', 'MEDINTER S.A.', '1111111111', 'LOS OLIVOS #111', '2222222', '', 'ACTIVIDAD', '', 'logo.jpeg', '2026-02-16 22:21:27', '2026-02-25 15:16:44');
+INSERT INTO `configuracions` (`id`, `nombre_sistema`, `alias`, `razon_social`, `nit`, `dir`, `fono`, `actividad`, `correo`, `logo`, `created_at`, `updated_at`) VALUES
+(1, 'MEDINTER', 'MD', 'MEDINTER S.A.', '1111111111', 'LOS OLIVOS #111', '67676767', 'ACTIVIDAD', 'correo@gmail.com', 'logo.jpeg', '2026-02-16 22:21:27', '2026-04-07 00:26:24');
 
 -- --------------------------------------------------------
 

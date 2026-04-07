@@ -1,0 +1,226 @@
+<script setup>
+import Content from "@/Components/Content.vue";
+import { computed, onMounted, ref } from "vue";
+import { Head, usePage, Link } from "@inertiajs/vue3";
+import { useAppStore } from "@/stores/aplicacion/appStore";
+const appStore = useAppStore();
+
+const cargarListas = () => {
+    cargarClientes();
+    cargarSucursals();
+    cargarUsers();
+    cargarTipoPagos();
+    cargarTipoCertificados();
+};
+
+const listClientes = ref([]);
+const listSucursals = ref([]);
+const listUsers = ref([]);
+const listTipoPagos = ref([]);
+const listTipoCertificados = ref([]);
+
+const cargarClientes = () => {
+    axios.get(route("clientes.listado")).then((response) => {
+        listClientes.value = response.data.clientes;
+        listClientes.value.unshift({
+            id: "todos",
+            full_name: "TODOS",
+            full_ci: "",
+        });
+    });
+};
+
+const cargarSucursals = () => {
+    axios.get(route("sucursals.listado")).then((response) => {
+        listSucursals.value = response.data.sucursals;
+        listSucursals.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+const cargarUsers = () => {
+    axios
+        .get(route("usuarios.byTipo"), {
+            params: {
+                tipo: "MÉDICO",
+            },
+        })
+        .then((response) => {
+            listUsers.value = response.data.usuarios;
+            listUsers.value.unshift({
+                id: "todos",
+                full_name: "TODOS",
+            });
+        });
+};
+const cargarTipoPagos = () => {
+    axios.get(route("tipo_pagos.listado")).then((response) => {
+        listTipoPagos.value = response.data;
+        listTipoPagos.value.unshift({
+            value: "todos",
+            label: "TODOS",
+        });
+    });
+};
+const cargarTipoCertificados = () => {
+    axios.get(route("tipo_certificados.listado")).then((response) => {
+        listTipoCertificados.value = response.data.tipo_certificados;
+        listTipoCertificados.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
+onMounted(() => {
+    appStore.stopLoading();
+    cargarListas();
+});
+
+const form = ref({
+    cliente_id: "todos",
+    sucursal_id: "todos",
+    user_id: "todos",
+    tipo_pago: "todos",
+    tipo_certificado_id: "todos",
+});
+
+const generando = ref(false);
+const txtBtn = computed(() => {
+    if (generando.value) {
+        return "Generando Reporte...";
+    }
+    return "Generar Reporte";
+});
+
+const generarReporte = () => {
+    generando.value = true;
+    const url = route("reportes.r_certificados", form.value);
+    window.open(url, "_blank");
+    setTimeout(() => {
+        generando.value = false;
+    }, 500);
+};
+</script>
+<template>
+    <Head title="Reporte Certificados Emitidos"></Head>
+    <Content>
+        <template #header>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Certificados Emitidos</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <Link :href="route('inicio')">Inicio</Link>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Reportes - Certificados Emitidos
+                        </li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </template>
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <form @submit.prevent="generarReporte">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label>Seleccionar Cliente*</label>
+                                    <el-select
+                                        v-model="form.cliente_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in listClientes"
+                                            :key="item.id"
+                                            :value="item.id"
+                                            :label="`${item.full_name} ${item.full_ci ? ' - ' + item.full_ci : ''}`"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Sucursal*</label>
+                                    <el-select
+                                        v-model="form.sucursal_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in listSucursals"
+                                            :key="item.id"
+                                            :value="item.id"
+                                            :label="item.nombre"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Seleccionar Médico*</label>
+                                    <el-select
+                                        v-model="form.user_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in listUsers"
+                                            :key="item.id"
+                                            :value="item.id"
+                                            :label="item.full_name"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Seleccionar Tipo de Pago*</label>
+                                    <el-select
+                                        v-model="form.tipo_pago"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in listTipoPagos"
+                                            :key="item.value"
+                                            :value="item.value"
+                                            :label="item.label"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-12">
+                                    <label>Tipo de Certificado*</label>
+                                    <el-select
+                                        v-model="form.tipo_certificado_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="item in listTipoCertificados"
+                                            :key="item.id"
+                                            :value="item.id"
+                                            :label="item.nombre"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-md-12 text-center mt-3">
+                                    <button
+                                        class="btn btn-primary"
+                                        block
+                                        @click="generarReporte"
+                                        :disabled="generando"
+                                        v-text="txtBtn"
+                                    ></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Content>
+</template>

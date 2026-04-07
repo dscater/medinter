@@ -78,9 +78,9 @@ const enviarFormulario = () => {
 };
 const textBtn = computed(() => {
     if (enviando.value) {
-        return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
+        return `<i class="fa fa-spin fa-spinner"></i> Ingresando...`;
     }
-    return `<i class="fa fa-sign-in"></i> Ingresar`;
+    return `<i class="fa fa-sign-in-alt"></i> Ingresar`;
 });
 
 onMounted(() => {
@@ -95,7 +95,7 @@ onMounted(() => {
         <!-- BEGIN login -->
         <div class="row">
             <div
-                class="col-md-6 offset-md-3 col-lg-4 offset-lg-4 col-xl-3 offset-xl-4"
+                class="col-md-6 offset-md-3 col-lg-4 offset-lg-4 col-xl-3 offset-xl-4 my-5"
             >
                 <div class="card mt-5">
                     <div class="card-header text-center">
@@ -106,10 +106,14 @@ onMounted(() => {
                             width="100px"
                             lazy
                         />
+                        <br />
+                        <h1 class="h3 font-weight-bold text1">
+                            {{ oConfiguracion.nombre_sistema }}
+                        </h1>
                     </div>
                     <div class="card-body">
                         <form @submit.prevent="enviarFormulario()">
-                            <h5 class="w-100 text-center h4 text-dark">
+                            <h5 class="w-100 text-center h5 text-dark">
                                 Iniciar Sesión
                             </h5>
                             <div class="row">
@@ -117,7 +121,7 @@ onMounted(() => {
                                     <div class="input-group form-floating">
                                         <div class="input-group-prepend">
                                             <span
-                                                class="input-group-text bg-principal"
+                                                class="input-group-text bg-primary"
                                             >
                                                 <i class="fa fa-user"></i>
                                             </span>
@@ -153,7 +157,7 @@ onMounted(() => {
                                     <div class="input-group form-floating mt-3">
                                         <div class="input-group-prepend">
                                             <span
-                                                class="input-group-text bg-principal"
+                                                class="input-group-text bg-primary"
                                             >
                                                 <i class="fa fa-key"></i>
                                             </span>
@@ -242,8 +246,6 @@ onMounted(() => {
 body #app .contenedor_login {
     min-height: 100vh;
     width: 100vw;
-    background-image: url("/public/imgs/fondo.webp");
-    background-size: cover;
-    background-position: center;
+    background-color: var(--bgGrayLight);
 }
 </style>

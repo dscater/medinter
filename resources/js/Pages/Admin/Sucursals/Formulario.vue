@@ -233,7 +233,7 @@ onMounted(() => {});
             </button>
             <button
                 type="button"
-                class="btn btn-success"
+                class="btn btn-primary"
                 :disabled="enviando"
                 @click.prevent="enviarFormulario"
                 v-html="textBtn"

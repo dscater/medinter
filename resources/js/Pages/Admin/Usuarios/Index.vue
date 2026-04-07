@@ -175,7 +175,7 @@ onMounted(async () => {
                                 )
                             "
                             type="button"
-                            class="btn btn-success"
+                            class="btn btn-primary"
                             @click="agregarRegistro"
                         >
                             <i class="fa fa-plus"></i> Nuevo Usuario

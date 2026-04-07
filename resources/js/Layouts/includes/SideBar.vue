@@ -73,7 +73,7 @@ onUnmounted(() => {});
 </script>
 <template>
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-dark-success elevation-4">
+    <aside class="main-sidebar sidebar-light-primary elevation-4">
         <!-- Brand Logo -->
         <a :href="route('inicio')" class="brand-link">
             <img
@@ -121,7 +121,7 @@ onUnmounted(() => {});
                         :icon="'fa fa-home'"
                     ></ItemMenu>
                     <li
-                        class="nav-header font-weight-bold bg-principal"
+                        class="nav-header font-weight-bold"
                         v-if="
                             permisos == '*' ||
                             permisos.includes('usuarios.index') ||
@@ -178,9 +178,75 @@ onUnmounted(() => {});
                         :ruta="'usuarios.index'"
                         :icon="'fa fa-users'"
                     ></ItemMenu>
-                    <li class="nav-header font-weight-bold bg-principal">
-                        OTROS
+                    <li
+                        class="nav-header font-weight-bold"
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.usuarios') ||
+                            permisos.includes('reportes.clientes') ||
+                            permisos.includes('reportes.certificados') ||
+                            permisos.includes('reportes.historial_accions') ||
+                            permisos.includes('reportes.gcemitidos') ||
+                            permisos.includes('reportes.gmemitidos')
+                        "
+                    >
+                        REPORTES
                     </li>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.gcemitidos')
+                        "
+                        :label="'Cantidad de Certificados Emitidos por Médico'"
+                        :ruta="'reportes.gcemitidos'"
+                        :icon="'fa fa-chart-bar'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.gmemitidos')
+                        "
+                        :label="'Ingresos por Certificados Emitidos'"
+                        :ruta="'reportes.gmemitidos'"
+                        :icon="'fa fa-chart-bar'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.certificados')
+                        "
+                        :label="'Certificados Emitidos'"
+                        :ruta="'reportes.certificados'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.usuarios')
+                        "
+                        :label="'Lista de Usuarios'"
+                        :ruta="'reportes.usuarios'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.clientes')
+                        "
+                        :label="'Lista de Clientes'"
+                        :ruta="'reportes.clientes'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('reportes.historial_accions')
+                        "
+                        :label="'Log de Usuarios'"
+                        :ruta="'reportes.historial_accions'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <li class="nav-header font-weight-bold">OTROS</li>
                     <ItemMenu
                         v-if="
                             permisos == '*' ||

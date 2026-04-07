@@ -156,7 +156,7 @@ const eliminarCertificado = (item) => {
                                     'certificados.create',
                                 )
                             "
-                            class="btn btn-success"
+                            class="btn btn-primary"
                             :href="route('certificados.create')"
                         >
                             <i class="fa fa-plus"></i> Nuevo Certificado

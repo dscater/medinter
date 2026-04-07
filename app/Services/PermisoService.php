@@ -20,6 +20,7 @@ class PermisoService
             "usuarios.update",
             "usuarios.destroy",
             "usuarios.password",
+            "usuarios.byTipo",
 
             "tipo_usuarios.listado",
 
@@ -75,10 +76,20 @@ class PermisoService
             "configuracions.update",
             "configuracions.destroy",
 
-            // "reportes.usuarios",
-            // "reportes.r_usuarios",
-            "reportes.ventas",
-            "reportes.r_ventas",
+            "certificadosEmitidosLinea",
+
+            "reportes.usuarios",
+            "reportes.r_usuarios",
+            "reportes.clientes",
+            "reportes.r_clientes",
+            "reportes.certificados",
+            "reportes.r_certificados",
+            "reportes.gcemitidos",
+            "reportes.r_gcemitidos",
+            "reportes.gmemitidos",
+            "reportes.r_gmemitidos",
+            "reportes.historial_accions",
+            "reportes.r_historial_accions",
 
         ],
         "GERENTE" => [],
@@ -116,6 +127,8 @@ class PermisoService
             "certificados.destroy",
 
             "certificado_emitidos.verificaCantidad",
+
+            "certificadosEmitidosLinea",
         ],
     ];
 

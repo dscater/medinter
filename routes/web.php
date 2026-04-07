@@ -45,6 +45,7 @@ Route::get('/clear-cache', function () {
 Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function () {
     // INICIO
     Route::get('/inicio', [InicioController::class, 'inicio'])->name('inicio');
+    Route::get('/certificadosEmitidosLinea', [InicioController::class, 'certificadosEmitidosLinea'])->name('certificadosEmitidosLinea');
 
     // CONFIGURACION
     Route::resource("configuracions", ConfiguracionController::class)->only(
@@ -117,5 +118,20 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");
     Route::get('reportes/r_usuarios', [ReporteController::class, 'r_usuarios'])->name("reportes.r_usuarios");
+
+    Route::get('reportes/clientes', [ReporteController::class, 'clientes'])->name("reportes.clientes");
+    Route::get('reportes/r_clientes', [ReporteController::class, 'r_clientes'])->name("reportes.r_clientes");
+
+    Route::get('reportes/certificados', [ReporteController::class, 'certificados'])->name("reportes.certificados");
+    Route::get('reportes/r_certificados', [ReporteController::class, 'r_certificados'])->name("reportes.r_certificados");
+
+    Route::get('reportes/gcemitidos', [ReporteController::class, 'gcemitidos'])->name("reportes.gcemitidos");
+    Route::get('reportes/r_gcemitidos', [ReporteController::class, 'r_gcemitidos'])->name("reportes.r_gcemitidos");
+
+    Route::get('reportes/gmemitidos', [ReporteController::class, 'gmemitidos'])->name("reportes.gmemitidos");
+    Route::get('reportes/r_gmemitidos', [ReporteController::class, 'r_gmemitidos'])->name("reportes.r_gmemitidos");
+
+    Route::get('reportes/historial_accions', [ReporteController::class, 'historial_accions'])->name("reportes.historial_accions");
+    Route::get('reportes/r_historial_accions', [ReporteController::class, 'r_historial_accions'])->name("reportes.r_historial_accions");
 });
 require __DIR__ . '/auth.php';

@@ -19,9 +19,12 @@ class Cliente extends Model
         "status",
     ];
 
-    protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t"];
+    protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t", "full_name"];
 
-
+    public function getFullNameAttribute()
+    {
+        return $this->nombre . ' ' . $this->paterno . ($this->materno ? ' ' . $this->materno : '');
+    }
     public function getFechaNacTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha_nac));

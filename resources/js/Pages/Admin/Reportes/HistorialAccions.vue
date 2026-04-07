@@ -13,10 +13,18 @@ onMounted(() => {
     cargarListas();
 });
 
+const getFechaAtual = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
 const form = ref({
     user_id: "todos",
-    fecha_ini: "",
-    fecha_fin: "",
+    fecha_ini: getFechaAtual(),
+    fecha_fin: getFechaAtual(),
 });
 
 const generando = ref(false);
@@ -44,6 +52,7 @@ const cargarUsuarios = () => {
         listUsers.value.unshift({
             id: "todos",
             full_name: "TODOS",
+            tipo: "",
         });
     });
 };
@@ -63,7 +72,7 @@ const cargarUsuarios = () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes > Historial de Acciones
+                            Reportes - Historial de Acciones
                         </li>
                     </ol>
                 </div>
@@ -87,7 +96,7 @@ const cargarUsuarios = () => {
                                             v-for="item in listUsers"
                                             :key="item.id"
                                             :value="item.id"
-                                            :label="item.full_name"
+                                            :label="`${item.full_name} ${item.tipo ? ' - ' + item.tipo : ''}`"
                                         >
                                         </el-option>
                                     </el-select>
@@ -113,7 +122,7 @@ const cargarUsuarios = () => {
                                 </div>
                                 <div class="col-md-12 text-center mt-3">
                                     <button
-                                        class="btn btn-success"
+                                        class="btn btn-primary"
                                         block
                                         @click="generarReporte"
                                         :disabled="generando"

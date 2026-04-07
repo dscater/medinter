@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificado;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -30,5 +32,92 @@ class InicioController extends Controller
     public function login()
     {
         return Inertia::render("Auth/Login");
+    }
+
+    public function certificadosEmitidosLinea(Request $request)
+    {
+        $tipo =  $request->tipo;
+
+        $recorrido = [];
+
+        if ($tipo == 'semanal') {
+            $fecha = Carbon::now("America/La_Paz");
+
+            for ($i = 6; $i >= 0; $i--) {
+                $recorrido[] = $fecha->copy()->subDays($i)->format("Y-m-d");
+            }
+        }
+        if ($tipo == 'meses') {
+            $fecha = Carbon::now("America/La_Paz");
+            $mes_actual = $fecha->month;
+
+            for ($i = 1; $i <= $mes_actual; $i++) {
+                $recorrido[] = Carbon::create(null, $i, 1)->format("m");
+            }
+        }
+        if ($tipo == 'gestion') {
+            $recorrido = Certificado::selectRaw("YEAR(fecha_registro) as gestion")
+                ->groupBy("gestion")
+                ->orderBy("gestion")
+                ->pluck("gestion")
+                ->toArray();
+        }
+
+        $data = [];
+
+        $categories = [];
+        $array_meses = [
+            "01" => "Enero",
+            "02" => "Febrero",
+            "03" => "Marzo",
+            "04" => "Abril",
+            "05" => "Mayo",
+            "06" => "Junio",
+            "07" => "Julio",
+            "08" => "Agosto",
+            "09" => "Septiembre",
+            "10" => "Octubre",
+            "11" => "Noviembre",
+            "12" => "Diciembre",
+        ];
+        $total_final = 0;
+        foreach ($recorrido as $item) {
+            if ($tipo == 'semanal') {
+                $total = Certificado::whereDate('fecha_registro', $item);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
+                $total = $total->count();
+                $categories[] = date("d/m/Y", strtotime($item));
+            }
+
+            if ($tipo == 'meses') {
+                $total = Certificado::whereMonth('fecha_registro', $item)
+                    ->whereYear('fecha_registro', Carbon::now()->year);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
+                $total = $total->count();
+                $categories[] = $array_meses[$item];
+            }
+
+            if ($tipo == 'gestion') {
+                $total = Certificado::whereYear('fecha_registro', $item);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
+                $total = $total->count();
+                $categories[] = $item;
+            }
+
+            $total_final += (float)$total;
+            $data[] = (float)$total;
+        }
+
+        return response()->JSON([
+            "categories" => $categories,
+            "data" => $data,
+            "total_final" => number_format($total_final, 2, ".", ",")
+        ]);
     }
 }

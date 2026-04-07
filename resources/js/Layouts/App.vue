@@ -8,6 +8,8 @@ import SideBar from "./includes/SideBar.vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import LoginUser from "@/Components/LoginUser.vue";
 import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
+import { useConfiguracionStore } from "@/stores/configuracion/configuracionStore";
+const configuracionStore = useConfiguracionStore();
 const appStore = useAppStore();
 const { auth } = usePage().props;
 
@@ -72,7 +74,11 @@ onBeforeMount(async () => {
             <slot name="loading"></slot>
         </template>
         <template v-else>
-            <i class="fa fa-spin fa-spinner fa-4x"></i>
+            <i class="fa fa-spin fa-spinner fa-4x text1"></i>
+            <br />
+            <span class="font-weight-bold text1 h4">
+                {{ configuracionStore.oConfiguracion.nombre_sistema }}
+            </span>
         </template>
     </div>
 

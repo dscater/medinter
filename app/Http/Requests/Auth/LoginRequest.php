@@ -32,6 +32,16 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            "usuario.required" => "Debes ingresar el usuario",
+            "usuario.required" => "Debes ingresar un texto valido",
+            "password.required" => "Debes ingresar la contraseña",
+            "password.string" => "Debes ingresar un texto valido",
+        ];
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *
@@ -47,7 +57,8 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'usuario' => trans('auth.failed'),
+                // 'usuario' => trans('auth.failed'),
+                'usuario' => "El usuario o contraseña son incorrectos",
             ]);
         }
         if (Auth::user()->status == 0) {

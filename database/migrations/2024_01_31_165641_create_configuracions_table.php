@@ -14,7 +14,13 @@ return new class extends Migration
         Schema::create('configuracions', function (Blueprint $table) {
             $table->id();
             $table->string("nombre_sistema", 255);
+            $table->string("alias", 255);
             $table->string("razon_social", 255);
+            $table->string("nit", 255)->nullable();
+            $table->string("dir", 255)->nullable();
+            $table->string("fono", 255)->nullable();
+            $table->string("actividad", 255)->nullable();
+            $table->string("correo", 255)->nullable();
             $table->string("logo")->nullable();
             $table->timestamps();
         });

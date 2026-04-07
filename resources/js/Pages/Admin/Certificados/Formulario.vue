@@ -513,7 +513,7 @@ onBeforeMount(() => {
                     >
                         <button
                             type="button"
-                            class="btn btn-success w-100"
+                            class="btn btn-primary w-100"
                             :disabled="enviando"
                             @click.prevent="enviarFormulario"
                             v-html="textBtn"

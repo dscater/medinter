@@ -16,8 +16,17 @@ onMounted(() => {
     cargarListas();
 });
 
+const getFechaAtual = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
 const form = ref({
-    tipo: "todos",
+    fecha_ini: getFechaAtual(),
+    fecha_fin: getFechaAtual(),
 });
 
 const generando = ref(false);
@@ -32,7 +41,7 @@ const listTipos = ref([]);
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_usuarios", form.value);
+    const url = route("reportes.r_clientes", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
@@ -54,12 +63,12 @@ const cargarTipos = () => {
 };
 </script>
 <template>
-    <Head title="Reporte Usuarios"></Head>
+    <Head title="Reporte Clientes"></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Usuarios</h1>
+                    <h1 class="m-0">Lista de Clientes</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -68,7 +77,7 @@ const cargarTipos = () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Usuarios
+                            Reportes - Lista de Clientes
                         </li>
                     </ol>
                 </div>
@@ -83,18 +92,29 @@ const cargarTipos = () => {
                         <form @submit.prevent="generarReporte">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label>Seleccionar tipo de usuario*</label>
-                                    <select
-                                        v-model="form.tipo"
-                                        class="form-control"
+                                    <label>Rango de fechas</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input
+                                                type="date"
+                                                v-model="form.fecha_ini"
+                                                class="form-control"
+                                            />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input
+                                                type="date"
+                                                v-model="form.fecha_fin"
+                                                class="form-control"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="text-xs text-muted w-100 text-center"
                                     >
-                                        <option
-                                            v-for="item in listTipos"
-                                            :value="item.id"
-                                        >
-                                            {{ item.nombre }}
-                                        </option>
-                                    </select>
+                                        Para listar todos los clientes dejar
+                                        vacío
+                                    </div>
                                 </div>
                                 <div class="col-md-12 text-center mt-3">
                                     <button

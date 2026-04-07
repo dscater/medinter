@@ -22,6 +22,13 @@ class HistorialAccion extends Model
         "hora",
     ];
 
+    protected $appends = ["fecha_t"];
+
+    public function getFechaTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha));
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -39,6 +46,4 @@ class HistorialAccion extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
-    
 }

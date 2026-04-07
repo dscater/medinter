@@ -42,7 +42,7 @@ onUnmounted(() => {});
 </script>
 <template>
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-dark bg-principal">
+    <nav class="main-header navbar navbar-expand navbar-light">
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">

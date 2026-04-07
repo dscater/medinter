@@ -24,6 +24,12 @@ class ConfiguracionRequest extends FormRequest
         return [
             "nombre_sistema" => "required",
             "alias" => "required",
+            "razon_social" => "required",
+            "nit" => "nullable",
+            "dir" => "nullable",
+            "fono" => "nullable",
+            "actividad" => "nullable",
+            "correo" => "nullable",
             "logo" => "required",
         ];
     }
@@ -38,6 +44,7 @@ class ConfiguracionRequest extends FormRequest
         return [
             "nombre_sistema.required" => "Debes completar este campo",
             "alias.required" => "Debes completar este campo",
+            "razon_social.required" => "Debes completar este campo",
             "logo.required" => "Debes completar este campo",
             "fono.required" => "Debes completar este campo",
             "dir.required" => "Debes completar este campo",

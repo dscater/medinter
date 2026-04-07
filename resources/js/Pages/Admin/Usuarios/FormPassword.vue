@@ -147,7 +147,7 @@ const cerrarFormulario = () => {
                     <button
                         type="button"
                         @click="enviarFormulario()"
-                        class="btn btn-success"
+                        class="btn btn-primary"
                     >
                         <i class="fa fa-save"></i>
                         Guardar
