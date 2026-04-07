@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 
 class TipoCertificadoService
 {
-    private $modulo = "SUCURSALES";
+    private $modulo = "TIPO DE CERTIFICADOS";
 
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
@@ -90,7 +90,7 @@ class TipoCertificadoService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PRODUCTO", $tipo_certificado);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN TIPO DE CERTIFICADO", $tipo_certificado);
 
         return $tipo_certificado;
     }
@@ -113,7 +113,7 @@ class TipoCertificadoService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PRODUCTO", $old_tipo_certificado, $tipo_certificado->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN TIPO DE CERTIFICADO", $old_tipo_certificado, $tipo_certificado->withoutRelations());
 
         return $tipo_certificado;
     }
@@ -144,7 +144,7 @@ class TipoCertificadoService
         $tipo_certificado->delete();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN PRODUCTO", $old_tipo_certificado, $tipo_certificado);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN TIPO DE CERTIFICADO", $old_tipo_certificado, $tipo_certificado);
 
         return true;
     }

@@ -16,9 +16,6 @@ export const useAppStore = defineStore("app_store", {
         },
         startLoading() {
             this.loading = true;
-            setTimeout(() => {
-                if (this.loading == true) this.loading = false;
-            }, 3000);
         },
         prueba() {
             alert("prueba");

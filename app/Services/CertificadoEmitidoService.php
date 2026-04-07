@@ -66,9 +66,24 @@ class CertificadoEmitidoService
                     $certificado_emitido_nuevo->conteo = (int)$certificado_emitido_nuevo->conteo + 1;
                     $certificado_emitido_nuevo->save();
                 }
+                $certificado_emitido = $certificado_emitido_nuevo;
             }
             // caso contrario no hacer nada
         }
+
+        return $certificado_emitido;
+    }
+
+    public function descontarCertificadoEmitido($tipo_certificado_id, $fecha_actual, $user_id): CertificadoEmitido
+    {
+        $certificado_emitido = CertificadoEmitido::where("tipo_certificado_id", $tipo_certificado_id)
+            ->where("fecha", $fecha_actual)
+            ->where("user_id", $user_id)
+            ->get()
+            ->first();
+
+        $certificado_emitido->conteo = (int)$certificado_emitido->conteo - 1;
+        $certificado_emitido->save();
 
         return $certificado_emitido;
     }

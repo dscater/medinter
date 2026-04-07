@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Certificado;
 use App\Models\User;
 use App\Models\Venta;
 use Exception;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Log;
 
 class UserService
 {
-    public function __construct(private  CargarArchivoService $cargarArchivoService) {}
+    private $modulo = "USUARIOS";
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
 
     /**
@@ -31,28 +33,7 @@ class UserService
         $users = User::select("users.*")
             ->where("users.id", "!=", 1);
 
-        // Filtros exactos
-        foreach ($columnsFilter as $key => $value) {
-            if (!is_null($value)) {
-                $users->where("users.$key", $value);
-            }
-        }
-
-        // Filtros por rango
-        foreach ($columnsBetweenFilter as $key => $value) {
-            if (isset($value[0], $value[1])) {
-                $users->whereBetween("users.$key", $value);
-            }
-        }
-
-        // Búsqueda en múltiples columnas con LIKE
-        if (!empty($search) && !empty($columnsSerachLike)) {
-            $users->where(function ($query) use ($search, $columnsSerachLike) {
-                foreach ($columnsSerachLike as $col) {
-                    $query->orWhere("$col", "LIKE", "%$search%");
-                }
-            });
-        }
+        $users->buscarNombre($search);
 
         // Ordenamiento
         foreach ($orderBy as $value) {
@@ -177,6 +158,8 @@ class UserService
         if (isset($datos["foto"]) && !is_string($datos["foto"])) {
             $this->cargarFoto($user, $datos["foto"]);
         }
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN USUARIO", $user);
         return $user;
     }
 
@@ -189,6 +172,7 @@ class UserService
      */
     public function actualizar(array $datos, User $user): User
     {
+        $old_user = clone $user;
         $user->update([
             "usuario" => $this->getNombreUsuario($datos["nombre"], $datos["paterno"]),
             "nombre" => mb_strtoupper($datos["nombre"]),
@@ -209,6 +193,8 @@ class UserService
             $this->cargarFoto($user, $datos["foto"]);
         }
 
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN USUARIO", $old_user, $user->withoutRelations());
         return $user;
     }
 
@@ -252,12 +238,16 @@ class UserService
      */
     public function eliminar(User $user): bool
     {
-        $usos = Venta::where("user_id", $user->id)->get();
+        $old_user = clone $user;
+
+        $usos = Certificado::where("user_id", $user->id)->get();
         if (count($usos) > 0) {
             throw new Exception("No es posible eliminar el registro porque esta ligado a otros registros");
         }
-
-        $user->delete();
+        $user->status = 0;
+        $user->save();
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ AL USUARIO " . $old_user->usuario, $old_user, $user);
 
         return true;
     }

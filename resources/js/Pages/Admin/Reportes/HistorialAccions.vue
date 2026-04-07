@@ -1,16 +1,21 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 const appStore = useAppStore();
+
+onBeforeMount(() => {
+    appStore.startLoading();
+});
+
 const cargarListas = () => {
     cargarUsuarios();
 };
 
 onMounted(() => {
-    appStore.stopLoading();
     cargarListas();
+    appStore.stopLoading();
 });
 
 const getFechaAtual = () => {
@@ -20,11 +25,51 @@ const getFechaAtual = () => {
     const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 };
+const listFormatos = ref([
+    {
+        icon: "fa fa-file-pdf",
+        value: "pdf",
+        label: "PDF",
+    },
+    {
+        icon: "fa fa-file-excel",
+        value: "excel",
+        label: "EXCEL",
+    },
+]);
 
+const listModulos = ref([
+    {
+        value: "todos",
+        label: "TODOS",
+    },
+    {
+        value: "CERTIFICADOS",
+        label: "CERTIFICADOS",
+    },
+    {
+        value: "CLIENTES",
+        label: "CLIENTES",
+    },
+    {
+        value: "TIPO DE CERTIFICADOS",
+        label: "TIPO DE CERTIFICADOS",
+    },
+    {
+        value: "SUCURSALES",
+        label: "SUCURSALES",
+    },
+    {
+        value: "USUARIOS",
+        label: "USUARIOS",
+    },
+]);
 const form = ref({
     user_id: "todos",
     fecha_ini: getFechaAtual(),
     fecha_fin: getFechaAtual(),
+    modulo: "todos",
+    formato: "pdf",
 });
 
 const generando = ref(false);
@@ -101,6 +146,18 @@ const cargarUsuarios = () => {
                                         </el-option>
                                     </el-select>
                                 </div>
+                                <div class="col-md-12">
+                                    <label>Seleccionar módulo*</label>
+                                    <el-select v-model="form.modulo" filterable>
+                                        <el-option
+                                            v-for="item in listModulos"
+                                            :key="item.value"
+                                            :value="item.value"
+                                            :label="item.label"
+                                        >
+                                        </el-option>
+                                    </el-select>
+                                </div>
                                 <div class="col-12 mt-3">
                                     <label>Rango de fechas</label>
                                     <div class="row">
@@ -119,6 +176,17 @@ const cargarUsuarios = () => {
                                             />
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-12 text-center mt-2">
+                                    <el-radio-group v-model="form.formato">
+                                        <el-radio
+                                            v-for="item in listFormatos"
+                                            :value="item.value"
+                                            size="large"
+                                            ><i :class="item.icon"></i>
+                                            {{ item.label }}</el-radio
+                                        >
+                                    </el-radio-group>
                                 </div>
                                 <div class="col-md-12 text-center mt-3">
                                     <button

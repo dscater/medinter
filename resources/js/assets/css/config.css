@@ -180,7 +180,7 @@ body .main-sidebar {
 body .sidebar-light-primary .nav-sidebar > .nav-item > .nav-link.active {
     border-radius: 0;
     background-color: var(--bg1);
-    color: white;
+    color: white !important;
     width: 100%;
 }
 

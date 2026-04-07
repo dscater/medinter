@@ -150,8 +150,8 @@ const renderChart1 = (containerId, categories, total_final, data) => {
 };
 
 onMounted(() => {
-    // appStore.stopLoading();
     generarReporte1();
+    appStore.stopLoading();
 });
 </script>
 <template>

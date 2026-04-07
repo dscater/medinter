@@ -49,27 +49,33 @@ class CertificadoController extends Controller
     {
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
-        $search = (string)$request->input("search", "");
-        $orderByCol = $request->orderByCol;
-        $desc = $request->desc;
+        $cliente = (string)$request->input("cliente", "");
+        $tipo_certificado_id = (string)$request->input("tipo_certificado_id", "todos");
+        $tipo_pago = (string)$request->input("tipo_pago", "todos");
+        $sucursal_id = (string)$request->input("sucursal_id", "todos");
+        $medico = (string)$request->input("medico", "");
+        $fecha = (string)$request->input("fecha", "");
+        $orderBy = $request->orderBy;
+        $orderAsc = $request->orderAsc;
 
-        $columnsSerachLike = [
-            "codigo",
-            "modelo",
-            "marca",
-            "talla",
-            "nombre"
-        ];
-        $columnsFilter = [];
-        $columnsBetweenFilter = [];
         $arrayOrderBy = [];
-        if ($orderByCol && $desc) {
+        if ($orderBy && $orderAsc) {
             $arrayOrderBy = [
-                [$orderByCol, $desc]
+                [$orderBy, $orderAsc]
             ];
         }
 
-        $certificados = $this->certificadoService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $certificados = $this->certificadoService->listadoPaginado(
+            $perPage,
+            $page,
+            $arrayOrderBy,
+            $cliente,
+            $tipo_certificado_id,
+            $tipo_pago,
+            $sucursal_id,
+            $medico,
+            $fecha
+        );
         return response()->JSON([
             "data" => $certificados->items(),
             "total" => $certificados->total(),

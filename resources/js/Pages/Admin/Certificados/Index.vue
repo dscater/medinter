@@ -16,7 +16,43 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
+const listTipoCertificados = ref([]);
+const listTipoPagos = ref([]);
+const listSucursals = ref([]);
+const cargarTipoCertificados = () => {
+    axios.get(route("tipo_certificados.listado")).then((response) => {
+        listTipoCertificados.value = response.data.tipo_certificados;
+        listTipoCertificados.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
+const cargarTipoPagos = () => {
+    axios.get(route("tipo_pagos.listado")).then((response) => {
+        listTipoPagos.value = response.data;
+        listTipoPagos.value.unshift({
+            value: "todos",
+            label: "TODOS",
+        });
+    });
+};
+
+const cargarSucursals = () => {
+    axios.get(route("sucursals.listado")).then((response) => {
+        listSucursals.value = response.data.sucursals;
+        listSucursals.value.unshift({
+            id: "todos",
+            nombre: "TODOS",
+        });
+    });
+};
+
 onMounted(() => {
+    cargarTipoCertificados();
+    cargarTipoPagos();
+    cargarSucursals();
     appStore.stopLoading();
 });
 
@@ -57,7 +93,7 @@ const headers = [
         sortable: true,
     },
     {
-        label: "USUARIO",
+        label: "MÉDICO",
         key: "user",
         sortable: true,
     },
@@ -80,23 +116,18 @@ const headers = [
 ];
 
 const multiSearch = ref({
-    search: "",
+    cliente: "",
+    tipo_certificado_id: "todos",
+    tipo_pago: "todos",
+    sucursal_id: "todos",
+    medico: "",
+    fecha: "",
     filtro: [],
 });
-
-const accion_formulario = ref(0);
-const muestra_formulario = ref(false);
-
-const agregarRegistro = () => {
-    limpiarCertificado();
-    accion_formulario.value = 0;
-    muestra_formulario.value = true;
-};
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
-        muestra_formulario.value = false;
     }
 };
 
@@ -162,27 +193,99 @@ const eliminarCertificado = (item) => {
                             <i class="fa fa-plus"></i> Nuevo Certificado
                         </Link>
                     </div>
-                    <div class="col-md-8 my-1">
-                        <div class="row justify-content-end">
-                            <div class="col-md-5">
-                                <div
-                                    class="input-group"
-                                    style="align-items: end"
+                    <div class="col-md-12 my-1">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <small class="text-muted text-xs"
+                                    >Cliente</small
                                 >
-                                    <input
-                                        v-model="multiSearch.search"
-                                        placeholder="Buscar"
-                                        class="form-control border-1 border-right-0"
-                                    />
-                                    <div class="input-append">
-                                        <button
-                                            class="btn btn-default rounded-0 border-left-0"
-                                            @click="updateDatos"
-                                        >
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                <input
+                                    type="search"
+                                    v-model="multiSearch.cliente"
+                                    placeholder="Cliente"
+                                    class="form-control border-1 border-right-0"
+                                />
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted text-xs"
+                                    >Tipo de Certificado</small
+                                >
+                                <el-select
+                                    type="search"
+                                    v-model="multiSearch.tipo_certificado_id"
+                                    placeholder="Tipo de Certificado"
+                                    size="large"
+                                    filterable
+                                >
+                                    <el-option
+                                        v-for="item in listTipoCertificados"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted text-xs"
+                                    >Tipo de Pago</small
+                                >
+                                <el-select
+                                    type="search"
+                                    v-model="multiSearch.tipo_pago"
+                                    placeholder="Tipo de Certificado"
+                                    size="large"
+                                    filterable
+                                >
+                                    <el-option
+                                        v-for="item in listTipoPagos"
+                                        :key="item.value"
+                                        :value="item.value"
+                                        :label="item.label"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div
+                                class="col-md-2"
+                                v-if="props_page.auth.user.tipo != 'MÉDICO'"
+                            >
+                                <small class="text-muted text-xs"
+                                    >Sucursal</small
+                                >
+                                <el-select
+                                    type="search"
+                                    v-model="multiSearch.sucursal_id"
+                                    placeholder="Tipo de Certificado"
+                                    size="large"
+                                    filterable
+                                >
+                                    <el-option
+                                        v-for="item in listSucursals"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
+                            </div>
+                            <div
+                                class="col-md-2"
+                                v-if="props_page.auth.user.tipo != 'MÉDICO'"
+                            >
+                                <small class="text-muted text-xs">Médico</small>
+                                <input
+                                    type="search"
+                                    v-model="multiSearch.medico"
+                                    placeholder="Médico"
+                                    class="form-control border-1 border-right-0"
+                                />
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted text-xs">Fecha</small>
+                                <input
+                                    type="date"
+                                    v-model="multiSearch.fecha"
+                                    placeholder="Fecha"
+                                    class="form-control border-1 border-right-0"
+                                />
                             </div>
                         </div>
                     </div>

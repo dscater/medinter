@@ -1,9 +1,13 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 const appStore = useAppStore();
+
+onBeforeMount(() => {
+    appStore.startLoading();
+});
 
 const cargarListas = () => {
     cargarTipos();
@@ -12,12 +16,26 @@ const cargarListas = () => {
 const listSucursals = ref([]);
 
 onMounted(() => {
-    appStore.stopLoading();
     cargarListas();
+    appStore.stopLoading();
 });
+
+const listFormatos = ref([
+    {
+        icon: "fa fa-file-pdf",
+        value: "pdf",
+        label: "PDF",
+    },
+    {
+        icon: "fa fa-file-excel",
+        value: "excel",
+        label: "EXCEL",
+    },
+]);
 
 const form = ref({
     tipo: "todos",
+    formato: "pdf",
 });
 
 const generando = ref(false);
@@ -95,6 +113,17 @@ const cargarTipos = () => {
                                             {{ item.nombre }}
                                         </option>
                                     </select>
+                                </div>
+                                <div class="col-md-12 text-center mt-2">
+                                    <el-radio-group v-model="form.formato">
+                                        <el-radio
+                                            v-for="item in listFormatos"
+                                            :value="item.value"
+                                            size="large"
+                                            ><i :class="item.icon"></i>
+                                            {{ item.label }}</el-radio
+                                        >
+                                    </el-radio-group>
                                 </div>
                                 <div class="col-md-12 text-center mt-3">
                                     <button

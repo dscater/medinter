@@ -36,8 +36,17 @@ class CertificadoService
      * @param array $columnsFilter
      * @return LengthAwarePaginator
      */
-    public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
-    {
+    public function listadoPaginado(
+        int $length,
+        int $page,
+        array $orderBy = [],
+        $cliente,
+        $tipo_certificado_id,
+        $tipo_pago,
+        $sucursal_id,
+        $medico,
+        $fecha
+    ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
             ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "tipo_certificado:id,nombre", "sucursal:id,nombre", "user:id,nombre,paterno,materno"])->where("status", 1);
 
@@ -45,28 +54,35 @@ class CertificadoService
             $certificados->where("user_id", Auth::user()->id);
         }
 
-        // Filtros exactos
-        foreach ($columnsFilter as $key => $value) {
-            if (!is_null($value)) {
-                $certificados->where("certificados.$key", $value);
-            }
-        }
-
-        // Filtros por rango
-        foreach ($columnsBetweenFilter as $key => $value) {
-            if (isset($value[0], $value[1])) {
-                $certificados->whereBetween("certificados.$key", $value);
-            }
-        }
-
-        // Búsqueda en múltiples columnas con LIKE
-        if (!empty($search) && !empty($columnsSerachLike)) {
-            $certificados->where(function ($query) use ($search, $columnsSerachLike) {
-                foreach ($columnsSerachLike as $col) {
-                    $query->orWhere("$col", "LIKE", "%$search%");
-                }
+        // FILTROS
+        $certificados
+            ->when($cliente, function ($q) use ($cliente) {
+                $q->whereHas('cliente', function ($sub) use ($cliente) {
+                    $sub->buscarNombre($cliente);
+                });
+            })
+            ->when($tipo_certificado_id && $tipo_certificado_id !== 'todos', function ($q) use ($tipo_certificado_id) {
+                $q->where("tipo_certificado_id", $tipo_certificado_id);
+            })
+            ->when($tipo_pago && $tipo_pago !== 'todos', function ($q) use ($tipo_pago) {
+                $q->where("tipo_pago", $tipo_pago);
+            })
+            ->when($sucursal_id && $sucursal_id !== 'todos', function ($q) use ($sucursal_id) {
+                $q->where("sucursal_id", $sucursal_id);
+            })
+            ->when($medico && $medico !== '', function ($q) use ($medico) {
+                $q->whereHas('user', function ($sub) use ($medico) {
+                    $sub->where(function ($query) use ($medico) {
+                        $query->where('nombre', 'like', "%$medico%")
+                            ->orWhere('paterno', 'like', "%$medico%")
+                            ->orWhere('materno', 'like', "%$medico%");
+                    });
+                });
+            })
+            ->when($fecha, function ($q) use ($fecha) {
+                $q->whereDate("fecha_registro", $fecha); // ajusta el campo si es otro
             });
-        }
+
 
         // Ordenamiento
         foreach ($orderBy as $value) {
@@ -74,7 +90,6 @@ class CertificadoService
                 $certificados->orderBy($value[0], $value[1]);
             }
         }
-
 
         $certificados = $certificados->paginate($length, ['*'], 'page', $page);
         return $certificados;
@@ -172,6 +187,11 @@ class CertificadoService
         $old_certificado = clone $certificado;
         $certificado->status = 0;
         $certificado->save();
+
+        // BUSCAR Y DESCONTAR EL TIPO DE CERTIFICADO
+        $user_id = $certificado->user_id;
+        $this->certificado_emitido_service->descontarCertificadoEmitido($old_certificado->tipo_certificado_id, $old_certificado->fecha_registro, $user_id);
+
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN CERTIFICADO", $old_certificado, $certificado);

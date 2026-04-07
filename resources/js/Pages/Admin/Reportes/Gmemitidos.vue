@@ -1,6 +1,6 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue";
 import { Head, usePage, Link } from "@inertiajs/vue3";
 import Highcharts from "highcharts";
 import { useFormater } from "@/composables/useFormater";
@@ -9,6 +9,11 @@ import "highcharts/modules/exporting";
 import "highcharts/modules/accessibility";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 const appStore = useAppStore();
+
+onBeforeMount(() => {
+    appStore.startLoading();
+});
+
 // exporting(Highcharts);
 // accessibility(Highcharts);
 Highcharts.setOptions({
@@ -92,9 +97,8 @@ const cargarTipoCertificados = () => {
 };
 
 onMounted(() => {
-    appStore.stopLoading();
     cargarListas();
-    setTimeout(() => {}, 300);
+    appStore.stopLoading();
 });
 
 const obtenerFechaActual = () => {

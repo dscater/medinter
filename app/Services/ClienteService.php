@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 class ClienteService
 {
-    private $modulo = "SUCURSALES";
+    private $modulo = "CLIENTES";
 
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
@@ -37,28 +37,7 @@ class ClienteService
     {
         $clientes = Cliente::select("clientes.*");
 
-        // Filtros exactos
-        foreach ($columnsFilter as $key => $value) {
-            if (!is_null($value)) {
-                $clientes->where("clientes.$key", $value);
-            }
-        }
-
-        // Filtros por rango
-        foreach ($columnsBetweenFilter as $key => $value) {
-            if (isset($value[0], $value[1])) {
-                $clientes->whereBetween("clientes.$key", $value);
-            }
-        }
-
-        // Búsqueda en múltiples columnas con LIKE
-        if (!empty($search) && !empty($columnsSerachLike)) {
-            $clientes->where(function ($query) use ($search, $columnsSerachLike) {
-                foreach ($columnsSerachLike as $col) {
-                    $query->orWhere("$col", "LIKE", "%$search%");
-                }
-            });
-        }
+        $clientes->buscarNombre($search);
 
         // Ordenamiento
         foreach ($orderBy as $value) {
@@ -92,7 +71,7 @@ class ClienteService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN PRODUCTO", $cliente);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CLIENTE", $cliente);
 
         return $cliente;
     }
@@ -120,7 +99,7 @@ class ClienteService
         ]);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN PRODUCTO", $old_cliente, $cliente->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CLIENTE", $old_cliente, $cliente->withoutRelations());
 
         return $cliente;
     }
@@ -138,7 +117,7 @@ class ClienteService
         $cliente->save();
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN PRODUCTO", $old_cliente, $cliente);
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN CLIENTE", $old_cliente, $cliente);
 
         return true;
     }

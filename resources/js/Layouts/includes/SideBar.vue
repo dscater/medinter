@@ -138,6 +138,11 @@ onUnmounted(() => {});
                             permisos == '*' ||
                             permisos.includes('certificados.index')
                         "
+                        :arrayRutaClassActive="[
+                            'certificados.index',
+                            'certificados.create',
+                            'certificados.edit',
+                        ]"
                         :label="'Certificados'"
                         :ruta="'certificados.index'"
                         :icon="'fa fa-clipboard-list'"

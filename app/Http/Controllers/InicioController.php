@@ -57,6 +57,7 @@ class InicioController extends Controller
         }
         if ($tipo == 'gestion') {
             $recorrido = Certificado::selectRaw("YEAR(fecha_registro) as gestion")
+                ->where("status", 1)
                 ->groupBy("gestion")
                 ->orderBy("gestion")
                 ->pluck("gestion")
@@ -83,7 +84,8 @@ class InicioController extends Controller
         $total_final = 0;
         foreach ($recorrido as $item) {
             if ($tipo == 'semanal') {
-                $total = Certificado::whereDate('fecha_registro', $item);
+                $total = Certificado::whereDate('fecha_registro', $item)
+                    ->where("status", 1);
                 if (Auth::user()->tipo == 'MÉDICO') {
                     $total->where("user_id", Auth::user()->id);
                 }
@@ -93,6 +95,7 @@ class InicioController extends Controller
 
             if ($tipo == 'meses') {
                 $total = Certificado::whereMonth('fecha_registro', $item)
+                    ->where("status", 1)
                     ->whereYear('fecha_registro', Carbon::now()->year);
                 if (Auth::user()->tipo == 'MÉDICO') {
                     $total->where("user_id", Auth::user()->id);
@@ -102,7 +105,8 @@ class InicioController extends Controller
             }
 
             if ($tipo == 'gestion') {
-                $total = Certificado::whereYear('fecha_registro', $item);
+                $total = Certificado::whereYear('fecha_registro', $item)
+                    ->where("status", 1);
                 if (Auth::user()->tipo == 'MÉDICO') {
                     $total->where("user_id", Auth::user()->id);
                 }
@@ -117,7 +121,7 @@ class InicioController extends Controller
         return response()->JSON([
             "categories" => $categories,
             "data" => $data,
-            "total_final" => number_format($total_final, 2, ".", ",")
+            "total_final" => $total_final
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Cliente extends Model
 {
@@ -37,5 +38,23 @@ class Cliente extends Model
     public function getFechaRegistroTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha_registro));
+    }
+
+    public function scopeBuscarNombre($query, $texto)
+    {
+        if (!$texto) return $query;
+
+        $palabras = explode(' ', $texto);
+
+        foreach ($palabras as $palabra) {
+            $query->where(function ($q) use ($palabra) {
+                $q->where('nombre', 'like', "%$palabra%")
+                    ->orWhere('paterno', 'like', "%$palabra%")
+                    ->orWhere('materno', 'like', "%$palabra%")
+                    ->orWhere('ci', 'like', "%$palabra%");
+            });
+        }
+
+        return $query;
     }
 }

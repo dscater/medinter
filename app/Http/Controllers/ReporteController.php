@@ -23,14 +23,138 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ReporteController extends Controller
 {
+    public $titulo = [
+        'font' => [
+            'bold' => true,
+            'size' => 12,
+            'family' => 'Times New Roman'
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_NONE,
+            ],
+        ],
+    ];
+
+    public $textoBold = [
+        'font' => [
+            'bold' => true,
+            'size' => 10,
+        ],
+    ];
+
+    public $headerTabla = [
+        'font' => [
+            'bold' => true,
+            'size' => 10,
+            'color' => ['argb' => 'ffffff'],
+        ],
+        'alignment' => [
+            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+            ],
+        ],
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => '203764']
+        ],
+    ];
+
+    public $headerTabla2 = [
+        'font' => [
+            'bold' => true,
+            'size' => 10,
+            'color' => ['argb' => '000000'],
+        ],
+        'alignment' => [
+            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+            ],
+        ],
+    ];
+
+    public $bodyTabla = [
+        'font' => [
+            'size' => 10,
+        ],
+        'alignment' => [
+            'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+            // 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+        ],
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+            ],
+        ],
+    ];
+
+    public $textLeft = [
+        'alignment' => [
+            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+        ],
+    ];
+
+    public $textRight = [
+        'alignment' => [
+            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
+        ],
+    ];
+
+    public $textCenter = [
+        'alignment' => [
+            'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+        ],
+    ];
+
+    public $bg0 = [
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => 'cff3f3']
+        ],
+    ];
+
+    public $bg1 = [
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => 'ffe9ff']
+        ],
+    ];
+
+    public $bg2 = [
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => 'f7ffe0']
+        ],
+    ];
+
+    public $bg3 = [
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => 'ecfcdd']
+        ],
+    ];
+
+    public $bg4 = [
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'color' => ['rgb' => 'faeee4']
+        ],
+    ];
+
     private $configuracion = null;
     public function __construct()
     {
         $this->configuracion = Configuracion::first();
         if (!$this->configuracion) {
             $this->configuracion = new Configuracion([
-                "nombre_sistema" => "SISPRENDASOL S.A.",
-                "alias" => "SP",
+                "nombre_sistema" => "MEDINTER S.A.",
+                "alias" => "MD",
                 "logo" => "logo.png",
                 "fono" => "2222222",
                 "dir" => "LOS OLIVOS",
@@ -48,6 +172,7 @@ class ReporteController extends Controller
         ini_set('memory_limit', '1024M');
         set_time_limit(-1);
         $tipo =  $request->tipo;
+        $formato =  $request->formato;
         $usuarios = User::select("users.*")
             ->where('id', '!=', 1);
 
@@ -60,17 +185,124 @@ class ReporteController extends Controller
 
         $usuarios = $usuarios->get();
 
-        $pdf = PDF::loadView('reportes.usuarios', compact('usuarios'))->setPaper('legal', 'landscape');
+        if ($formato == 'pdf') {
+            $pdf = PDF::loadView('reportes.usuarios', compact('usuarios'))->setPaper('legal', 'landscape');
 
-        // ENUMERAR LAS PÁGINAS USANDO CANVAS
-        $pdf->output();
-        $dom_pdf = $pdf->getDomPDF();
-        $canvas = $dom_pdf->get_canvas();
-        $alto = $canvas->get_height();
-        $ancho = $canvas->get_width();
-        $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+            // ENUMERAR LAS PÁGINAS USANDO CANVAS
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $alto = $canvas->get_height();
+            $ancho = $canvas->get_width();
+            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
 
-        return $pdf->stream('usuarios.pdf');
+            return $pdf->stream('usuarios.pdf');
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getProperties()
+                ->setCreator("ADMIN")
+                ->setLastModifiedBy('Administración')
+                ->setTitle('Registros')
+                ->setSubject('Registros')
+                ->setDescription('Registros')
+                ->setKeywords('PHPSpreadsheet')
+                ->setCategory('Listado');
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+
+            $fila = 1;
+            if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('logo');
+                $drawing->setDescription('logo');
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setCoordinates('A' . $fila);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(0);
+                $drawing->setHeight(70);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $fila = 2;
+            $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
+            $sheet->mergeCells("A" . $fila . ":K" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':K' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':K' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $sheet->setCellValue('A' . $fila, "LISTA DE USUARIOS");
+            $sheet->mergeCells("A" . $fila . ":K" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':K' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':K' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'N°');
+            $sheet->setCellValue('B' . $fila, 'USUARIO');
+            $sheet->setCellValue('C' . $fila, 'PATERNO');
+            $sheet->setCellValue('D' . $fila, 'MATERNO');
+            $sheet->setCellValue('E' . $fila, 'NOMBRE(S)');
+            $sheet->setCellValue('F' . $fila, 'C.I.');
+            $sheet->setCellValue('G' . $fila, 'DIRECCIÓN');
+            $sheet->setCellValue('H' . $fila, 'CORREO');
+            $sheet->setCellValue('I' . $fila, 'TELÉFONO/CELULAR');
+            $sheet->setCellValue('J' . $fila, 'TIPO');
+            $sheet->setCellValue('K' . $fila, 'ACCESO');
+            $sheet->getStyle('A' . $fila . ':K' . $fila)->applyFromArray($this->headerTabla);
+            $fila++;
+
+            foreach ($usuarios as $key => $item) {
+                $sheet->setCellValue('A' . $fila, $key + 1);
+                $sheet->setCellValue('B' . $fila, $item->usuario);
+                $sheet->setCellValue('C' . $fila, $item->paterno);
+                $sheet->setCellValue('D' . $fila, $item->materno);
+                $sheet->setCellValue('E' . $fila, $item->nombre);
+                $sheet->setCellValue('F' . $fila, $item->full_ci);
+                $sheet->setCellValue('G' . $fila, $item->dir);
+                $sheet->setCellValue('H' . $fila, $item->correo);
+                $sheet->setCellValue('I' . $fila, $item->fono);
+                $sheet->setCellValue('J' . $fila, $item->tipo);
+                $sheet->setCellValue('K' . $fila, $item->acceso == 1 ? 'HABILITADO' : 'DENEGADO');
+                $sheet->getStyle('A' . $fila . ':K' . $fila)->applyFromArray($this->bodyTabla);
+                $fila++;
+            }
+
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(10);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
+            $sheet->getColumnDimension('I')->setWidth(15);
+            $sheet->getColumnDimension('J')->setWidth(15);
+            $sheet->getColumnDimension('K')->setWidth(15);
+
+            foreach (range('A', 'K') as $columnID) {
+                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.5);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setPrintArea('A:K');
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'usuarios_' . time() . '.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        }
     }
 
     public function clientes()
@@ -84,6 +316,7 @@ class ReporteController extends Controller
         set_time_limit(-1);
         $fecha_ini =  $request->fecha_ini;
         $fecha_fin =  $request->fecha_fin;
+        $formato =  $request->formato;
         $clientes = Cliente::select("clientes.*");
 
         if ($fecha_ini && $fecha_fin) {
@@ -91,18 +324,115 @@ class ReporteController extends Controller
         }
 
         $clientes = $clientes->get();
+        if ($formato == 'pdf') {
+            $pdf = PDF::loadView('reportes.clientes', compact('clientes'))->setPaper('letter', 'portrait');
 
-        $pdf = PDF::loadView('reportes.clientes', compact('clientes'))->setPaper('letter', 'portrait');
+            // ENUMERAR LAS PÁGINAS USANDO CANVAS
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $alto = $canvas->get_height();
+            $ancho = $canvas->get_width();
+            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
 
-        // ENUMERAR LAS PÁGINAS USANDO CANVAS
-        $pdf->output();
-        $dom_pdf = $pdf->getDomPDF();
-        $canvas = $dom_pdf->get_canvas();
-        $alto = $canvas->get_height();
-        $ancho = $canvas->get_width();
-        $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+            return $pdf->stream('clientes.pdf');
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getProperties()
+                ->setCreator("ADMIN")
+                ->setLastModifiedBy('Administración')
+                ->setTitle('Registros')
+                ->setSubject('Registros')
+                ->setDescription('Registros')
+                ->setKeywords('PHPSpreadsheet')
+                ->setCategory('Listado');
 
-        return $pdf->stream('clientes.pdf');
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+
+            $fila = 1;
+            if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('logo');
+                $drawing->setDescription('logo');
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setCoordinates('A' . $fila);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(0);
+                $drawing->setHeight(70);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $fila = 2;
+            $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
+            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $sheet->setCellValue('A' . $fila, "LISTA DE CLIENTES");
+            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'N°');
+            $sheet->setCellValue('B' . $fila, 'PATERNO');
+            $sheet->setCellValue('C' . $fila, 'MATERNO');
+            $sheet->setCellValue('D' . $fila, 'NOMBRE(S)');
+            $sheet->setCellValue('E' . $fila, 'C.I.');
+            $sheet->setCellValue('F' . $fila, 'FECHA NACIMIENTO');
+            $sheet->setCellValue('G' . $fila, 'CELULAR');
+            $sheet->setCellValue('H' . $fila, 'FECHA REGISTRO');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->headerTabla);
+            $fila++;
+
+            foreach ($clientes as $key => $item) {
+                $sheet->setCellValue('A' . $fila, $key + 1);
+                $sheet->setCellValue('B' . $fila, $item->paterno);
+                $sheet->setCellValue('C' . $fila, $item->materno);
+                $sheet->setCellValue('D' . $fila, $item->nombre);
+                $sheet->setCellValue('E' . $fila, $item->full_ci);
+                $sheet->setCellValue('F' . $fila, $item->fecha_nact_t);
+                $sheet->setCellValue('G' . $fila, $item->cel);
+                $sheet->setCellValue('H' . $fila, $item->fecha_registro_t);
+                $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->bodyTabla);
+                $fila++;
+            }
+
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(10);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
+
+            foreach (range('A', 'H') as $columnID) {
+                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.5);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setPrintArea('A:H');
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'clientes_' . time() . '.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        }
     }
 
     public function certificados()
@@ -118,6 +448,7 @@ class ReporteController extends Controller
         $sucursal_id =  $request->sucursal_id;
         $user_id =  $request->user_id;
         $tipo_certificado_id =  $request->tipo_certificado_id;
+        $formato =  $request->formato;
         $certificados = Certificado::select("certificados.*");
 
         if ($cliente_id != 'todos') {
@@ -138,17 +469,112 @@ class ReporteController extends Controller
 
         $certificados = $certificados->get();
 
-        $pdf = PDF::loadView('reportes.certificados', compact('certificados'))->setPaper('letter', 'portrait');
+        if ($formato == 'pdf') {
+            $pdf = PDF::loadView('reportes.certificados', compact('certificados'))->setPaper('letter', 'portrait');
 
-        // ENUMERAR LAS PÁGINAS USANDO CANVAS
-        $pdf->output();
-        $dom_pdf = $pdf->getDomPDF();
-        $canvas = $dom_pdf->get_canvas();
-        $alto = $canvas->get_height();
-        $ancho = $canvas->get_width();
-        $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+            // ENUMERAR LAS PÁGINAS USANDO CANVAS
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $alto = $canvas->get_height();
+            $ancho = $canvas->get_width();
+            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
 
-        return $pdf->stream('certificados.pdf');
+            return $pdf->stream('certificados.pdf');
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getProperties()
+                ->setCreator("ADMIN")
+                ->setLastModifiedBy('Administración')
+                ->setTitle('Registros')
+                ->setSubject('Registros')
+                ->setDescription('Registros')
+                ->setKeywords('PHPSpreadsheet')
+                ->setCategory('Listado');
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+
+            $fila = 1;
+            if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('logo');
+                $drawing->setDescription('logo');
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setCoordinates('A' . $fila);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(0);
+                $drawing->setHeight(70);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $fila = 2;
+            $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
+            $sheet->mergeCells("A" . $fila . ":G" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':G' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $sheet->setCellValue('A' . $fila, "CERTIFICADOS EMITIDOS");
+            $sheet->mergeCells("A" . $fila . ":G" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':G' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'N°');
+            $sheet->setCellValue('B' . $fila, 'CLIENTE');
+            $sheet->setCellValue('C' . $fila, 'TIPO CERTIFICADO');
+            $sheet->setCellValue('D' . $fila, 'COSTO BS.');
+            $sheet->setCellValue('E' . $fila, 'TIPO DE PAGO');
+            $sheet->setCellValue('F' . $fila, 'MÉDICO');
+            $sheet->setCellValue('G' . $fila, 'FECHA DE REGISTRO');
+            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->headerTabla);
+            $fila++;
+
+            foreach ($certificados as $key => $item) {
+                $sheet->setCellValue('A' . $fila, $key + 1);
+                $sheet->setCellValue('B' . $fila, $item->cliente->full_name . "\n" . $item->cliente->full_ci);
+                $sheet->setCellValue('C' . $fila, $item->tipo_certificado->nombre);
+                $sheet->setCellValue('D' . $fila, $item->precio);
+                $sheet->setCellValue('E' . $fila, $item->tipo_pago);
+                $sheet->setCellValue('F' . $fila, $item->user->full_name);
+                $sheet->setCellValue('G' . $fila, $item->fecha_registro_t . ' ' . $item->hora_registro);
+                $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->bodyTabla);
+                $fila++;
+            }
+
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(10);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(15);
+
+            foreach (range('A', 'G') as $columnID) {
+                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.5);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setPrintArea('A:G');
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'certificados_' . time() . '.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        }
     }
 
     public function historial_accions()
@@ -161,12 +587,17 @@ class ReporteController extends Controller
         ini_set('memory_limit', '1024M');
         set_time_limit(-1);
         $user_id =  $request->user_id;
+        $modulo =  $request->modulo;
         $fecha_ini =  $request->fecha_ini;
         $fecha_fin =  $request->fecha_fin;
+        $formato =  $request->formato;
         $historial_accions = HistorialAccion::select("historial_accions.*");
 
         if ($user_id != 'todos') {
             $historial_accions->where('user_id', $user_id);
+        }
+        if ($modulo != 'todos') {
+            $historial_accions->where('modulo', $modulo);
         }
 
         if ($fecha_ini && $fecha_fin) {
@@ -175,17 +606,109 @@ class ReporteController extends Controller
 
         $historial_accions = $historial_accions->get();
 
-        $pdf = PDF::loadView('reportes.historial_accions', compact('historial_accions'))->setPaper('letter', 'portrait');
+        if ($formato == 'pdf') {
+            $pdf = PDF::loadView('reportes.historial_accions', compact('historial_accions'))->setPaper('letter', 'portrait');
 
-        // ENUMERAR LAS PÁGINAS USANDO CANVAS
-        $pdf->output();
-        $dom_pdf = $pdf->getDomPDF();
-        $canvas = $dom_pdf->get_canvas();
-        $alto = $canvas->get_height();
-        $ancho = $canvas->get_width();
-        $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+            // ENUMERAR LAS PÁGINAS USANDO CANVAS
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $alto = $canvas->get_height();
+            $ancho = $canvas->get_width();
+            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
 
-        return $pdf->stream('historial_accions.pdf');
+            return $pdf->stream('historial_accions.pdf');
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getProperties()
+                ->setCreator("ADMIN")
+                ->setLastModifiedBy('Administración')
+                ->setTitle('Registros')
+                ->setSubject('Registros')
+                ->setDescription('Registros')
+                ->setKeywords('PHPSpreadsheet')
+                ->setCategory('Listado');
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+
+            $fila = 1;
+            if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('logo');
+                $drawing->setDescription('logo');
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setCoordinates('A' . $fila);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(0);
+                $drawing->setHeight(70);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $fila = 2;
+            $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
+            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $sheet->setCellValue('A' . $fila, "LOG DE USUARIOS");
+            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'N°');
+            $sheet->setCellValue('B' . $fila, 'FECHA Y HORA');
+            $sheet->setCellValue('C' . $fila, 'USUARIO');
+            $sheet->setCellValue('D' . $fila, 'DESCRIPCIÓN');
+            $sheet->setCellValue('E' . $fila, 'MÓDULO');
+            $sheet->setCellValue('F' . $fila, 'ACCIÓN');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->headerTabla);
+            $fila++;
+
+            foreach ($historial_accions as $key => $item) {
+                $sheet->setCellValue('A' . $fila, $key + 1);
+                $sheet->setCellValue('B' . $fila, $item->fecha_t . ' ' . $item->hora);
+                $sheet->setCellValue('C' . $fila, $item->user->full_name);
+                $sheet->setCellValue('D' . $fila, $item->descripcion);
+                $sheet->setCellValue('E' . $fila, $item->modulo);
+                $sheet->setCellValue('F' . $fila, $item->accion);
+                $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->bodyTabla);
+                $fila++;
+            }
+
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(25);
+            $sheet->getColumnDimension('E')->setWidth(18);
+            $sheet->getColumnDimension('F')->setWidth(15);
+
+            foreach (range('A', 'F') as $columnID) {
+                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.5);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setPrintArea('A:F');
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'historial_accions_' . time() . '.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        }
     }
 
     public function gcemitidos()
@@ -228,7 +751,8 @@ class ReporteController extends Controller
         foreach ($tipo_certificados as $tipo_certificado) {
             $cantidad_por_tipo = [];
             foreach ($users as $key => $user) {
-                $total = Certificado::where("user_id", $user->id)
+                $total = Certificado::where("status", 1)
+                    ->where("user_id", $user->id)
                     ->where("tipo_certificado_id", $tipo_certificado->id);
                 if ($fecha_ini && $fecha_fin) {
                     $total->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
@@ -283,7 +807,8 @@ class ReporteController extends Controller
         $total_final = 0;
         foreach ($tipo_certificados as $tipo_certificado) {
             $categorias[] = $tipo_certificado->nombre;
-            $total = Certificado::where("tipo_certificado_id", $tipo_certificado->id);
+            $total = Certificado::where("status", 1)
+                ->where("tipo_certificado_id", $tipo_certificado->id);
             if ($fecha_ini && $fecha_fin) {
                 $total->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
             }

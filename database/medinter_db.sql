@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 07-04-2026 a las 00:39:00
+-- Tiempo de generación: 07-04-2026 a las 14:07:51
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -70,7 +70,8 @@ INSERT INTO `certificados` (`id`, `cliente_id`, `precio`, `tipo_certificado_id`,
 (19, 19, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:47:10', 1, '2026-04-06 17:47:10', '2026-04-06 17:47:10'),
 (20, 20, 90.00, 1, 'EFECTIVO', NULL, NULL, 2, 1, '2026-04-06', '09:47:35', 1, '2026-04-06 17:47:35', '2026-04-06 17:47:35'),
 (21, 21, 0.00, 1, 'QR', NULL, NULL, 2, 1, '2026-04-06', '09:47:59', 1, '2026-04-06 17:47:59', '2026-04-06 17:47:59'),
-(22, 22, 90.00, 1, 'EFECTIVO', NULL, NULL, 4, 2, '2026-04-06', '10:22:33', 1, '2026-04-06 18:22:33', '2026-04-06 18:22:33');
+(22, 22, 90.00, 1, 'EFECTIVO', NULL, NULL, 4, 2, '2026-04-06', '10:22:33', 1, '2026-04-06 18:22:33', '2026-04-06 18:22:33'),
+(23, 23, 90.00, 1, 'EFECTIVO', NULL, NULL, 4, 2, '2026-04-07', '09:31:16', 0, '2026-04-07 17:31:16', '2026-04-07 17:31:55');
 
 -- --------------------------------------------------------
 
@@ -95,7 +96,8 @@ CREATE TABLE `certificado_emitidos` (
 INSERT INTO `certificado_emitidos` (`id`, `fecha`, `user_id`, `tipo_certificado_id`, `conteo`, `created_at`, `updated_at`) VALUES
 (1, '2026-04-06', 2, 1, 20, '2026-04-06 17:31:31', '2026-04-06 17:47:59'),
 (2, '2026-04-06', 2, 2, 1, '2026-04-06 17:40:21', '2026-04-06 17:40:25'),
-(3, '2026-04-06', 4, 1, 1, '2026-04-06 18:22:31', '2026-04-06 18:22:33');
+(3, '2026-04-06', 4, 1, 1, '2026-04-06 18:22:31', '2026-04-06 18:22:33'),
+(4, '2026-04-07', 4, 1, 0, '2026-04-07 17:31:14', '2026-04-07 17:31:55');
 
 -- --------------------------------------------------------
 
@@ -145,7 +147,8 @@ INSERT INTO `clientes` (`id`, `nombre`, `paterno`, `materno`, `ci`, `ci_exp`, `c
 (19, 'GRACIELA', 'CONDORI', '', '34534544', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:06', '2026-04-06 17:47:06'),
 (20, 'JORGE LUIS', 'GARNICA', '', '34534534', 'SC', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:30', '2026-04-06 17:47:30'),
 (21, 'FELIX', 'CARVAJAL', '', '4564565', 'SC', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 17:47:48', '2026-04-06 17:47:48'),
-(22, 'FRANCO', 'VALVIDIESO', '', '465645645', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 18:22:27', '2026-04-06 18:22:27');
+(22, 'FRANCO', 'VALVIDIESO', '', '465645645', 'CB', '', NULL, NULL, '2026-04-06', 1, '2026-04-06 18:22:27', '2026-04-06 18:22:27'),
+(23, 'FRANZ', 'SALINAS', '', '46545443', 'CB', '', NULL, NULL, '2026-04-07', 1, '2026-04-07 17:31:11', '2026-04-07 17:31:11');
 
 -- --------------------------------------------------------
 
@@ -253,7 +256,10 @@ INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `dato
 (51, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN PRODUCTO', '{\"ci\": \"4564565\", \"id\": 21, \"cel\": null, \"ci_exp\": \"SC\", \"nombre\": \"FELIX\", \"materno\": \"\", \"paterno\": \"CARVAJAL\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T13:47:48.000000Z\", \"updated_at\": \"2026-04-06T13:47:48.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '13:47:48', '2026-04-06 17:47:48', '2026-04-06 17:47:48'),
 (52, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 21, \"precio\": \"0\", \"user_id\": 2, \"tipo_pago\": \"QR\", \"cliente_id\": \"21\", \"created_at\": \"2026-04-06T13:47:59.000000Z\", \"updated_at\": \"2026-04-06T13:47:59.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"09:47:59\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '13:47:59', '2026-04-06 17:47:59', '2026-04-06 17:47:59'),
 (53, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN PRODUCTO', '{\"ci\": \"465645645\", \"id\": 22, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"FRANCO\", \"materno\": \"\", \"paterno\": \"VALVIDIESO\", \"fecha_nac\": null, \"created_at\": \"2026-04-06T14:22:27.000000Z\", \"updated_at\": \"2026-04-06T14:22:27.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-06\"}', NULL, 'SUCURSALES', '2026-04-06', '14:22:27', '2026-04-06 18:22:27', '2026-04-06 18:22:27'),
-(54, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 22, \"precio\": \"90.00\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"22\", \"created_at\": \"2026-04-06T14:22:33.000000Z\", \"updated_at\": \"2026-04-06T14:22:33.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"10:22:33\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '14:22:33', '2026-04-06 18:22:33', '2026-04-06 18:22:33');
+(54, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 22, \"precio\": \"90.00\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"22\", \"created_at\": \"2026-04-06T14:22:33.000000Z\", \"updated_at\": \"2026-04-06T14:22:33.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"10:22:33\", \"fecha_registro\": \"2026-04-06\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-06', '14:22:33', '2026-04-06 18:22:33', '2026-04-06 18:22:33'),
+(55, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN PRODUCTO', '{\"ci\": \"46545443\", \"id\": 23, \"cel\": null, \"ci_exp\": \"CB\", \"nombre\": \"FRANZ\", \"materno\": \"\", \"paterno\": \"SALINAS\", \"fecha_nac\": null, \"created_at\": \"2026-04-07T13:31:11.000000Z\", \"updated_at\": \"2026-04-07T13:31:11.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-07\"}', NULL, 'SUCURSALES', '2026-04-07', '13:31:11', '2026-04-07 17:31:11', '2026-04-07 17:31:11'),
+(56, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 23, \"precio\": \"90.00\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"23\", \"created_at\": \"2026-04-07T13:31:16.000000Z\", \"updated_at\": \"2026-04-07T13:31:16.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"09:31:16\", \"fecha_registro\": \"2026-04-07\", \"tipo_certificado_id\": \"1\"}', NULL, 'CERTIFICADOS', '2026-04-07', '13:31:16', '2026-04-07 17:31:16', '2026-04-07 17:31:16'),
+(57, 5, 'ELIMINACIÓN', 'EL USUARIO SMARTINEZ ELIMINÓ UN CERTIFICADO', '{\"id\": 23, \"precio\": \"90.00\", \"status\": 1, \"user_id\": 4, \"archivo1\": null, \"archivo2\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 23, \"created_at\": \"2026-04-07T13:31:16.000000Z\", \"updated_at\": \"2026-04-07T13:31:16.000000Z\", \"sucursal_id\": 2, \"hora_registro\": \"09:31:16\", \"fecha_registro\": \"2026-04-07\", \"tipo_certificado_id\": 1}', '{\"id\": 23, \"precio\": \"90.00\", \"status\": 0, \"user_id\": 4, \"archivo1\": null, \"archivo2\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 23, \"created_at\": \"2026-04-07T13:31:16.000000Z\", \"updated_at\": \"2026-04-07T13:31:55.000000Z\", \"sucursal_id\": 2, \"hora_registro\": \"09:31:16\", \"fecha_registro\": \"2026-04-07\", \"tipo_certificado_id\": 1}', 'CERTIFICADOS', '2026-04-07', '13:31:55', '2026-04-07 17:31:55', '2026-04-07 17:31:55');
 
 -- --------------------------------------------------------
 
@@ -277,7 +283,9 @@ CREATE TABLE `login_users` (
 
 INSERT INTO `login_users` (`id`, `user_id`, `sucursal_id`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
 (1, 2, 1, '2026-04-06', '08:57:24', '2026-04-06 16:57:24', '2026-04-06 16:57:24'),
-(2, 4, 2, '2026-04-06', '10:22:10', '2026-04-06 18:22:10', '2026-04-06 18:22:10');
+(2, 4, 2, '2026-04-06', '10:22:10', '2026-04-06 18:22:10', '2026-04-06 18:22:10'),
+(3, 2, 1, '2026-04-07', '08:37:04', '2026-04-07 16:37:04', '2026-04-07 16:37:04'),
+(4, 4, 2, '2026-04-07', '09:30:43', '2026-04-07 17:30:43', '2026-04-07 17:30:43');
 
 -- --------------------------------------------------------
 
@@ -389,7 +397,8 @@ INSERT INTO `users` (`id`, `usuario`, `nombre`, `paterno`, `materno`, `ci`, `ci_
 (1, 'admin', 'admin', 'admin', '', '0', '', '', '', '', '$2y$12$65d4fgZsvBV5Lc/AxNKh4eoUdbGyaczQ4sSco20feSQANshNLuxSC', 1, 'ADMINISTRADOR', NULL, '2025-10-01', 1, '2026-02-17 22:21:27', '2026-02-17 22:21:27'),
 (2, 'JPERES', 'JUAN', 'PERES', 'MAMANI', '123456', 'LP', 'LOS PEDREGALES', 'juan@gmail.com', '67676767', '$2y$12$XBzFSGL5NsnnoM4EBz3uduveQcrStDx6BtrdGxXSmeNEY0VnqdTte', 1, 'MÉDICO', '21775258381.jpg', '2026-04-03', 1, '2026-04-04 03:19:41', '2026-04-04 03:22:40'),
 (3, 'MGONZALES', 'MARIA', 'GONZALES', '', '1234567', 'LP', '', NULL, '6767676', '$2y$12$okLv9H49WTpjRipKuglJO.iS4QPMl62lvwhtbJGG/EtQ5aJaLJ3bi', 1, 'SECRETARIA', '31775258613.jpg', '2026-04-03', 1, '2026-04-04 03:23:20', '2026-04-04 03:23:55'),
-(4, 'GMARTINEZ', 'GEOVANA', 'MARTINEZ', 'MARTINEZ', '32234234', 'CB', '', NULL, '67676767', '$2y$12$hqaROKdsJFiFWcbuTXm7tugbl1s3LR6Rt3hA4JZ2JTdr/dJGIa0Ou', 1, 'MÉDICO', '41775258996.jpg', '2026-04-03', 1, '2026-04-04 03:29:56', '2026-04-04 03:29:56');
+(4, 'GMARTINEZ', 'GEOVANA', 'MARTINEZ', 'MARTINEZ', '32234234', 'CB', '', NULL, '67676767', '$2y$12$hqaROKdsJFiFWcbuTXm7tugbl1s3LR6Rt3hA4JZ2JTdr/dJGIa0Ou', 1, 'MÉDICO', '41775258996.jpg', '2026-04-03', 1, '2026-04-04 03:29:56', '2026-04-04 03:29:56'),
+(5, 'SMARTINEZ', 'SANDRA', 'MARTINEZ', '', '56445645', 'LP', '', NULL, '67676767', '$2y$12$BOrmYu5SAJSSdxrpToSux.PR4DRFWiN6YMFsvBUDmyJBUTO52cFQi', 1, 'GERENTE', NULL, '2026-04-07', 1, '2026-04-07 17:27:08', '2026-04-07 17:27:08');
 
 --
 -- Índices para tablas volcadas
@@ -471,19 +480,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `certificados`
 --
 ALTER TABLE `certificados`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `certificado_emitidos`
 --
 ALTER TABLE `certificado_emitidos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `configuracions`
@@ -495,13 +504,13 @@ ALTER TABLE `configuracions`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `login_users`
 --
 ALTER TABLE `login_users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -525,7 +534,7 @@ ALTER TABLE `tipo_certificados`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas

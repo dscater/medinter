@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
 import { usePage, router, Link } from "@inertiajs/vue3";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
+// import { useAppStore } from "@/stores/aplicacion/appStore";
+// const appStore = useAppStore();
 const props = defineProps({
     label: {
         type: String,
@@ -58,7 +58,7 @@ const emits = defineEmits(["onClick"]);
 onMounted(() => {
     route_current.value = route().current();
     link.value.addEventListener("click", function () {
-        appStore.startLoading();
+        // appStore.startLoading();
         emits("onClick");
     });
 });
