@@ -249,8 +249,10 @@ onMounted(async () => {
                             <template #accion="{ item }">
                                 <template
                                     v-if="
-                                        props_page.auth?.user.role_id == 1 ||
-                                        props_page.auth?.user.role_id == 2
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
+                                            'usuarios.password',
+                                        )
                                     "
                                 >
                                     <el-tooltip
