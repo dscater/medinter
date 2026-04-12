@@ -18,9 +18,13 @@ return new class extends Migration
             $table->unsignedBigInteger("tramitador_id");
             $table->date("fecha");
             $table->time("hora");
+            $table->unsignedBigInteger("sucursal_id");
+            $table->unsignedBigInteger("user_id");
             $table->timestamps();
 
             $table->foreign("tramitador_id")->on("tramitadors")->references("id");
+            $table->foreign("sucursal_id")->on("sucursals")->references("id");
+            $table->foreign("user_id")->on("users")->references("id");
         });
     }
 

@@ -202,7 +202,7 @@ onMounted(() => {
                             <div class="col-md-4">
                                 <select
                                     v-model="form1.tipo"
-                                    class="form-control"
+                                    class="form-control text-sm"
                                     @change="generarReporte1"
                                 >
                                     <option

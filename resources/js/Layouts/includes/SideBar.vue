@@ -79,13 +79,12 @@ onUnmounted(() => {});
             <img
                 :src="configuracionStore.oConfiguracion.url_logo"
                 alt="Logo"
-                class="brand-image img-circle elevation-3"
+                class="brand-image img-circle elevation-2"
                 style="opacity: 0.8"
             />
-            <span
-                class="brand-text font-weight-light title_Chau_Philomene_One"
-                >{{ configuracionStore.oConfiguracion.nombre_sistema }}</span
-            >
+            <span class="brand-text font-weight-600">{{
+                configuracionStore.oConfiguracion.nombre_sistema
+            }}</span>
         </a>
 
         <!-- Sidebar -->
@@ -146,6 +145,20 @@ onUnmounted(() => {});
                         :label="'Certificados'"
                         :ruta="'certificados.index'"
                         :icon="'fa fa-clipboard-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('tramites.index')
+                        "
+                        :arrayRutaClassActive="[
+                            'tramites.index',
+                            'tramites.create',
+                            'tramites.edit',
+                        ]"
+                        :label="'Trámites'"
+                        :ruta="'tramites.index'"
+                        :icon="'fa fa-folder-open'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="

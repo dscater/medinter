@@ -33,6 +33,10 @@ const props = defineProps({
         type: String,
         default: "auto",
     },
+    footer: {
+        type: Boolean,
+        default: true,
+    },
 });
 const emits = defineEmits(["close"]);
 const show = ref(props.open_modal);
@@ -126,7 +130,7 @@ onBeforeUnmount(() => {
                 >
                     <slot name="body"></slot>
                 </div>
-                <div class="modal-footer" :class="[footerClass]">
+                <div v-if="footer" class="modal-footer" :class="[footerClass]">
                     <slot name="footer"></slot>
                 </div>
             </div>

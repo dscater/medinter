@@ -80,6 +80,16 @@ class PermisoService
 
             "certificado_emitidos.verificaCantidad",
 
+            "tramites.paginado",
+            "tramites.index",
+            "tramites.listado",
+            "tramites.create",
+            "tramites.store",
+            "tramites.edit",
+            "tramites.show",
+            "tramites.update",
+            "tramites.destroy",
+
             "configuracions.index",
             "configuracions.create",
             "configuracions.edit",

@@ -628,14 +628,6 @@ onBeforeMount(() => {
     </form>
 </template>
 <style scoped>
-.cliente_listado {
-    cursor: pointer;
-}
-
-.cliente_listado:hover .callout {
-    background-color: var(--bg4);
-}
-
 .quitar {
     position: absolute;
     right: 0;

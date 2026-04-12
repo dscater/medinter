@@ -427,7 +427,7 @@ onMounted(() => {});
                         </ul>
                     </div>
                     <div class="col-md-4 mt-2">
-                        <label class="">Fecha de Nacimiento</label>
+                        <label class="required">Fecha de Nacimiento</label>
                         <input
                             type="date"
                             class="form-control"

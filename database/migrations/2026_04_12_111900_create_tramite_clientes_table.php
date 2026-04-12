@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tramitador_clientes', function (Blueprint $table) {
+        Schema::create('tramite_clientes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("tramite_id");
             $table->unsignedBigInteger("cliente_id");
             $table->unsignedBigInteger("certificado_id")->nullable();
-            $table->integer("estado"); //PENDIENTE, ATENDIDO
+            $table->integer("estado")->default(0); //0: PENDIENTE, 1:ATENDIDO
+            $table->boolean("existente")->default(0);
             $table->timestamps();
 
             $table->foreign("tramite_id")->on("tramites")->references("id");
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tramitador_clientes');
+        Schema::dropIfExists('tramite_clientes');
     }
 };

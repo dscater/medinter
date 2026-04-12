@@ -67,7 +67,7 @@ class ClienteService
             "ci_exp" => mb_strtoupper($datos['ci_exp']),
             "complemento" => mb_strtoupper($datos['complemento']),
             "fecha_nac" => $datos['fecha_nac'],
-            "edad" => $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
+            "edad" => isset($datos['edad']) && $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
             "cel" => $datos['cel'],
             "fecha_registro" => date("Y-m-d")
         ]);
@@ -96,7 +96,7 @@ class ClienteService
             "ci" => mb_strtoupper($datos['ci']),
             "ci_exp" => mb_strtoupper($datos['ci_exp']),
             "complemento" => mb_strtoupper($datos['complemento']),
-            "edad" => $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
+            "edad" => isset($datos['edad']) && $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
             "cel" => $datos['cel'],
         ]);
 

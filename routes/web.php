@@ -13,6 +13,7 @@ use App\Http\Controllers\TipoCertificadoController;
 use App\Http\Controllers\TipoPagoController;
 use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\TramitadorController;
+use App\Http\Controllers\TramiteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Auth;
@@ -124,6 +125,15 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
 
     // TIPO PAGO
     Route::get("tipo_pagos/listado", [TipoPagoController::class, 'listado'])->name("tipo_pagos.listado");
+
+    // TRAMITES
+    Route::post("tramites/nuevo", [TramiteController::class, 'nuevo'])->name("tramites.nuevo");
+    Route::get("tramites/paginado", [TramiteController::class, 'paginado'])->name("tramites.paginado");
+    Route::get("tramites/listado", [TramiteController::class, 'listado'])->name("tramites.listado");
+    Route::get("tramites/byCi", [TramiteController::class, 'byCi'])->name("tramites.byCi");
+    Route::resource("tramites", TramiteController::class)->only(
+        ["index", "create", "store", "edit", "show", "update", "destroy"]
+    );
 
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");

@@ -1,31 +1,17 @@
 <script setup>
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { useCertificados } from "@/composables/certificados/useCertificados";
+import { useTramites } from "@/composables/tramites/useTramites";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import Formulario from "./Formulario.vue";
-const props = defineProps({
-    certificado: {
-        type: Object,
-        default: {},
-        required: true,
-    },
-    cliente: {
-        type: Object,
-        default: {},
-    },
-});
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
-onMounted(() => {
-    appStore.stopLoading();
-});
+const { setTramite, limpiarTramite, oTramite } = useTramites();
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -35,18 +21,19 @@ const goBack = () => {
     }
 };
 
-onBeforeMount(() => {
-    setCertificado(props.certificado);
+onMounted(() => {
+    appStore.stopLoading();
+    limpiarTramite();
 });
 </script>
 <template>
-    <Head title="Certificados"></Head>
+    <Head title="Trámites"></Head>
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h1 class="m-0">
-                        <i class="fa fa-edit"></i> Editar Certificado
+                        <i class="fa fa-plus"></i> Nuevo Trámite
                     </h1>
                 </div>
                 <!-- /.col -->
@@ -56,11 +43,11 @@ onBeforeMount(() => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item">
-                            <Link :href="route('certificados.index')"
-                                >Certificados</Link
+                            <Link :href="route('tramites.index')"
+                                >Trámites</Link
                             >
                         </li>
-                        <li class="breadcrumb-item active">Editar</li>
+                        <li class="breadcrumb-item active">Nuevo</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -82,7 +69,7 @@ onBeforeMount(() => {
                 </div>
                 <div class="row mt-1">
                     <div class="col-12">
-                        <Formulario :certificado="oCertificado"></Formulario>
+                        <Formulario :tramite="oTramite"></Formulario>
                     </div>
                 </div>
             </div>

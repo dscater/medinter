@@ -86,3 +86,23 @@ form .v-input.v-input--error {
 .form-floating input::placeholder {
     color: transparent;
 }
+
+.el-select.el-select--large .el-select__wrapper {
+    min-height: 38px;
+}
+
+.el-select.el-select--large.el-select-input-group-right .el-select__wrapper {
+    border-radius: 0px 5px 5px 0px;
+}
+
+.el-select.el-select--large.el-select-input-group-left .el-select__wrapper {
+    border-radius: 5px 0px 0px 5px;
+}
+
+.cliente_listado {
+    cursor: pointer;
+}
+
+.cliente_listado:hover .callout {
+    background-color: var(--bg4);
+}

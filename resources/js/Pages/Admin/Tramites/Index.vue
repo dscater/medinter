@@ -2,7 +2,7 @@
 import Content from "@/Components/Content.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { useCertificados } from "@/composables/certificados/useCertificados";
+import { useTramites } from "@/composables/tramites/useTramites";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
@@ -16,13 +16,13 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const listTipoCertificados = ref([]);
+const listTipoTramites = ref([]);
 const listTipoPagos = ref([]);
 const listSucursals = ref([]);
-const cargarTipoCertificados = () => {
+const cargarTipoTramites = () => {
     axios.get(route("tipo_certificados.listado")).then((response) => {
-        listTipoCertificados.value = response.data.tipo_certificados;
-        // listTipoCertificados.value.unshift({
+        listTipoTramites.value = response.data.tipo_certificados;
+        // listTipoTramites.value.unshift({
         //     id: "todos",
         //     nombre: "TODOS",
         // });
@@ -50,45 +50,31 @@ const cargarSucursals = () => {
 };
 
 onMounted(() => {
-    cargarTipoCertificados();
+    cargarTipoTramites();
     cargarTipoPagos();
     cargarSucursals();
     appStore.stopLoading();
 });
 
-const { setCertificado, limpiarCertificado } = useCertificados();
+const { setTramite, limpiarTramite } = useTramites();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
 const headers = [
     {
-        label: "NRO.",
-        key: "id",
+        label: "CÓDIGO",
+        key: "codigo",
         sortable: true,
         width: "4%",
     },
     {
-        label: "CLIENTE",
-        key: "cliente",
+        label: "TRAMITADOR",
+        key: "tramitador.nombre",
         sortable: true,
     },
     {
-        label: "CERTIFICADO(S)",
-        key: "certificados",
-    },
-    {
-        label: "TOTAL BS.",
-        key: "total",
-        sortable: true,
-    },
-    {
-        label: "TIPO DE PAGO",
-        key: "tipo_pago",
-        sortable: true,
-    },
-    {
-        label: "SUCURSAL",
-        key: "sucursal.nombre",
+        label: "NRO. REGISTROS",
+        key: "tramite_clientes_count",
         sortable: true,
     },
     {
@@ -98,7 +84,7 @@ const headers = [
     },
     {
         label: "FECHA REGISTRO",
-        key: "fecha_registro_t",
+        key: "fecha_registro",
         sortable: true,
     },
     {
@@ -125,10 +111,10 @@ const updateDatatable = async () => {
     }
 };
 
-const eliminarCertificado = (item) => {
+const eliminarTramite = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
-        html: `<strong>Nro. de registro: ${item.id}</strong>`,
+        html: `<strong>Código: ${item.codigo}</strong>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -140,7 +126,7 @@ const eliminarCertificado = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("certificados.destroy", item.id),
+                route("tramites.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -150,13 +136,13 @@ const eliminarCertificado = (item) => {
 };
 </script>
 <template>
-    <Head title="Certificados"></Head>
+    <Head title="Trámites"></Head>
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h1 class="m-0">
-                        <i class="fa fa-clipboard-list"></i> Certificados
+                        <i class="fa fa-folder-open"></i> Trámites
                     </h1>
                 </div>
                 <!-- /.col -->
@@ -165,7 +151,7 @@ const eliminarCertificado = (item) => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">Certificados</li>
+                        <li class="breadcrumb-item active">Trámites</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -180,13 +166,13 @@ const eliminarCertificado = (item) => {
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'certificados.create',
+                                    'tramites.create',
                                 )
                             "
                             class="btn btn-primary text-sm"
-                            :href="route('certificados.create')"
+                            :href="route('tramites.create')"
                         >
-                            <i class="fa fa-plus"></i> Nuevo Certificado
+                            <i class="fa fa-plus"></i> Nuevo Tramite
                         </Link>
                     </div>
                     <div class="col-md-12 my-1">
@@ -204,18 +190,18 @@ const eliminarCertificado = (item) => {
                             </div>
                             <div class="col-md-2">
                                 <small class="text-muted text-xs"
-                                    >Tipo de Certificado</small
+                                    >Tipo de Tramite</small
                                 >
                                 <el-select
                                     type="search"
                                     v-model="multiSearch.tipo_certificado_id"
-                                    placeholder="Tipo de Certificado"
+                                    placeholder="Tipo de Tramite"
                                     size="large"
                                     multiple
                                     filterable
                                 >
                                     <el-option
-                                        v-for="item in listTipoCertificados"
+                                        v-for="item in listTipoTramites"
                                         :key="item.id"
                                         :value="item.id"
                                         :label="item.nombre"
@@ -229,7 +215,7 @@ const eliminarCertificado = (item) => {
                                 <el-select
                                     type="search"
                                     v-model="multiSearch.tipo_pago"
-                                    placeholder="Tipo de Certificado"
+                                    placeholder="Tipo de Tramite"
                                     size="large"
                                     filterable
                                 >
@@ -251,7 +237,7 @@ const eliminarCertificado = (item) => {
                                 <el-select
                                     type="search"
                                     v-model="multiSearch.sucursal_id"
-                                    placeholder="Tipo de Certificado"
+                                    placeholder="Tipo de Tramite"
                                     size="large"
                                     filterable
                                 >
@@ -296,7 +282,7 @@ const eliminarCertificado = (item) => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('certificados.paginado')"
+                            :url="route('tramites.paginado')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -305,41 +291,8 @@ const eliminarCertificado = (item) => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
-                            <template #certificados="{ item }">
-                                <div>
-                                    <ul class="p-1">
-                                        <li
-                                            v-for="d in item.certificado_detalles"
-                                        >
-                                            {{ d.tipo_certificado.nombre }}
-
-                                            <a
-                                                :href="d.url_archivo"
-                                                target="_blank"
-                                                class="text-md"
-                                                ><i class="fa fa-download"></i
-                                            ></a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </template>
-
-                            <template #cliente="{ item }">
-                                <span
-                                    >{{ item.cliente.nombre }}
-                                    {{ item.cliente.paterno }}
-                                    {{ item.cliente.materno }}
-                                </span>
-                                <br />
-                                <span
-                                    >{{ item.cliente.ci }}
-                                    {{
-                                        item.cliente.complemento
-                                            ? " - " + item.cliente.complemento
-                                            : ""
-                                    }}
-                                    {{ item.cliente.ci_exp }}</span
-                                >
+                            <template #fecha_registro="{ item }">
+                                <span>{{ item.fecha_t }} {{ item.hora }}</span>
                             </template>
 
                             <template #user="{ item }">
@@ -355,7 +308,7 @@ const eliminarCertificado = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'certificados.edit',
+                                            'tramites.edit',
                                         )
                                     "
                                 >
@@ -367,10 +320,7 @@ const eliminarCertificado = (item) => {
                                     >
                                         <Link
                                             :href="
-                                                route(
-                                                    'certificados.edit',
-                                                    item.id,
-                                                )
+                                                route('tramites.edit', item.id)
                                             "
                                             class="btn btn-warning"
                                         >
@@ -382,7 +332,7 @@ const eliminarCertificado = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'certificados.destroy',
+                                            'tramites.destroy',
                                         )
                                     "
                                 >
@@ -394,7 +344,7 @@ const eliminarCertificado = (item) => {
                                     >
                                         <button
                                             class="btn btn-danger"
-                                            @click="eliminarCertificado(item)"
+                                            @click="eliminarTramite(item)"
                                         >
                                             <i
                                                 class="fa fa-trash-alt"

@@ -21,7 +21,7 @@ class TramitadorService
 
     public function listado(): Collection
     {
-        $tramitadors = Tramitador::select("tramitadors.*")->where("status", 1)->get();
+        $tramitadors = Tramitador::select("tramitadors.*")->get();
         return $tramitadors;
     }
     /**
