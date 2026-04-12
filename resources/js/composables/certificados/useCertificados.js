@@ -3,13 +3,18 @@ import { onMounted, ref } from "vue";
 const oCertificado = ref({
     id: 0,
     cliente_id: "",
-    precio: "",
-    tipo_certificado_id: "",
-    tipo_pago: "",
-    archivo1: "",
-    archivo2: "",
+    total: "",
+    cancelado: "",
+    saldo: "",
+    tipo_pago: "EFECTIVO",
     user_id: "",
     sucursal_id: "",
+    fecha_inicio: "",
+    hora_inicio: "",
+    fecha_fin: "",
+    hora_fin: "",
+    certificado_detalles: [],
+    eliminados: [],
     _method: "POST",
 });
 
@@ -18,13 +23,18 @@ export const useCertificados = () => {
         if (item) {
             oCertificado.value.id = item.id;
             oCertificado.value.cliente_id = item.cliente_id;
-            oCertificado.value.precio = item.precio;
-            oCertificado.value.tipo_certificado_id = item.tipo_certificado_id;
+            oCertificado.value.total = item.total;
+            oCertificado.value.cancelado = item.cancelado;
+            oCertificado.value.saldo = item.saldo;
             oCertificado.value.tipo_pago = item.tipo_pago;
-            oCertificado.value.url_archivo1 = item.url_archivo1;
-            oCertificado.value.url_archivo2 = item.url_archivo2;
             oCertificado.value.user_id = item.user_id;
             oCertificado.value.sucursal_id = item.sucursal_id;
+            oCertificado.value.fecha_inicio = item.fecha_inicio;
+            oCertificado.value.hora_inicio = item.hora_inicio;
+            oCertificado.value.fecha_fin = item.fecha_fin;
+            oCertificado.value.hora_fin = item.hora_fin;
+            oCertificado.value.certificado_detalles = item.certificado_detalles;
+            oCertificado.value.eliminados = [];
             oCertificado.value._method = "PUT";
             return oCertificado;
         }
@@ -34,13 +44,18 @@ export const useCertificados = () => {
     const limpiarCertificado = () => {
         oCertificado.value.id = 0;
         oCertificado.value.cliente_id = "";
-        oCertificado.value.precio = "";
-        oCertificado.value.tipo_certificado_id = "";
-        oCertificado.value.tipo_pago = "";
-        oCertificado.value.archivo1 = "";
-        oCertificado.value.archivo2 = "";
+        oCertificado.value.total = "";
+        oCertificado.value.cancelado = "";
+        oCertificado.value.saldo = "";
+        oCertificado.value.tipo_pago = "EFECTIVO";
         oCertificado.value.user_id = "";
         oCertificado.value.sucursal_id = "";
+        oCertificado.value.fecha_inicio = "";
+        oCertificado.value.hora_inicio = "";
+        oCertificado.value.fecha_fin = "";
+        oCertificado.value.hora_fin = "";
+        oCertificado.value.certificado_detalles = [];
+        oCertificado.value.eliminados = [];
         oCertificado.value._method = "POST";
     };
 

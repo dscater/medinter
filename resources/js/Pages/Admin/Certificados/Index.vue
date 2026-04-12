@@ -22,10 +22,10 @@ const listSucursals = ref([]);
 const cargarTipoCertificados = () => {
     axios.get(route("tipo_certificados.listado")).then((response) => {
         listTipoCertificados.value = response.data.tipo_certificados;
-        listTipoCertificados.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
+        // listTipoCertificados.value.unshift({
+        //     id: "todos",
+        //     nombre: "TODOS",
+        // });
     });
 };
 
@@ -73,13 +73,12 @@ const headers = [
         sortable: true,
     },
     {
-        label: "TIPO DE CERTIFICADO",
-        key: "tipo_certificado.nombre",
-        sortable: true,
+        label: "CERTIFICADO(S)",
+        key: "certificados",
     },
     {
-        label: "COSTO BS.",
-        key: "precio",
+        label: "TOTAL BS.",
+        key: "total",
         sortable: true,
     },
     {
@@ -93,18 +92,13 @@ const headers = [
         sortable: true,
     },
     {
-        label: "MÉDICO",
+        label: "USUARIO",
         key: "user",
         sortable: true,
     },
     {
         label: "FECHA REGISTRO",
         key: "fecha_registro",
-        sortable: true,
-    },
-    {
-        label: "DESCARGAR",
-        key: "descargar",
         sortable: true,
     },
     {
@@ -117,7 +111,7 @@ const headers = [
 
 const multiSearch = ref({
     cliente: "",
-    tipo_certificado_id: "todos",
+    tipo_certificado_id: [],
     tipo_pago: "todos",
     sucursal_id: "todos",
     medico: "",
@@ -159,9 +153,11 @@ const eliminarCertificado = (item) => {
     <Head title="Certificados"></Head>
     <Content>
         <template #header>
-            <div class="row mb-2">
+            <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Certificados</h1>
+                    <h1 class="m-0">
+                        <i class="fa fa-clipboard-list"></i> Certificados
+                    </h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -187,7 +183,7 @@ const eliminarCertificado = (item) => {
                                     'certificados.create',
                                 )
                             "
-                            class="btn btn-primary"
+                            class="btn btn-primary text-sm"
                             :href="route('certificados.create')"
                         >
                             <i class="fa fa-plus"></i> Nuevo Certificado
@@ -215,6 +211,7 @@ const eliminarCertificado = (item) => {
                                     v-model="multiSearch.tipo_certificado_id"
                                     placeholder="Tipo de Certificado"
                                     size="large"
+                                    multiple
                                     filterable
                                 >
                                     <el-option
@@ -270,11 +267,13 @@ const eliminarCertificado = (item) => {
                                 class="col-md-2"
                                 v-if="props_page.auth.user.tipo != 'MÉDICO'"
                             >
-                                <small class="text-muted text-xs">Médico</small>
+                                <small class="text-muted text-xs"
+                                    >Usuario</small
+                                >
                                 <input
                                     type="search"
                                     v-model="multiSearch.medico"
-                                    placeholder="Médico"
+                                    placeholder="Usuario"
                                     class="form-control border-1 border-right-0"
                                 />
                             </div>
@@ -306,22 +305,23 @@ const eliminarCertificado = (item) => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
-                            <template #descargar="{ item }">
-                                <a
-                                    v-if="item.url_archivo1"
-                                    :href="item.url_archivo1"
-                                    class="btn btn-xs btn-outline-primary"
-                                    target="_blank"
-                                    ><i class="fa fa-download"></i> Archivo 1</a
-                                >
-                                <br />
-                                <a
-                                    v-if="item.url_archivo2"
-                                    :href="item.url_archivo2"
-                                    class="btn btn-xs btn-outline-primary"
-                                    target="_blank"
-                                    ><i class="fa fa-download"></i> Archivo 2</a
-                                >
+                            <template #certificados="{ item }">
+                                <div>
+                                    <ul class="p-1">
+                                        <li
+                                            v-for="d in item.certificado_detalles"
+                                        >
+                                            {{ d.tipo_certificado.nombre }}
+
+                                            <a
+                                                :href="d.url_archivo"
+                                                target="_blank"
+                                                class="text-md"
+                                                ><i class="fa fa-download"></i
+                                            ></a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </template>
 
                             <template #cliente="{ item }">

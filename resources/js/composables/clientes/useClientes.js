@@ -9,6 +9,7 @@ const oCliente = ref({
     ci_exp: "",
     complemento: "",
     fecha_nac: "",
+    edad: "",
     cel: "",
     respuesta: "clientes",
     _method: "POST",
@@ -25,6 +26,7 @@ export const useClientes = () => {
             oCliente.value.ci_exp = item.ci_exp;
             oCliente.value.complemento = item.complemento;
             oCliente.value.fecha_nac = item.fecha_nac;
+            oCliente.value.edad = item.edad;
             oCliente.value.cel = item.cel;
             oCliente.value._method = "PUT";
             return oCliente;
@@ -41,6 +43,7 @@ export const useClientes = () => {
         oCliente.value.ci_exp = "";
         oCliente.value.complemento = "";
         oCliente.value.fecha_nac = "";
+        oCliente.value.edad = "";
         oCliente.value.cel = "";
         oCliente.value.respuesta = "clientes";
         oCliente.value._method = "POST";

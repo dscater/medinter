@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("ci_exp");
             $table->string("complemento");
             $table->date("fecha_nac")->nullable();
+            $table->integer("edad");
             $table->string("cel")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->integer("status")->default(1);

@@ -2,7 +2,7 @@
 import Content from "@/Components/Content.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { useClientes } from "@/composables/clientes/useClientes";
+import { useTramitadors } from "@/composables/tramitadors/useTramitadors";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
@@ -20,7 +20,7 @@ onMounted(() => {
     appStore.stopLoading();
 });
 
-const { setCliente, limpiarCliente } = useClientes();
+const { setTramitador, limpiarTramitador } = useTramitadors();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
@@ -37,28 +37,8 @@ const headers = [
         sortable: true,
     },
     {
-        label: "AP. PATERNO",
-        key: "paterno",
-        sortable: true,
-    },
-    {
-        label: "AP. MATERNO",
-        key: "materno",
-        sortable: true,
-    },
-    {
         label: "C.I.",
         key: "full_ci",
-        sortable: true,
-    },
-    {
-        label: "FECHA NACIMIENTO",
-        key: "fecha_nac_t",
-        sortable: true,
-    },
-    {
-        label: "EDAD",
-        key: "edad",
         sortable: true,
     },
     {
@@ -88,7 +68,7 @@ const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
 
 const agregarRegistro = () => {
-    limpiarCliente();
+    limpiarTramitador();
     accion_formulario.value = 0;
     muestra_formulario.value = true;
 };
@@ -100,10 +80,10 @@ const updateDatatable = async () => {
     }
 };
 
-const eliminarCliente = (item) => {
+const eliminarTramitador = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
-        html: `<strong>${item.nombre} ${item.paterno} ${item.materno}</strong>`,
+        html: `<strong>${item.nombre}</strong>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -115,7 +95,7 @@ const eliminarCliente = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("clientes.destroy", item.id),
+                route("tramitadors.destroy", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -125,13 +105,13 @@ const eliminarCliente = (item) => {
 };
 </script>
 <template>
-    <Head title="Clientes"></Head>
+    <Head title="Tramitadores"></Head>
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h1 class="m-0">
-                        <i class="fa fa-user-friends"></i> Clientes
+                        <i class="fa fa-address-book"></i> Tramitadores
                     </h1>
                 </div>
                 <!-- /.col -->
@@ -140,7 +120,7 @@ const eliminarCliente = (item) => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">Clientes</li>
+                        <li class="breadcrumb-item active">Tramitadores</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -155,14 +135,14 @@ const eliminarCliente = (item) => {
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'clientes.create',
+                                    'tramitadors.create',
                                 )
                             "
                             type="button"
                             class="btn btn-primary text-sm"
                             @click="agregarRegistro"
                         >
-                            <i class="fa fa-plus"></i> Nuevo Cliente
+                            <i class="fa fa-plus"></i> Nuevo Tramitador
                         </button>
                     </div>
                     <div class="col-md-8 my-1">
@@ -197,7 +177,7 @@ const eliminarCliente = (item) => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('clientes.paginado')"
+                            :url="route('tramitadors.paginado')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -211,7 +191,7 @@ const eliminarCliente = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'clientes.edit',
+                                            'tramitadors.edit',
                                         )
                                     "
                                 >
@@ -224,7 +204,7 @@ const eliminarCliente = (item) => {
                                         <button
                                             class="btn btn-warning"
                                             @click="
-                                                setCliente(item);
+                                                setTramitador(item);
                                                 accion_formulario = 1;
                                                 muestra_formulario = true;
                                             "
@@ -237,7 +217,7 @@ const eliminarCliente = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'clientes.destroy',
+                                            'tramitadors.destroy',
                                         )
                                     "
                                 >
@@ -249,7 +229,7 @@ const eliminarCliente = (item) => {
                                     >
                                         <button
                                             class="btn btn-danger"
-                                            @click="eliminarCliente(item)"
+                                            @click="eliminarTramitador(item)"
                                         >
                                             <i
                                                 class="fa fa-trash-alt"

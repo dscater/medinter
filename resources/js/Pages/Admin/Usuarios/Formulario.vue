@@ -26,18 +26,11 @@ watch(
         if (muestra_form.value) {
             foto.value.value = null;
             cargarTipoUsuarios();
+            cargarSucursals();
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
             form = useForm(oUsuario.value);
-            options.value = [
-                {
-                    value: oUsuario.value.persona_id,
-                    label: oUsuario.value.persona
-                        ? `${oUsuario.value.persona.full_name} - ${oUsuario.value.persona.ci}`
-                        : "Cargando...",
-                },
-            ];
         } else {
             document
                 .getElementsByTagName("body")[0]
@@ -73,6 +66,13 @@ const listTipos = ref([]);
 const cargarTipoUsuarios = () => {
     axios.get(route("tipo_usuarios.listado")).then((response) => {
         listTipos.value = response.data;
+    });
+};
+
+const listSucursals = ref([]);
+const cargarSucursals = () => {
+    axios.get(route("sucursals.listado")).then((response) => {
+        listSucursals.value = response.data.sucursals;
     });
 };
 
@@ -390,6 +390,35 @@ onMounted(() => {
                         >
                             <li class="parsley-required">
                                 {{ form.errors?.tipo }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mt-2">
+                        <label class="required">Seleccionar Sucursal</label>
+                        <el-select
+                            :class="{
+                                'parsley-error': form.errors?.sucursal_id,
+                            }"
+                            no-data-text="Sin datos"
+                            no-data-match="Sin resultados"
+                            size="large"
+                            placeholder="- Seleccione -"
+                            v-model="form.sucursal_id"
+                            filterable
+                        >
+                            <el-option
+                                v-for="item in listSucursals"
+                                :key="item.id"
+                                :value="item.id"
+                                :label="item.nombre"
+                            ></el-option>
+                        </el-select>
+                        <ul
+                            v-if="form.errors?.sucursal_id"
+                            class="list-unstyled text-danger"
+                        >
+                            <li class="parsley-required">
+                                {{ form.errors?.sucursal_id }}
                             </li>
                         </ul>
                     </div>

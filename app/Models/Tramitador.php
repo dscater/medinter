@@ -3,37 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 
-class Cliente extends Model
+class Tramitador extends Model
 {
     protected $fillable = [
         "nombre",
-        "paterno",
-        "materno",
         "ci",
         "ci_exp",
-        "complemento",
-        "fecha_nac",
-        "edad",
         "cel",
         "fecha_registro",
-        "status",
     ];
 
-    protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t", "full_name"];
+    protected $appends = ["fecha_registro_t", "full_ci"];
 
-    public function getFullNameAttribute()
-    {
-        return $this->nombre . ' ' . $this->paterno . ($this->materno ? ' ' . $this->materno : '');
-    }
-    public function getFechaNacTAttribute()
-    {
-        return date("d/m/Y", strtotime($this->fecha_nac));
-    }
     public function getFullCiAttribute()
     {
-        return $this->ci . ($this->complemento ? '-' . $this->complemento : '') . ' ' . $this->ci_exp;
+        return $this->ci . ' ' . $this->ci_exp;
     }
 
     public function getFechaRegistroTAttribute()
@@ -50,8 +35,6 @@ class Cliente extends Model
         foreach ($palabras as $palabra) {
             $query->where(function ($q) use ($palabra) {
                 $q->where('nombre', 'like', "%$palabra%")
-                    ->orWhere('paterno', 'like', "%$palabra%")
-                    ->orWhere('materno', 'like', "%$palabra%")
                     ->orWhere('ci', 'like', "%$palabra%");
             });
         }

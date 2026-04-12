@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Certificado;
+use App\Models\CertificadoDetalle;
 use App\Models\CertificadoEmitido;
 use App\Services\HistorialAccionService;
 use App\Models\User;
@@ -48,7 +49,7 @@ class CertificadoService
         $fecha
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "tipo_certificado:id,nombre", "sucursal:id,nombre", "user:id,nombre,paterno,materno"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
 
         if (Auth::user()->tipo == 'MÉDICO') {
             $certificados->where("user_id", Auth::user()->id);
@@ -62,7 +63,9 @@ class CertificadoService
                 });
             })
             ->when($tipo_certificado_id && $tipo_certificado_id !== 'todos', function ($q) use ($tipo_certificado_id) {
-                $q->where("tipo_certificado_id", $tipo_certificado_id);
+                $q->whereHas("certificado_detalles", function ($sub) use ($tipo_certificado_id) {
+                    $sub->whereIn("tipo_certificado_id", $tipo_certificado_id);
+                });
             })
             ->when($tipo_pago && $tipo_pago !== 'todos', function ($q) use ($tipo_pago) {
                 $q->where("tipo_pago", $tipo_pago);
@@ -108,8 +111,9 @@ class CertificadoService
 
         $certificado = Certificado::create([
             "cliente_id" => $datos["cliente_id"],
-            "precio" => $datos["precio"],
-            "tipo_certificado_id" => $datos["tipo_certificado_id"],
+            "total" => $datos["total"],
+            "saldo" => 0,
+            "cancelado" => $datos["total"],
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
             "sucursal_id" => $datos["sucursal_id"],
@@ -117,21 +121,28 @@ class CertificadoService
             "hora_registro" => $hora_actual,
         ]);
 
+        // detalles
+        foreach ($datos["certificado_detalles"] as $key => $item) {
+            $certificado_detalle = $certificado->certificado_detalles()->create([
+                "precio" => $item["precio"],
+                "cancelado" => $item["precio"],
+                "saldo" => 0,
+                "tipo_certificado_id" => $item["tipo_certificado_id"],
+            ]);
 
-        // cargar archivo1
-        if ($datos["archivo1"] && !is_string($datos["archivo1"])) {
-            $this->cargarArchivo($certificado, $datos["archivo1"], "archivo1");
+            $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $fecha_actual, Auth::user()->id);
+
+            // cargar archivo
+            if (!is_string($item["archivo"])) {
+                $archivo = $item["archivo"];
+                $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+            }
         }
 
-        // cargar archivo2
-        if ($datos["archivo2"] && !is_string($datos["archivo2"])) {
-            $this->cargarArchivo($certificado, $datos["archivo2"], "archivo2");
-        }
 
-        $this->certificado_emitido_service->actualizarCertificadoEmitido($datos["tipo_certificado_id"], $fecha_actual, Auth::user()->id);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
 
         return $certificado;
     }
@@ -149,29 +160,63 @@ class CertificadoService
 
         $certificado->update([
             "cliente_id" => $datos["cliente_id"],
-            "precio" => $datos["precio"],
-            "tipo_certificado_id" => $datos["tipo_certificado_id"],
+            "total" => $datos["total"],
+            "saldo" => 0,
+            "cancelado" => $datos["total"],
             "tipo_pago" => $datos["tipo_pago"],
-            // "user_id" => Auth::user()->id,
+            "user_id" => Auth::user()->id,
             "sucursal_id" => $datos["sucursal_id"],
         ]);
 
-        // cargar archivo1
-        if ($datos["archivo1"] && !is_string($datos["archivo1"])) {
-            $this->cargarArchivo($certificado, $datos["archivo1"], "archivo1");
+        // detalles
+        foreach ($datos["certificado_detalles"] as $key => $item) {
+            if ($item["id"] == 0) {
+                $certificado_detalle = $certificado->certificado_detalles()->create([
+                    "precio" => $item["precio"],
+                    "cancelado" => $item["cancelado"],
+                    "saldo" => 0,
+                    "tipo_certificado_id" => $item["tipo_certificado_id"],
+                ]);
+
+                // cargar archivo
+                if (!is_string($item["archivo"])) {
+                    $archivo = $item["archivo"];
+
+                    $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                }
+
+                $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
+            } else {
+                $certificado_detalle = CertificadoDetalle::find($item["id"]);
+                // cargar archivo
+                if (!is_string($item["archivo"])) {
+                    $archivo = $item["archivo"];
+                    \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+                    $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                }
+
+                $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id, $certificado_detalle->tipo_certificado_id);
+
+                $certificado_detalle->update([
+                    "precio" => $item["precio"],
+                    "cancelado" => $item["precio"],
+                    "saldo" => 0,
+                    "tipo_certificado_id" => $item["tipo_certificado_id"],
+                ]);
+            }
         }
 
-        // cargar archivo2
-        if ($datos["archivo2"] && !is_string($datos["archivo2"])) {
-            $this->cargarArchivo($certificado, $datos["archivo2"], "archivo2");
+        if (isset($datos["eliminados"])) {
+            foreach ($datos["eliminados"] as $value) {
+                $certificado_detalle = CertificadoDetalle::find($value);
+                $this->certificado_emitido_service->descontarCertificadoEmitido($certificado_detalle->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
+                \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+                $certificado_detalle->delete();
+            }
         }
-
-
-        $user_id = $certificado->user_id;
-        $this->certificado_emitido_service->actualizarCertificadoEmitido($datos["tipo_certificado_id"], $old_certificado->fecha_registro, $user_id, $old_certificado->tipo_certificado_id);
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CERTIFICADO", $old_certificado, $certificado->withoutRelations());
+        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CERTIFICADO", $old_certificado, $certificado, ["certificado_detalles"]);
 
         return $certificado;
     }
@@ -185,13 +230,13 @@ class CertificadoService
     public function eliminar(Certificado $certificado): bool|Exception
     {
         $old_certificado = clone $certificado;
+
+        foreach ($certificado->certificado_detalles as $item) {
+            $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
+        }
+
         $certificado->status = 0;
         $certificado->save();
-
-        // BUSCAR Y DESCONTAR EL TIPO DE CERTIFICADO
-        $user_id = $certificado->user_id;
-        $this->certificado_emitido_service->descontarCertificadoEmitido($old_certificado->tipo_certificado_id, $old_certificado->fecha_registro, $user_id);
-
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN CERTIFICADO", $old_certificado, $certificado);
@@ -202,18 +247,18 @@ class CertificadoService
     /**
      * Cargar archivo
      *
-     * @param Certificado $certificado
+     * @param CertificadoDetalle $certificado_detalle
      * @param UploadedFile $archivo
      * @return void
      */
-    public function cargarArchivo(Certificado $certificado, UploadedFile $archivo, String $col): void
+    public function cargarArchivoDetalle(CertificadoDetalle $certificado_detalle, UploadedFile $archivo, int $index): void
     {
-        if ($certificado[$col]) {
-            \File::delete(public_path("files/certificados/" . $certificado[$col]));
+        if ($certificado_detalle->archivo) {
+            \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
         }
 
-        $nombre = $col . $certificado->id . time();
-        $certificado[$col] = $this->cargarArchivoService->cargarArchivo($archivo, public_path("files/certificados"), $nombre);
-        $certificado->save();
+        $nombre = $index . $certificado_detalle->id . time();
+        $certificado_detalle->archivo = $this->cargarArchivoService->cargarArchivo($archivo, public_path("files/certificados"), $nombre);
+        $certificado_detalle->save();
     }
 }

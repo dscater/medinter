@@ -1,9 +1,48 @@
+#app form label {
+    font-size: 0.8em;
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+form table tbody tr th,
+form table tbody tr td {
+    font-size: 0.875em;
+}
+
 form .v-input {
     /* height: 40px; */
 }
 
 form .v-input.v-input--error {
     /* height: 60px; */
+}
+
+.btn-agregar {
+    border: dashed 2px var(--bgDarkGray);
+    color: var(--bgDarkGray);
+}
+.btn-agregar:hover {
+    border: dashed 2px var(--bgDarkPrincipal);
+    color: var(--bgDarkPrincipal);
+}
+
+.border-success {
+    border: solid 1px var(--success);
+}
+
+#app .btn {
+    font-size: 1em;
+}
+#app input.form-control {
+    font-size: 0.84em;
+}
+#app select.form-control {
+    font-size: 1.1em;
+}
+
+#app form select.form-control,
+#app form input[type="date"].form-control {
+    font-size: 0.84em;
 }
 
 /* Contenedor relativo para que el label se posicione dentro */

@@ -12,6 +12,7 @@ use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\TipoCertificadoController;
 use App\Http\Controllers\TipoPagoController;
 use App\Http\Controllers\TipoUsuarioController;
+use App\Http\Controllers\TramitadorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Auth;
@@ -92,6 +93,15 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("clientes/listado", [ClienteController::class, 'listado'])->name("clientes.listado");
     Route::get("clientes/byCi", [ClienteController::class, 'byCi'])->name("clientes.byCi");
     Route::resource("clientes", ClienteController::class)->only(
+        ["index", "store", "edit", "show", "update", "destroy"]
+    );
+
+    // TRAMITADORES
+    Route::post("tramitadors/nuevo", [TramitadorController::class, 'nuevo'])->name("tramitadors.nuevo");
+    Route::get("tramitadors/paginado", [TramitadorController::class, 'paginado'])->name("tramitadors.paginado");
+    Route::get("tramitadors/listado", [TramitadorController::class, 'listado'])->name("tramitadors.listado");
+    Route::get("tramitadors/byCi", [TramitadorController::class, 'byCi'])->name("tramitadors.byCi");
+    Route::resource("tramitadors", TramitadorController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );
 

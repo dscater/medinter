@@ -50,7 +50,7 @@ class CertificadoController extends Controller
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
         $cliente = (string)$request->input("cliente", "");
-        $tipo_certificado_id = (string)$request->input("tipo_certificado_id", "todos");
+        $tipo_certificado_id = $request->input("tipo_certificado_id", []);
         $tipo_pago = (string)$request->input("tipo_pago", "todos");
         $sucursal_id = (string)$request->input("sucursal_id", "todos");
         $medico = (string)$request->input("medico", "");
@@ -121,6 +121,7 @@ class CertificadoController extends Controller
     {
 
         $cliente = $certificado->cliente;
+        $certificado = $certificado->load(["certificado_detalles"]);
         return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
     }
 

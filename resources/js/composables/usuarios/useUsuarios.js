@@ -15,6 +15,7 @@ const oUsuario = ref({
     acceso: "",
     tipo: "",
     foto: "",
+    sucursal_id: "",
     _method: "POST",
 });
 
@@ -34,6 +35,7 @@ export const useUsuarios = () => {
             oUsuario.value.password = item.password;
             oUsuario.value.acceso = item.acceso;
             oUsuario.value.tipo = item.tipo;
+            oUsuario.value.sucursal_id = item.sucursal_id;
             oUsuario.value._method = "PUT";
             return oUsuario;
         }
@@ -55,6 +57,7 @@ export const useUsuarios = () => {
         oUsuario.value.acceso = "";
         oUsuario.value.tipo = "";
         oUsuario.value.foto = "";
+        oUsuario.value.sucursal_id = "";
         oUsuario._method = "POST";
     };
 

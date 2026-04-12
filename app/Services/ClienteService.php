@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\HistorialAccionService;
 use App\Models\Cliente;
 use App\Models\User;
+use DateTime;
 use Illuminate\Http\UploadedFile;
 use Exception;
 use Illuminate\Container\Attributes\Auth;
@@ -66,6 +67,7 @@ class ClienteService
             "ci_exp" => mb_strtoupper($datos['ci_exp']),
             "complemento" => mb_strtoupper($datos['complemento']),
             "fecha_nac" => $datos['fecha_nac'],
+            "edad" => $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
             "cel" => $datos['cel'],
             "fecha_registro" => date("Y-m-d")
         ]);
@@ -94,7 +96,7 @@ class ClienteService
             "ci" => mb_strtoupper($datos['ci']),
             "ci_exp" => mb_strtoupper($datos['ci_exp']),
             "complemento" => mb_strtoupper($datos['complemento']),
-            "fecha_nac" => $datos['fecha_nac'],
+            "edad" => $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
             "cel" => $datos['cel'],
         ]);
 
@@ -120,5 +122,17 @@ class ClienteService
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN CLIENTE", $old_cliente, $cliente);
 
         return true;
+    }
+
+    public function calcularEdad($fechaNacimiento)
+    {
+        if (!$fechaNacimiento) return null;
+
+        $fechaNac = new DateTime($fechaNacimiento);
+        $hoy = new DateTime();
+
+        $edad = $hoy->diff($fechaNac);
+
+        return $edad->y; // años
     }
 }

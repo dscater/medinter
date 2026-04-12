@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer("acceso");
             $table->string("tipo", 255);
             $table->string("foto", 255)->nullable();
+            $table->unsignedBigInteger("sucursal_id")->nullable();
             $table->date("fecha_registro");
             $table->integer("status")->default(1);
             $table->timestamps();

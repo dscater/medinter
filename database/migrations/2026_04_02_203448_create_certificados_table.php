@@ -14,20 +14,24 @@ return new class extends Migration
         Schema::create('certificados', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("cliente_id");
-            $table->decimal("precio", 24, 2);
-            $table->unsignedBigInteger("tipo_certificado_id");
+            $table->decimal("total", 24, 2);
+            $table->decimal("cancelado", 24, 2)->nullable();
+            $table->decimal("saldo", 24, 2)->nullable();
             $table->string("tipo_pago");
-            $table->string("archivo1", 255)->nullable();
-            $table->string("archivo2", 255)->nullable();
             $table->unsignedBigInteger("user_id");
             $table->unsignedBigInteger("sucursal_id");
+            $table->string("tipo", 255)->default('NORMAL'); //NORMAL: registrado por medicto, TRAMITE: grupo
+            $table->date("fecha_inicio")->nullable();
+            $table->time("hora_inicio")->nullable();
+            $table->date("fecha_fin")->nullable();
+            $table->time("hora_fin")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->time("hora_registro")->nullable();
+            $table->integer("verificado")->default(0);
             $table->integer("status")->default(1);
             $table->timestamps();
 
             $table->foreign("cliente_id")->on("clientes")->references("id");
-            $table->foreign("tipo_certificado_id")->on("tipo_certificados")->references("id");
             $table->foreign("user_id")->on("users")->references("id");
             $table->foreign("sucursal_id")->on("sucursals")->references("id");
         });

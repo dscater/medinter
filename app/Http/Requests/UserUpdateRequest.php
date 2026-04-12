@@ -33,6 +33,7 @@ class UserUpdateRequest extends FormRequest
             "acceso" => "required",
             "tipo" => "required",
             "foto" => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            "sucursal_id" => "required",
         ];
     }
 
@@ -54,6 +55,7 @@ class UserUpdateRequest extends FormRequest
             "password.min" => "Debes ingresar al menos :min caracteres",
             "acceso.required" => "Este campo es obligatorio",
             "tipo.required" => "Este campo es obligatorio",
+            "sucursal_id.required" => "Este campo es obligatorio",
         ];
     }
 }

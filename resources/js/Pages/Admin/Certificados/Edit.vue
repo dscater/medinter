@@ -27,6 +27,14 @@ onMounted(() => {
     appStore.stopLoading();
 });
 
+const goBack = () => {
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        router.visit(route("inicio"));
+    }
+};
+
 onBeforeMount(() => {
     setCertificado(props.certificado);
 });
@@ -35,9 +43,11 @@ onBeforeMount(() => {
     <Head title="Certificados"></Head>
     <Content>
         <template #header>
-            <div class="row mb-2">
+            <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Certificados > Editar</h1>
+                    <h1 class="m-0">
+                        <i class="fa fa-edit"></i> Editar Certificado
+                    </h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -62,33 +72,20 @@ onBeforeMount(() => {
                 <div class="row">
                     <div class="col-md-4">
                         <Link
-                            v-if="
-                                props_page.auth?.user.permisos == '*' ||
-                                props_page.auth?.user.permisos.includes(
-                                    'certificados.index',
-                                )
-                            "
-                            :href="route('certificados.index')"
-                            class="btn btn-secondary"
+                            href="#"
+                            @click.prevent="goBack"
+                            class="btn btn-default"
                         >
-                            <i class="fa fa-arrow-left"></i> Volver a
-                            Certificados
+                            <i class="fa fa-arrow-left"></i> Volver
                         </Link>
                     </div>
                 </div>
                 <div class="row mt-1">
                     <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <i class="fa fa-edit"></i> Editar Certificado
-                            </div>
-                            <div class="card-body pt-1">
-                                <Formulario
-                                    :certificado="oCertificado"
-                                    :cliente="cliente"
-                                ></Formulario>
-                            </div>
-                        </div>
+                        <Formulario
+                            :certificado="oCertificado"
+                            :cliente="cliente"
+                        ></Formulario>
                     </div>
                 </div>
             </div>

@@ -34,6 +34,7 @@ class ClienteStoreRequest extends FormRequest
             "ci_exp" => "required",
             "complemento" => "nullable",
             "fecha_nac" => "nullable|date",
+            "edad" => "nullable",
             "cel" => "nullable",
         ];
     }

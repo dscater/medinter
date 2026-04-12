@@ -73,7 +73,7 @@ onUnmounted(() => {});
 </script>
 <template>
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-light-primary elevation-4">
+    <aside class="main-sidebar sidebar-light-primary elevation-1">
         <!-- Brand Logo -->
         <a :href="route('inicio')" class="brand-link">
             <img
@@ -164,6 +164,15 @@ onUnmounted(() => {});
                         :label="'Tipo de Certificados'"
                         :ruta="'tipo_certificados.index'"
                         :icon="'fa fa-list'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
+                            permisos.includes('tramitadors.index')
+                        "
+                        :label="'Tramitadores'"
+                        :ruta="'tramitadors.index'"
+                        :icon="'fa fa-address-book'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="

@@ -33,6 +33,7 @@ class User extends Authenticatable
         "acceso",
         "tipo",
         "foto",
+        "sucursal_id",
         "fecha_registro",
         "status",
     ];
@@ -131,5 +132,10 @@ class User extends Authenticatable
         }
 
         return $query;
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_id');
     }
 }

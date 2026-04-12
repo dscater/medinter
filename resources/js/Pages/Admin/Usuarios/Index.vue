@@ -72,6 +72,11 @@ const headers = [
         sortable: true,
     },
     {
+        label: "SUCURSAL",
+        key: "sucursal.nombre",
+        sortable: true,
+    },
+    {
         label: "FOTO",
         key: "foto",
         sortable: true,
@@ -145,9 +150,9 @@ onMounted(async () => {
 
     <Content>
         <template #header>
-            <div class="row mb-2">
+            <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Usuarios</h1>
+                    <h1 class="m-0"><i class="fa fa-users"></i> Usuarios</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -175,7 +180,7 @@ onMounted(async () => {
                                 )
                             "
                             type="button"
-                            class="btn btn-primary"
+                            class="btn btn-primary text-sm"
                             @click="agregarRegistro"
                         >
                             <i class="fa fa-plus"></i> Nuevo Usuario

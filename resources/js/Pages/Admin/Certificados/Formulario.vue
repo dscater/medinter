@@ -27,12 +27,6 @@ watch(
     },
 );
 
-const tituloDialog = computed(() => {
-    return form.id == 0
-        ? `<i class="fa fa-plus"></i> Nuevo Tipo de Certificado`
-        : `<i class="fa fa-edit"></i> Editar Tipo de Certificado`;
-});
-
 const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
@@ -50,8 +44,11 @@ const enviarFormulario = () => {
             ? route("certificados.store")
             : route("certificados.update", form.id);
 
-    if (propsPage.auth.user.tipo == "MÉDICO")
+    if (propsPage.auth.user.tipo == "MÉDICO") {
         form["sucursal_id"] = loginUserStore.getLoginUser.sucursal_id;
+    } else {
+        form["sucursal_id"] = propsPage.auth.user.sucursal_id;
+    }
     form.post(url, {
         preserveScroll: true,
         forceFormData: true,
@@ -124,13 +121,11 @@ const cargarTipoCertificados = () => {
     });
 };
 
-const archivo1 = ref(null);
-const archivo2 = ref(null);
-const cargarArchivo = (e, key) => {
+const cargarArchivo = (e, key, index) => {
     form[key] = null;
     const file = e.target.files[0];
     if (file) {
-        form[key] = e.target.files[0];
+        form.certificado_detalles[index][key] = e.target.files[0];
     }
 };
 
@@ -194,11 +189,13 @@ const quitarSeleccionCliente = () => {
 };
 
 const nroTipoCertificadoDia = ref(0);
-const muestraMensajeConteo = ref(false);
-const detectarTipoCertificado = () => {
-    muestraMensajeConteo.value = false;
+const detectarTipoCertificado = (value, index) => {
+    if (!value) {
+        return;
+    }
+
     const item = listTipoCertificados.value.filter(
-        (item) => item.id === form.tipo_certificado_id,
+        (item) => item.id == value,
     )[0];
     if (item.id) {
         axios
@@ -210,17 +207,62 @@ const detectarTipoCertificado = () => {
             .then((response) => {
                 nroTipoCertificadoDia.value = response.data.conteo_siguiente;
                 if (nroTipoCertificadoDia.value % 10 === 0) {
-                    form.precio = 0;
-                    muestraMensajeConteo.value = true;
+                    form.certificado_detalles[index].precio = 0;
+                    form.certificado_detalles[index].muestra_conteo = true;
                 } else {
-                    form.precio = item.precio;
+                    form.certificado_detalles[index].muestra_conteo = false;
+                    form.certificado_detalles[index].precio = item.precio;
                 }
+            })
+            .finally(() => {
+                nroTipoCertificadoDia.value = 0;
             });
     }
 };
 
+const agregarCertificado = () => {
+    form.certificado_detalles.push({
+        id: 0,
+        certificado_id: "",
+        precio: "",
+        cancelado: "",
+        saldo: "",
+        tipo_certificado_id: "",
+        archivo: null,
+        muestra_conteo: false,
+    });
+};
+
+const quitarCertificado = (index) => {
+    const item = form.certificado_detalles[index];
+    if (item.id != 0) {
+        form.eliminados.push(item.id);
+    }
+    form.certificado_detalles.splice(index, 1);
+};
+
+const total = computed(() => {
+    const total = form.certificado_detalles.reduce((total, item) => {
+        const subtotal = parseFloat(
+            item.precio && item.precio != 0 ? item.precio : 0,
+        );
+        if (subtotal !== null && subtotal !== undefined && subtotal !== "") {
+            return total + Number(subtotal);
+        }
+
+        return total;
+    }, 0);
+
+    form.total = total;
+
+    return total ? total.toFixed(2) : "0.00";
+});
+
 onMounted(() => {
-    form = useForm(oCertificado.value);
+    if (form.id == 0) {
+        agregarCertificado();
+    }
+
     if (form.id && form.id != 0) {
         txtCi.value = props.cliente.ci;
         buscarClienteByCi();
@@ -236,124 +278,158 @@ onBeforeMount(() => {
 
 <template>
     <form @submit.prevent="enviarFormulario()">
-        <p class="text-muted text-xs mb-0 mt-0">
-            Todos los campos con
-            <span class="text-danger">(*)</span> son obligatorios.
-        </p>
-        <div class="row">
+        <div class="row" v-if="form">
             <div class="col-md-5">
-                <div class="row">
-                    <div class="col-md-12 mt-2">
-                        <label class="required">Ingresar Nro. C.I.</label>
-                        <input
-                            type="search"
-                            class="form-control"
-                            :class="{
-                                'parsley-error': form.errors?.cliente_id,
-                            }"
-                            @search="listClientes = []"
-                            v-model="txtCi"
-                            @keyup.prevent="detectarBusquedaCliente()"
-                        />
-                        <ul
-                            v-if="form.errors?.cliente_id"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.cliente_id }}
-                            </li>
-                        </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">
+                            <i class="fa fa-user"></i> Datos del Paciente
+                        </h4>
                     </div>
-                    <div class="col-12" v-if="buscandoCliente">Buscando...</div>
-                    <div
-                        class="col-12 mt-2"
-                        v-if="listClientes.length > 0 && !clienteSeleccionado"
-                    >
+                    <div class="card-body pt-0">
                         <div class="row">
-                            <div class="col-12">
-                                {{ listClientes.length }} resultados encontrados
+                            <div class="col-md-12 mt-2">
+                                <label class="">Ingresar Nro. C.I.</label>
+                                <input
+                                    type="search"
+                                    class="form-control"
+                                    @search="listClientes = []"
+                                    v-model="txtCi"
+                                    @keyup.prevent="detectarBusquedaCliente()"
+                                />
+                                <ul
+                                    v-if="form.errors?.cliente_id"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.cliente_id }}
+                                    </li>
+                                </ul>
                             </div>
                             <div
-                                class="col-12 cliente_listado"
-                                v-for="item in listClientes"
-                                @click="seleccionaCliente(item)"
+                                class="col-12 text-center"
+                                v-if="buscandoCliente"
                             >
-                                <div class="callout callout-info">
-                                    <h5>
-                                        {{ item.nombre }} {{ item.paterno }}
-                                        {{ item.materno }}
-                                    </h5>
-                                    <p>{{ item.full_ci }}</p>
+                                Buscando...
+                            </div>
+                            <div
+                                class="col-12 mt-2"
+                                v-if="
+                                    listClientes.length > 0 &&
+                                    !clienteSeleccionado
+                                "
+                            >
+                                <div class="row">
+                                    <div class="col-12 text-center text-sm">
+                                        {{ listClientes.length }} resultado(s)
+                                        encontrado(s)
+                                    </div>
+                                    <div
+                                        class="col-12 cliente_listado"
+                                        v-for="item in listClientes"
+                                        @click="seleccionaCliente(item)"
+                                    >
+                                        <div class="callout callout-info">
+                                            <h5
+                                                class="text-md font-weight-bold"
+                                            >
+                                                {{ item.nombre }}
+                                                {{ item.paterno }}
+                                                {{ item.materno }}
+                                            </h5>
+                                            <p class="text-sm">
+                                                {{ item.full_ci }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div
-                        class="col-12 text-center"
-                        v-if="listClientes.length == 0 && txtCi.trim() != ''"
-                    >
-                        <span class="h6">Sin resultados...</span>
-                    </div>
-                    <div
-                        class="col-12"
-                        v-if="txtCi.trim() != '' && !clienteSeleccionado"
-                    >
-                        <button
-                            type="button"
-                            class="btn btn-outline-info w-100"
-                            @click.prevent="agregarCliente"
-                        >
-                            <i class="fa fa-plus"></i> Agregar Nuevo Cliente
-                        </button>
-                        <Formulario
-                            :accion_formulario="accion_form_cliente"
-                            :muestra_formulario="muestra_form_cliente"
-                            :ci="txtCi"
-                            :metodo="'axios'"
-                            @cerrar-formulario="cierraFormularioCliente()"
-                            @envio-formulario="clienteAgregado"
-                        ></Formulario>
-                    </div>
-                    <div class="col-12" v-if="clienteSeleccionado">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="card mb-2">
-                                    <div class="card-body card-widget shadow">
-                                        <h5>
-                                            {{ oCliente.nombre }}
-                                            {{ oCliente.paterno }}
-                                            {{ oCliente.materno }}
-                                            <span
-                                                class="check_cliente text-success"
-                                            >
-                                                <i
-                                                    class="fa fa-check-circle fa-lg"
-                                                ></i>
-                                            </span>
-                                        </h5>
-                                        <p>
-                                            {{ oCliente.ci }}
-                                            {{ oCliente.complemento }}
-                                            {{ oCliente.ci_exp }}
-                                        </p>
-                                        <p>
-                                            <strong>F. nacimiento:</strong>
-                                            {{ oCliente.fecha_nac_t ?? "-" }}
-                                        </p>
-                                        <p>
-                                            <strong>Celular:</strong>
-                                            {{ oCliente.cel ?? "-" }}
-                                        </p>
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-danger w-100"
-                                            @click.prevent="
-                                                quitarSeleccionCliente
-                                            "
-                                        >
-                                            <i class="fa fa-times"></i>
-                                            Reiniciar Selección
-                                        </button>
+                            <div
+                                class="col-12 text-center"
+                                v-if="
+                                    listClientes.length == 0 &&
+                                    txtCi.trim() != ''
+                                "
+                            >
+                                <span class="h6">Sin resultados...</span>
+                            </div>
+                            <div
+                                class="col-12"
+                                v-if="
+                                    txtCi.trim() != '' && !clienteSeleccionado
+                                "
+                            >
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-info w-100 text-sm btn-sm"
+                                    @click.prevent="agregarCliente"
+                                >
+                                    <i class="fa fa-plus"></i> Agregar Nuevo
+                                    Cliente
+                                </button>
+                                <Formulario
+                                    :accion_formulario="accion_form_cliente"
+                                    :muestra_formulario="muestra_form_cliente"
+                                    :ci="txtCi"
+                                    :metodo="'axios'"
+                                    @cerrar-formulario="
+                                        cierraFormularioCliente()
+                                    "
+                                    @envio-formulario="clienteAgregado"
+                                ></Formulario>
+                            </div>
+                            <div class="col-12" v-if="clienteSeleccionado">
+                                <div class="row mt-1">
+                                    <div class="col-12">
+                                        <div class="card mb-0 border-success">
+                                            <div class="card-body">
+                                                <h5 class="text-md">
+                                                    {{ oCliente.nombre }}
+                                                    {{ oCliente.paterno }}
+                                                    {{ oCliente.materno }}
+                                                    <span
+                                                        class="check_cliente text-success"
+                                                    >
+                                                        <i
+                                                            class="fa fa-check-circle fa-lg"
+                                                        ></i>
+                                                    </span>
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <strong>C.I.:</strong>
+                                                    {{ oCliente.ci }}
+                                                    {{ oCliente.complemento }}
+                                                    {{ oCliente.ci_exp }}
+                                                </p>
+                                                <p class="mb-0 text-sm">
+                                                    <strong
+                                                        >F. nacimiento:</strong
+                                                    >
+                                                    {{
+                                                        oCliente.fecha_nac_t ??
+                                                        "-"
+                                                    }}
+                                                </p>
+                                                <p class="mb-0 text-sm">
+                                                    <strong>Edad:</strong>
+                                                    {{ oCliente.edad ?? "-" }}
+                                                </p>
+                                                <p class="mb-0 text-sm">
+                                                    <strong>Celular:</strong>
+                                                    {{ oCliente.cel ?? "-" }}
+                                                </p>
+                                                <button
+                                                    type="button"
+                                                    class="mt-2 btn btn-outline-danger btn-sm w-100 text-sm"
+                                                    @click.prevent="
+                                                        quitarSeleccionCliente
+                                                    "
+                                                >
+                                                    <i class="fa fa-times"></i>
+                                                    Reiniciar Selección
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -362,142 +438,172 @@ onBeforeMount(() => {
                 </div>
             </div>
             <div class="col-md-7">
-                <div class="row">
-                    <div class="col-md-12 mt-2">
-                        <label class="required">Tipo de Certificado</label>
-                        <el-select
-                            :class="{
-                                'parsley-error':
-                                    form.errors?.tipo_certificado_id,
-                            }"
-                            v-model="form.tipo_certificado_id"
-                            placeholder="- Seleccione -"
-                            no-data-text="Sin datos"
-                            no-match-text="No se entrarón coincidencias"
-                            filterable
-                            @change="detectarTipoCertificado"
-                        >
-                            <el-option
-                                v-for="item in listTipoCertificados"
-                                :key="item.id"
-                                :value="item.id"
-                                :label="item.nombre"
-                            ></el-option>
-                        </el-select>
-                        <ul
-                            v-if="form.errors?.tipo_certificado_id"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.tipo_certificado_id }}
-                            </li>
-                        </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">
+                            <i class="fa fa-clipboard-list"></i> Datos
+                            Certificado(s)
+                        </h4>
                     </div>
-                    <div class="col-md-6 mt-2">
-                        <label class="required">Costo Bs.</label>
-                        <el-input
-                            type="text"
-                            :class="{
-                                'parsley-error': form.errors?.precio,
-                            }"
-                            v-model="form.precio"
-                            autosize
-                        ></el-input>
-                        <small
-                            class="text-xs text-success"
-                            v-if="muestraMensajeConteo"
-                            >(Certificado gratuito)</small
+                    <div class="card-body pt-0">
+                        <div
+                            class="row"
+                            v-for="(
+                                certificado_detalle, index
+                            ) in form.certificado_detalles"
                         >
-                        <ul
-                            v-if="form.errors?.precio"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.precio }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6 mt-2">
-                        <label class="required">Tipo de Pago </label>
-                        <el-radio-group v-model="form.tipo_pago">
-                            <el-radio
-                                v-for="item in listTipoPagos"
-                                :value="item.value"
-                                size="large"
-                                ><i :class="item.icon"></i>
-                                {{ item.label }}</el-radio
+                            <div
+                                class="col-12 border pt-0 pb-1 mt-2 elevation-1"
                             >
-                        </el-radio-group>
-                        <ul
-                            v-if="form.errors?.tipo_pago"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.tipo_pago }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-12">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm text-xs quitar"
+                                    v-if="index > 0"
+                                    @click.prevent="quitarCertificado(index)"
+                                >
+                                    X
+                                </button>
+                                <div class="row">
+                                    <div class="col-md-12 mt-1">
+                                        <label class=""
+                                            >Tipo de Certificado</label
+                                        >
+                                        <el-select
+                                            v-model="
+                                                certificado_detalle.tipo_certificado_id
+                                            "
+                                            placeholder="- Seleccione -"
+                                            no-data-text="Sin datos"
+                                            no-match-text="No se entrarón coincidencias"
+                                            filterable
+                                            @change="
+                                                detectarTipoCertificado(
+                                                    $event,
+                                                    index,
+                                                )
+                                            "
+                                        >
+                                            <el-option
+                                                v-for="item in listTipoCertificados"
+                                                :key="item.id"
+                                                :value="item.id"
+                                                :label="item.nombre"
+                                            ></el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="col-md-6 mt-1">
+                                        <label class="">Costo Bs.</label>
+                                        <el-input
+                                            type="text"
+                                            v-model="certificado_detalle.precio"
+                                            autosize
+                                        ></el-input>
+                                        <small
+                                            class="text-xs text-success"
+                                            v-if="
+                                                certificado_detalle.muestra_conteo
+                                            "
+                                            >(Certificado gratuito)</small
+                                        >
+                                    </div>
+                                    <div class="col-md-6 mt-1">
+                                        <label class=""
+                                            >Cargar Certificado
+                                            <a
+                                                v-if="
+                                                    certificado_detalle.url_archivo
+                                                "
+                                                :href="
+                                                    certificado_detalle.url_archivo
+                                                "
+                                                target="_blank"
+                                                class="btn btn-sm btn-outline-primary"
+                                                ><i
+                                                    class="fa fa-download"
+                                                ></i></a
+                                        ></label>
+                                        <input
+                                            type="file"
+                                            class="form-control"
+                                            @change="
+                                                cargarArchivo(
+                                                    $event,
+                                                    'archivo',
+                                                    index,
+                                                )
+                                            "
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
-                            <div class="col-md-6 mt-2">
-                                <label class=""
-                                    >Cargar Archivo 1
-                                    <a
-                                        v-if="form.url_archivo1"
-                                        href=""
-                                        class="btn btn-sm btn-outline-primary"
-                                        ><i class="fa fa-download"></i></a
-                                ></label>
-                                <input
-                                    type="file"
-                                    class="form-control"
-                                    :class="{
-                                        'parsley-error': form.errors?.archivo1,
-                                    }"
-                                    ref="archivo1"
-                                    @change="cargarArchivo($event, 'archivo1')"
-                                />
+                            <div class="col-12">
                                 <ul
-                                    v-if="form.errors?.archivo1"
+                                    v-if="form.errors?.certificado_detalles"
                                     class="d-block text-danger list-unstyled"
                                 >
                                     <li class="parsley-required">
-                                        {{ form.errors?.archivo1 }}
+                                        {{ form.errors?.certificado_detalles }}
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-md-6 mt-2">
-                                <label class=""
-                                    >Cargar Archivo 2
-                                    <a
-                                        v-if="form.url_archivo1"
-                                        href=""
-                                        class="btn btn-sm btn-outline-primary"
-                                        ><i class="fa fa-download"></i></a
-                                ></label>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 p-0 mt-2">
+                                <button
+                                    type="button"
+                                    class="btn w-100 btn-agregar btn-sm text-sm"
+                                    @click.prevent="agregarCertificado()"
+                                >
+                                    <i class="fa fa-plus"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <hr class="w-100 mb-1" />
+                            <div class="col-12 text-center">
+                                <label class="">Total Bs.</label>
                                 <input
-                                    type="file"
-                                    class="form-control"
-                                    :class="{
-                                        'parsley-error': form.errors?.archivo2,
-                                    }"
-                                    @change="cargarArchivo($event, 'archivo2')"
-                                    ref="archivo2"
+                                    type="number"
+                                    class="form-control text-center"
+                                    :value="total ?? '0.00'"
+                                    readonly=""
                                 />
                                 <ul
-                                    v-if="form.errors?.archivo2"
+                                    v-if="form.errors?.total"
                                     class="d-block text-danger list-unstyled"
                                 >
                                     <li class="parsley-required">
-                                        {{ form.errors?.archivo2 }}
+                                        {{ form.errors?.total }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12 text-center">
+                                <label class="">Tipo de Pago </label>
+                                <el-radio-group v-model="form.tipo_pago">
+                                    <el-radio
+                                        v-for="item in listTipoPagos"
+                                        :value="item.value"
+                                        size="large"
+                                        ><i :class="item.icon"></i>
+                                        {{ item.label }}</el-radio
+                                    >
+                                </el-radio-group>
+                                <ul
+                                    v-if="form.errors?.tipo_pago"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.tipo_pago }}
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 mt-3">
                 <div class="row">
                     <div
                         class="col-12 text-center"
@@ -507,10 +613,7 @@ onBeforeMount(() => {
                             >Debes seleccionar un Cliente</span
                         >
                     </div>
-                    <div
-                        class="col-md-3 offset-md-5"
-                        v-if="oCliente && form.cliente_id"
-                    >
+                    <div class="col-md-12" v-if="oCliente && form.cliente_id">
                         <button
                             type="button"
                             class="btn btn-primary w-100"
@@ -531,5 +634,18 @@ onBeforeMount(() => {
 
 .cliente_listado:hover .callout {
     background-color: var(--bg4);
+}
+
+.quitar {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 10;
 }
 </style>

@@ -1,7 +1,7 @@
 <script setup>
 import MiModal from "@/Components/MiModal.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import { useClientes } from "@/composables/clientes/useClientes";
+import { useTramitadors } from "@/composables/tramitadors/useTramitadors";
 import { watch, ref, computed, onMounted, nextTick } from "vue";
 const props = defineProps({
     muestra_formulario: {
@@ -22,11 +22,11 @@ const props = defineProps({
     },
 });
 
-const { oCliente, limpiarCliente } = useClientes();
+const { oTramitador, limpiarTramitador } = useTramitadors();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-let form = useForm(oCliente.value);
+let form = useForm(oTramitador.value);
 watch(
     () => props.muestra_formulario,
     (newValue) => {
@@ -35,7 +35,7 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oCliente.value);
+            form = useForm(oTramitador.value);
             if (form.id == 0) {
                 form.ci = props.ci ?? "";
             }
@@ -72,8 +72,8 @@ function cargaArchivo(e, key) {
 
 const tituloDialog = computed(() => {
     return accion_form.value == 0
-        ? `<i class="fa fa-plus"></i> Nuevo Cliente`
-        : `<i class="fa fa-edit"></i> Editar Cliente`;
+        ? `<i class="fa fa-plus"></i> Nuevo Tramitador`
+        : `<i class="fa fa-edit"></i> Editar Tramitador`;
 });
 
 const textBtn = computed(() => {
@@ -90,8 +90,8 @@ const enviarFormulario = () => {
     enviando.value = true;
     let url =
         accion_form.value == 0
-            ? route("clientes.store")
-            : route("clientes.update", form.id);
+            ? route("tramitadors.store")
+            : route("tramitadors.update", form.id);
     if (props.metodo == "inertia") {
         form.post(url, {
             preserveScroll: true,
@@ -111,7 +111,7 @@ const enviarFormulario = () => {
                     },
                 });
                 form.reset();
-                limpiarCliente();
+                limpiarTramitador();
                 emits("envio-formulario");
             },
             onError: (err, code) => {
@@ -151,7 +151,7 @@ const enviarFormulario = () => {
     } else {
         // enviar por axios el formulario
         enviando.value = true;
-        let url = route("clientes.nuevo");
+        let url = route("tramitadors.nuevo");
         axios
             .post(url, form.data()) // importante usar form.data()
             .then((response) => {
@@ -185,8 +185,8 @@ const manejarExito = (response) => {
     });
 
     form.reset();
-    limpiarCliente();
-    emits("envio-formulario", response.data.cliente);
+    limpiarTramitador();
+    emits("envio-formulario", response.data.tramitador);
 };
 const manejarError = (error) => {
     let errores = null;
@@ -255,27 +255,6 @@ const cerrarFormulario = () => {
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
 };
 
-const calcularEdad = () => {
-    if (!form.fecha_nac) return null;
-
-    const hoy = new Date();
-    const fecha = new Date(form.fecha_nac);
-
-    let edad = hoy.getFullYear() - fecha.getFullYear();
-
-    const mesActual = hoy.getMonth();
-    const mesNacimiento = fecha.getMonth();
-
-    // Ajustar si aún no cumplió años este año
-    if (
-        mesActual < mesNacimiento ||
-        (mesActual === mesNacimiento && hoy.getDate() < fecha.getDate())
-    ) {
-        edad--;
-    }
-    form.edad = edad;
-};
-
 onMounted(() => {});
 </script>
 
@@ -306,7 +285,7 @@ onMounted(() => {});
                 </p>
                 <div class="row">
                     <div class="col-md-4 mt-2">
-                        <label class="required">Nombre(s)</label>
+                        <label class="required">Nombre Completo</label>
                         <el-input
                             type="text"
                             :class="{
@@ -321,44 +300,6 @@ onMounted(() => {});
                         >
                             <li class="parsley-required">
                                 {{ form.errors?.nombre }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4 mt-2">
-                        <label class="required">Ap. Paterno</label>
-                        <el-input
-                            type="text"
-                            :class="{
-                                'parsley-error': form.errors?.paterno,
-                            }"
-                            v-model="form.paterno"
-                            autosize
-                        ></el-input>
-                        <ul
-                            v-if="form.errors?.paterno"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.paterno }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4 mt-2">
-                        <label class="">Ap. Materno</label>
-                        <el-input
-                            type="text"
-                            :class="{
-                                'parsley-error': form.errors?.materno,
-                            }"
-                            v-model="form.materno"
-                            autosize
-                        ></el-input>
-                        <ul
-                            v-if="form.errors?.materno"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.materno }}
                             </li>
                         </ul>
                     </div>
@@ -408,47 +349,7 @@ onMounted(() => {});
                         </ul>
                     </div>
                     <div class="col-md-4 mt-2">
-                        <label class="">Complemento</label>
-                        <el-input
-                            type="text"
-                            :class="{
-                                'parsley-error': form.errors?.complemento,
-                            }"
-                            v-model="form.complemento"
-                            autosize
-                        ></el-input>
-                        <ul
-                            v-if="form.errors?.complemento"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.complemento }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4 mt-2">
-                        <label class="">Fecha de Nacimiento</label>
-                        <input
-                            type="date"
-                            class="form-control"
-                            :class="{
-                                'parsley-error': form.errors?.fecha_nac,
-                            }"
-                            v-model="form.fecha_nac"
-                            @change="calcularEdad"
-                            autosize
-                        />
-                        <ul
-                            v-if="form.errors?.fecha_nac"
-                            class="d-block text-danger list-unstyled"
-                        >
-                            <li class="parsley-required">
-                                {{ form.errors?.fecha_nac }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-4 mt-2">
-                        <label class="">Teléfono/Celular</label>
+                        <label class="required">Teléfono/Celular</label>
                         <el-input
                             type="text"
                             :class="{

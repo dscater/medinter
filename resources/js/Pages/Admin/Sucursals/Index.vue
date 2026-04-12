@@ -103,9 +103,11 @@ const eliminarSucursal = (item) => {
     <Head title="Sucursales"></Head>
     <Content>
         <template #header>
-            <div class="row mb-2">
+            <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Sucursales</h1>
+                    <h1 class="m-0">
+                        <i class="fa fa-building"></i> Sucursales
+                    </h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -132,7 +134,7 @@ const eliminarSucursal = (item) => {
                                 )
                             "
                             type="button"
-                            class="btn btn-primary"
+                            class="btn btn-primary text-sm"
                             @click="agregarRegistro"
                         >
                             <i class="fa fa-plus"></i> Nueva Sucursal
