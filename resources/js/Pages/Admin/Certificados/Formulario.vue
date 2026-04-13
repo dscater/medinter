@@ -13,7 +13,7 @@ const props = defineProps({
     },
     cliente: {
         type: Object,
-        default: { id: 0 },
+        default: { id: 0, ci: "" },
     },
 });
 

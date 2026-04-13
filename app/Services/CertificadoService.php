@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Certificado;
 use App\Models\CertificadoDetalle;
 use App\Models\CertificadoEmitido;
+use App\Models\TramiteCliente;
 use App\Services\HistorialAccionService;
 use App\Models\User;
 use Carbon\Carbon;
@@ -234,7 +235,13 @@ class CertificadoService
         $old_certificado = clone $certificado;
 
         foreach ($certificado->certificado_detalles as $item) {
-            $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
+            if ($item->tipo == 'NORMAL') {
+                $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
+            } else {
+                $tramite_cliente = TramiteCliente::where("certificado_id", $item->id);
+                $tramite_cliente->certificado_id = null;
+                $tramite_cliente->save();
+            }
         }
 
         $certificado->status = 0;

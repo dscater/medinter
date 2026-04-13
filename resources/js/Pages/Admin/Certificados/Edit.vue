@@ -82,7 +82,10 @@ onBeforeMount(() => {
                 </div>
                 <div class="row mt-1">
                     <div class="col-12">
-                        <Formulario :certificado="oCertificado"></Formulario>
+                        <Formulario
+                            :certificado="oCertificado"
+                            :cliente="cliente"
+                        ></Formulario>
                     </div>
                 </div>
             </div>
