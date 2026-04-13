@@ -27,7 +27,6 @@ return new class extends Migration
             $table->time("hora_fin")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->time("hora_registro")->nullable();
-            $table->integer("verificado")->default(0);
             $table->integer("status")->default(1);
             $table->timestamps();
 

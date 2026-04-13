@@ -118,7 +118,7 @@ onMounted(() => {
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Configuración</h1>
+                    <h1 class="m-0"><i class="fa fa-cog"></i> Configuración</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">

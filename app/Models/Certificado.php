@@ -21,7 +21,6 @@ class Certificado extends Model
         "hora_fin",
         "fecha_registro",
         "hora_registro",
-        "verificado",
         "status",
     ];
 
@@ -50,5 +49,16 @@ class Certificado extends Model
     public function certificado_detalles()
     {
         return $this->hasMany(CertificadoDetalle::class, 'certificado_id');
+    }
+
+    public function certificado_pagos()
+    {
+        return $this->hasMany(CertificadoPago::class, 'certificado_id');
+    }
+
+
+    public function tramite_cliente()
+    {
+        return $this->hasOne(TramiteCliente::class, 'certificado_id');
     }
 }

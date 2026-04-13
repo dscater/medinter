@@ -320,7 +320,10 @@ onBeforeMount(() => {});
                                 <button
                                     type="button"
                                     class="btn btn-sm text-xs quitar"
-                                    v-if="index > 0"
+                                    v-if="
+                                        index > 0 &&
+                                        !tramite_cliente.certificado_id
+                                    "
                                     @click.prevent="quitarCliente(index)"
                                 >
                                     X

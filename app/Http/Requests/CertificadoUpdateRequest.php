@@ -29,7 +29,8 @@ class CertificadoUpdateRequest extends FormRequest
             "tipo_pago" => "required",
             "sucursal_id" => "required",
             "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()],
-            "eliminados" => "nullable"
+            "eliminados" => "nullable",
+            "tipo" => "nullable"
         ];
     }
 

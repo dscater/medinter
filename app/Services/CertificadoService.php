@@ -21,7 +21,7 @@ class CertificadoService
 {
     private $modulo = "CERTIFICADOS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service) {}
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service, private CertificadoPagoService $certificado_pago_service) {}
 
     public function listado(): Collection
     {
@@ -100,6 +100,68 @@ class CertificadoService
     }
 
     /**
+     * Lista de certificados paginado con filtros
+     *
+     * @param integer $length
+     * @param integer $page
+     * @param string $search
+     * @param array $columnsSerachLike
+     * @param array $columnsFilter
+     * @return LengthAwarePaginator
+     */
+    public function listadoCobros(
+        int $length,
+        int $page,
+        array $orderBy = [],
+        $cliente,
+        $ci,
+        $fecha,
+        $codigo,
+    ): LengthAwarePaginator {
+        $certificados = Certificado::select("certificados.*")
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
+
+        $certificados->where("saldo", ">", 0);
+        if (Auth::user()->tipo == 'MÉDICO') {
+            $certificados->where("user_id", Auth::user()->id);
+        }
+
+        // FILTROS
+        $certificados
+            ->when($cliente, function ($q) use ($cliente) {
+                $q->whereHas('cliente', function ($sub) use ($cliente) {
+                    $sub->buscarNombre($cliente);
+                });
+            })
+            ->when($ci, function ($q) use ($ci) {
+                $q->whereHas('cliente', function ($sub) use ($ci) {
+                    $sub->where("ci", $ci);
+                });
+            })
+            ->when($fecha, function ($q) use ($fecha) {
+                $q->whereDate("fecha_registro", $fecha); // ajusta el campo si es otro
+            })
+            ->when($codigo, function ($q) use ($codigo) {
+                $q->whereHas('tramite_cliente', function ($sub) use ($codigo) {
+                    $sub->wherehas('tramite', function ($sub2) use ($codigo) {
+                        $sub2->where("codigo", $codigo);
+                    });
+                });
+            });
+
+
+        // Ordenamiento
+        foreach ($orderBy as $value) {
+            if (isset($value[0], $value[1])) {
+                $certificados->orderBy($value[0], $value[1]);
+            }
+        }
+
+        $certificados = $certificados->paginate($length, ['*'], 'page', $page);
+        return $certificados;
+    }
+
+    /**
      * Crear certificado
      *
      * @param array $datos
@@ -113,8 +175,8 @@ class CertificadoService
         $certificado = Certificado::create([
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
-            "saldo" => 0,
-            "cancelado" => $datos["total"],
+            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : 0,
+            "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
             "sucursal_id" => $datos["sucursal_id"],
@@ -141,7 +203,13 @@ class CertificadoService
             }
         }
 
-
+        // PAGO
+        if ($certificado->cancelado > 0) {
+            $this->certificado_pago_service->crear($certificado, [
+                "monto" => $certificado->cancelado,
+                "tipo_pago" => $certificado->tipo_pago,
+            ]);
+        }
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
@@ -163,8 +231,8 @@ class CertificadoService
         $certificado->update([
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
-            "saldo" => 0,
-            "cancelado" => $datos["total"],
+            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : 0,
+            "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
             "sucursal_id" => $datos["sucursal_id"],

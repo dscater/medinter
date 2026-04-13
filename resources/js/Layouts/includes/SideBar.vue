@@ -135,6 +135,23 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
+                            permisos.includes('recepcion_pagos.index')
+                        "
+                        :label="'Recepción de Pagos'"
+                        :ruta="'recepcion_pagos.index'"
+                        :icon="'fa fa-cash-register'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' || permisos.includes('cobros.index')
+                        "
+                        :label="'Cobros'"
+                        :ruta="'cobros.index'"
+                        :icon="'fa fa-hand-holding-usd'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
                             permisos.includes('certificados.index')
                         "
                         :arrayRutaClassActive="[

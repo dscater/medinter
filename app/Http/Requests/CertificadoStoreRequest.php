@@ -23,13 +23,21 @@ class CertificadoStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             "cliente_id" => "required",
             "total" => "required|numeric|decimal:0,2|min:0",
             "tipo_pago" => "required",
             "sucursal_id" => "required",
-            "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()]
+            "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()],
+            "tipo" => "nullable"
         ];
+
+        if ($this->tipo == 'TRAMITE') {
+            $rules["cancelado"] = "required|numeric|decimal:0,2|min:0";
+            $rules["saldo"] = "required|numeric|decimal:0,2|min:0";
+        }
+
+        return $rules;
     }
 
 
@@ -41,6 +49,14 @@ class CertificadoStoreRequest extends FormRequest
             "total.numeric" => "Debes ingresar un valor númerico",
             "total.numeric" => "Debes ingresar un número con hasta 2 decimales",
             "total.numeric" => "Debes ingresar un monto minimo de :min",
+            "cancelado.required" => "Debes ingresar el monto cancelado",
+            "cancelado.numeric" => "Debes ingresar un valor númerico",
+            "cancelado.numeric" => "Debes ingresar un número con hasta 2 decimales",
+            "cancelado.numeric" => "Debes ingresar un monto minimo de :min",
+            "saldo.required" => "No se obtuvo el saldo",
+            "saldo.numeric" => "Debes ingresar un valor númerico",
+            "saldo.numeric" => "Debes ingresar un número con hasta 2 decimales",
+            "saldo.numeric" => "Debes ingresar un monto minimo de :min",
             "tipo_pago.required" => "Debes completar este campo",
             "certificado_detalles.required" => "Debes agregar al menos 1 certificado",
             "certificado_detalles.array" => "Debes enviar una lista de certificados",

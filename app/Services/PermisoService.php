@@ -69,6 +69,7 @@ class PermisoService
             "tipo_pagos.listado",
 
             "certificados.paginado",
+            "certificados.listadoCobros",
             "certificados.index",
             "certificados.listado",
             "certificados.create",
@@ -94,6 +95,11 @@ class PermisoService
 
             "tramite_clientes.byTramite",
             "tramite_clientes.registrarCertificado",
+
+            "cobros.index",
+            "cobros.registrarPago",
+
+            "recepcion_pagos.index",
 
             "configuracions.index",
             "configuracions.create",

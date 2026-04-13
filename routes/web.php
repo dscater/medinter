@@ -3,10 +3,12 @@
 use App\Http\Controllers\CertificadoController;
 use App\Http\Controllers\CertificadoEmitidoController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\CobroController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\LoginUserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecepcionPagoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\TipoCertificadoController;
@@ -117,6 +119,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // CERTIFICADOS
     Route::get("certificados/paginado", [CertificadoController::class, 'paginado'])->name("certificados.paginado");
     Route::get("certificados/listado", [CertificadoController::class, 'listado'])->name("certificados.listado");
+    Route::get("certificados/listadoCobros", [CertificadoController::class, 'listadoCobros'])->name("certificados.listadoCobros");
     Route::resource("certificados", CertificadoController::class)->only(
         ["index", "store", "create", "edit", "show", "update", "destroy"]
     );
@@ -140,6 +143,13 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // TRAMITES CLIENTES
     Route::get("tramite_clientes/byTramite", [TramiteClienteController::class, 'byTramite'])->name("tramite_clientes.byTramite");
     Route::post("tramite_clientes/registrarCertificado/{tramite_cliente}", [TramiteClienteController::class, 'registrarCertificado'])->name("tramite_clientes.registrarCertificado");
+
+    // COBROS
+    Route::get("cobros", [CobroController::class, 'index'])->name("cobros.index");
+    Route::post("cobros/registrarPago/{certificado}", [CobroController::class, 'registrarPago'])->name("cobros.registrarPago");
+
+    // RECEPCION PAGOS
+    Route::get("recepcion_pagos", [RecepcionPagoController::class, 'index'])->name("recepcion_pagos.index");
 
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");

@@ -125,7 +125,8 @@ const cargarArchivo = (e, key, index) => {
     form[key] = null;
     const file = e.target.files[0];
     if (file) {
-        form.certificado_detalles[index][key] = e.target.files[0];
+        form.certificado_detalles[index][key] = file;
+        form.certificado_detalles[index]["name"] = file.name;
     }
 };
 
@@ -447,14 +448,12 @@ onBeforeMount(() => {
                     </div>
                     <div class="card-body pt-0">
                         <div
-                            class="row"
+                            class="row border-bottom pb-1"
                             v-for="(
                                 certificado_detalle, index
                             ) in form.certificado_detalles"
                         >
-                            <div
-                                class="col-12 border pt-0 pb-1 mt-2 elevation-1"
-                            >
+                            <div class="col-12 pt-0 pb-3 mt-2 mb-0">
                                 <button
                                     type="button"
                                     class="btn btn-sm text-xs quitar"
@@ -465,6 +464,80 @@ onBeforeMount(() => {
                                 </button>
                                 <div class="row">
                                     <div class="col-md-12 mt-1">
+                                        <label
+                                            :for="`file${index}`"
+                                            class="contenedorFile"
+                                            :class="
+                                                certificado_detalle.archivo
+                                                    ? 'cargado'
+                                                    : 'sinCargar'
+                                            "
+                                        >
+                                            <div class="principal">
+                                                <div class="icon icon-pdf">
+                                                    <i
+                                                        class="fa fa-file-alt"
+                                                    ></i>
+                                                </div>
+                                                <div class="contInfo">
+                                                    <div class="title">
+                                                        Certificado
+                                                    </div>
+                                                    <el-tooltip
+                                                        class="box-item"
+                                                        effect="dark"
+                                                        content="Certificado"
+                                                        placement="top"
+                                                    >
+                                                        <div
+                                                            class="descripcion"
+                                                            v-text="
+                                                                certificado_detalle.archivo
+                                                                    ? certificado_detalle.name
+                                                                    : 'Ningún archivo seleccionado'
+                                                            "
+                                                        ></div>
+                                                    </el-tooltip>
+                                                </div>
+                                                <div class="icon icon-loaded">
+                                                    <i
+                                                        class="fa"
+                                                        :class="[
+                                                            certificado_detalle.archivo
+                                                                ? 'fa-check-circle'
+                                                                : 'fa-upload',
+                                                        ]"
+                                                    ></i>
+                                                    <a
+                                                        v-if="
+                                                            certificado_detalle.url_archivo
+                                                        "
+                                                        :href="
+                                                            certificado_detalle.url_archivo
+                                                        "
+                                                        target="_blank"
+                                                    >
+                                                        <i
+                                                            class="fa fa-download text-info"
+                                                        ></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="file"
+                                                :name="`file${index}`"
+                                                :id="`file${index}`"
+                                                @change="
+                                                    cargarArchivo(
+                                                        $event,
+                                                        'archivo',
+                                                        index,
+                                                    )
+                                                "
+                                            />
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6 mt-1">
                                         <label class=""
                                             >Tipo de Certificado</label
                                         >
@@ -506,34 +579,6 @@ onBeforeMount(() => {
                                             >(Certificado gratuito)</small
                                         >
                                     </div>
-                                    <div class="col-md-6 mt-1">
-                                        <label class=""
-                                            >Cargar Certificado
-                                            <a
-                                                v-if="
-                                                    certificado_detalle.url_archivo
-                                                "
-                                                :href="
-                                                    certificado_detalle.url_archivo
-                                                "
-                                                target="_blank"
-                                                class="btn btn-sm btn-outline-primary"
-                                                ><i
-                                                    class="fa fa-download"
-                                                ></i></a
-                                        ></label>
-                                        <input
-                                            type="file"
-                                            class="form-control"
-                                            @change="
-                                                cargarArchivo(
-                                                    $event,
-                                                    'archivo',
-                                                    index,
-                                                )
-                                            "
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -562,9 +607,8 @@ onBeforeMount(() => {
                             </div>
                         </div>
 
-                        <div class="row mt-2">
-                            <hr class="w-100 mb-1" />
-                            <div class="col-12 text-center">
+                        <div class="row mt-3 border-top">
+                            <div class="col-12 mt-2 text-center">
                                 <label class="">Total Bs.</label>
                                 <input
                                     type="number"

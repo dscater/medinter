@@ -91,7 +91,10 @@ const enviarFormulario = () => {
     const formData = new FormData();
     formData.append("cliente_id", oClienteTramite.value.cliente_id);
     formData.append("total", form.total);
+    formData.append("cancelado", form.cancelado);
+    formData.append("saldo", form.saldo);
     formData.append("tipo_pago", form.tipo_pago);
+    formData.append("tipo", "TRAMITE");
     if (propsPage.auth.user.tipo == "MÉDICO") {
         formData.append("sucursal_id", loginUserStore.getLoginUser.sucursal_id);
     } else {
@@ -204,7 +207,7 @@ const cargarArchivo = (e, key, index) => {
     form[key] = null;
     const file = e.target.files[0];
     if (file) {
-        form.certificado_detalles[index][key] = e.target.files[0];
+        form.certificado_detalles[index][key] = file;
     }
 };
 
@@ -297,6 +300,25 @@ const total = computed(() => {
     return total ? total.toFixed(2) : "0.00";
 });
 
+const recalcularSaldoTotal = () => {
+    let total_costo = 0;
+    form.certificado_detalles.forEach((elem) => {
+        console.log(elem);
+        total_costo += parseFloat(elem.precio ?? 0);
+    });
+    form.saldo = parseFloat(total_costo) - parseFloat(form.cancelado);
+    form.saldo = form.saldo.toFixed(2);
+};
+
+const calculaSaldo = (e, index) => {
+    const value = e.target.value;
+    form.saldo = form.total;
+    if (value.trim() != "") {
+        form.saldo = parseFloat(form.total) - parseFloat(value);
+        form.saldo = form.saldo.toFixed(2);
+    }
+};
+
 onMounted(() => {});
 </script>
 
@@ -388,7 +410,7 @@ onMounted(() => {});
                                     ) in form.certificado_detalles"
                                 >
                                     <div
-                                        class="col-12 border pt-0 pb-1 mt-2 elevation-1"
+                                        class="col-12 border-bottom pt-0 pb-3 mt-2"
                                     >
                                         <button
                                             type="button"
@@ -402,6 +424,73 @@ onMounted(() => {});
                                         </button>
                                         <div class="row">
                                             <div class="col-md-12 mt-1">
+                                                <label
+                                                    :for="`file${index}`"
+                                                    class="contenedorFile"
+                                                    :class="
+                                                        certificado_detalle.archivo
+                                                            ? 'cargado'
+                                                            : 'sinCargar'
+                                                    "
+                                                >
+                                                    <div class="principal">
+                                                        <div
+                                                            class="icon icon-pdf"
+                                                        >
+                                                            <i
+                                                                class="fa fa-file-alt"
+                                                            ></i>
+                                                        </div>
+                                                        <div class="contInfo">
+                                                            <div class="title">
+                                                                Certificado
+                                                            </div>
+                                                            <el-tooltip
+                                                                class="box-item"
+                                                                effect="dark"
+                                                                content="Certificado"
+                                                                placement="top"
+                                                            >
+                                                                <div
+                                                                    class="descripcion"
+                                                                    v-text="
+                                                                        certificado_detalle.archivo
+                                                                            ? certificado_detalle
+                                                                                  .archivo
+                                                                                  .name
+                                                                            : 'Ningún archivo seleccionado'
+                                                                    "
+                                                                ></div>
+                                                            </el-tooltip>
+                                                        </div>
+                                                        <div
+                                                            class="icon icon-loaded"
+                                                        >
+                                                            <i
+                                                                class="fa"
+                                                                :class="[
+                                                                    certificado_detalle.archivo
+                                                                        ? 'fa-check-circle'
+                                                                        : 'fa-upload',
+                                                                ]"
+                                                            ></i>
+                                                        </div>
+                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        :name="`file${index}`"
+                                                        :id="`file${index}`"
+                                                        @change="
+                                                            cargarArchivo(
+                                                                $event,
+                                                                'archivo',
+                                                                index,
+                                                            )
+                                                        "
+                                                    />
+                                                </label>
+                                            </div>
+                                            <div class="col-md-6 mt-1">
                                                 <label class=""
                                                     >Tipo de Certificado</label
                                                 >
@@ -437,6 +526,12 @@ onMounted(() => {});
                                                     v-model="
                                                         certificado_detalle.precio
                                                     "
+                                                    @keyup="
+                                                        recalcularSaldoTotal
+                                                    "
+                                                    @change="
+                                                        recalcularSaldoTotal
+                                                    "
                                                     autosize
                                                 ></el-input>
                                                 <small
@@ -447,34 +542,6 @@ onMounted(() => {});
                                                     >(Certificado
                                                     gratuito)</small
                                                 >
-                                            </div>
-                                            <div class="col-md-6 mt-1">
-                                                <label class=""
-                                                    >Cargar Certificado
-                                                    <a
-                                                        v-if="
-                                                            certificado_detalle.url_archivo
-                                                        "
-                                                        :href="
-                                                            certificado_detalle.url_archivo
-                                                        "
-                                                        target="_blank"
-                                                        class="btn btn-sm btn-outline-primary"
-                                                        ><i
-                                                            class="fa fa-download"
-                                                        ></i></a
-                                                ></label>
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        cargarArchivo(
-                                                            $event,
-                                                            'archivo',
-                                                            index,
-                                                        )
-                                                    "
-                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -512,9 +579,8 @@ onMounted(() => {});
                                     </div>
                                 </div>
 
-                                <div class="row mt-2">
-                                    <hr class="w-100 mb-1" />
-                                    <div class="col-12 text-center">
+                                <div class="row border-top mt-3">
+                                    <div class="col-12 text-center mt-2">
                                         <label class="">Total Bs.</label>
                                         <input
                                             type="number"
@@ -528,6 +594,40 @@ onMounted(() => {});
                                         >
                                             <li class="parsley-required">
                                                 {{ form.errors?.total }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-12 mt-2 text-center">
+                                        <label class="">Cancelado Bs.</label>
+                                        <input
+                                            type="number"
+                                            class="form-control text-center"
+                                            v-model="form.cancelado"
+                                            @keyup="calculaSaldo($event, index)"
+                                        />
+                                        <ul
+                                            v-if="form.errors?.cancelado"
+                                            class="d-block text-danger list-unstyled"
+                                        >
+                                            <li class="parsley-required">
+                                                {{ form.errors?.cancelado }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-12 mt-2 text-center">
+                                        <label class="">Saldo Bs.</label>
+                                        <input
+                                            type="number"
+                                            class="form-control text-center"
+                                            v-model="form.saldo"
+                                            readonly=""
+                                        />
+                                        <ul
+                                            v-if="form.errors?.saldo"
+                                            class="d-block text-danger list-unstyled"
+                                        >
+                                            <li class="parsley-required">
+                                                {{ form.errors?.saldo }}
                                             </li>
                                         </ul>
                                     </div>

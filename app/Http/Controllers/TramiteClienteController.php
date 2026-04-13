@@ -8,6 +8,7 @@ use App\Services\CertificadoService;
 use App\Services\TramiteClienteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class TramiteClienteController extends Controller
@@ -36,7 +37,6 @@ class TramiteClienteController extends Controller
         try {
             // crear el Cliente
             $datos = $request->validated();
-            $datos["tipo"] = "TRAMITE";
             $certificado = $this->certificadoService->crear($datos);
             $tramite_cliente->certificado_id = $certificado->id;
             $tramite_cliente->estado = 1;

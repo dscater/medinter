@@ -81,7 +81,6 @@ const registrarCertificado = (item) => {
 };
 
 const cancelarTramiteSeleccionado = () => {
-    listTramitesClientes.value = [];
     oTramite.value = null;
 };
 

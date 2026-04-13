@@ -92,6 +92,11 @@ const headers = [
         sortable: true,
     },
     {
+        label: "TIPO",
+        key: "tipo",
+        sortable: true,
+    },
+    {
         label: "USUARIO",
         key: "user",
         sortable: true,

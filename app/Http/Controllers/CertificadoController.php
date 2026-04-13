@@ -83,6 +83,40 @@ class CertificadoController extends Controller
         ]);
     }
 
+    public function listadoCobros(Request $request)
+    {
+        $perPage = $request->perPage;
+        $page = (int)($request->input("page", 1));
+        $cliente = (string)$request->input("cliente", "");
+        $ci = $request->input("ci", "");
+        $fecha = (string)$request->input("fecha", "");
+        $codigo = (string)$request->input("codigo", "");
+        $orderBy = $request->orderBy;
+        $orderAsc = $request->orderAsc;
+
+        $arrayOrderBy = [];
+        if ($orderBy && $orderAsc) {
+            $arrayOrderBy = [
+                [$orderBy, $orderAsc]
+            ];
+        }
+
+        $certificados = $this->certificadoService->listadoCobros(
+            $perPage,
+            $page,
+            $arrayOrderBy,
+            $cliente,
+            $ci,
+            $fecha,
+            $codigo,
+        );
+        return response()->JSON([
+            "data" => $certificados->items(),
+            "total" => $certificados->total(),
+            "lastPage" => $certificados->lastPage()
+        ]);
+    }
+
     public function create()
     {
         return Inertia::render("Admin/Certificados/Create");

@@ -7,6 +7,7 @@ const oCertificado = ref({
     cancelado: "",
     saldo: "",
     tipo_pago: "EFECTIVO",
+    tipo: "",
     user_id: "",
     sucursal_id: "",
     fecha_inicio: "",
@@ -26,6 +27,7 @@ export const useCertificados = () => {
             oCertificado.value.total = item.total;
             oCertificado.value.cancelado = item.cancelado;
             oCertificado.value.saldo = item.saldo;
+            oCertificado.value.tipo = item.tipo;
             oCertificado.value.tipo_pago = item.tipo_pago;
             oCertificado.value.user_id = item.user_id;
             oCertificado.value.sucursal_id = item.sucursal_id;
@@ -45,9 +47,10 @@ export const useCertificados = () => {
         oCertificado.value.id = 0;
         oCertificado.value.cliente_id = "";
         oCertificado.value.total = "";
-        oCertificado.value.cancelado = "";
-        oCertificado.value.saldo = "";
+        oCertificado.value.cancelado = 0;
+        oCertificado.value.saldo = 0;
         oCertificado.value.tipo_pago = "EFECTIVO";
+        oCertificado.value.tipo = "";
         oCertificado.value.user_id = "";
         oCertificado.value.sucursal_id = "";
         oCertificado.value.fecha_inicio = "";

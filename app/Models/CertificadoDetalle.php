@@ -15,11 +15,16 @@ class CertificadoDetalle extends Model
         "archivo",
     ];
 
-    protected $appends = ["url_archivo", "muestra_conteo"];
+    protected $appends = ["url_archivo", "name", "muestra_conteo"];
 
     public function getMuestraConteoAttribute()
     {
         return false;
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->archivo;
     }
 
     public function getUrlArchivoAttribute()
