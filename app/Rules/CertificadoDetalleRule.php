@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
 class CertificadoDetalleRule implements ValidationRule
@@ -20,8 +21,8 @@ class CertificadoDetalleRule implements ValidationRule
             return;
         }
 
-        foreach ($value as $index => $detalle) {
 
+        foreach ($value as $index => $detalle) {
             // precio
             if ($detalle['precio'] === "" || $detalle['precio'] === null) {
                 $fail("El precio en la fila " . ($index + 1) . " es obligatorio.");

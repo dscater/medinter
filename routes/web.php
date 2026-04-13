@@ -13,6 +13,7 @@ use App\Http\Controllers\TipoCertificadoController;
 use App\Http\Controllers\TipoPagoController;
 use App\Http\Controllers\TipoUsuarioController;
 use App\Http\Controllers\TramitadorController;
+use App\Http\Controllers\TramiteClienteController;
 use App\Http\Controllers\TramiteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UsuarioController;
@@ -127,13 +128,18 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("tipo_pagos/listado", [TipoPagoController::class, 'listado'])->name("tipo_pagos.listado");
 
     // TRAMITES
-    Route::post("tramites/nuevo", [TramiteController::class, 'nuevo'])->name("tramites.nuevo");
+    Route::get("tramites/atencion", [TramiteController::class, 'atencion'])->name("tramites.atencion");
     Route::get("tramites/paginado", [TramiteController::class, 'paginado'])->name("tramites.paginado");
+    Route::get("tramites/listadoExacto", [TramiteController::class, 'listadoExacto'])->name("tramites.listadoExacto");
     Route::get("tramites/listado", [TramiteController::class, 'listado'])->name("tramites.listado");
     Route::get("tramites/byCi", [TramiteController::class, 'byCi'])->name("tramites.byCi");
     Route::resource("tramites", TramiteController::class)->only(
         ["index", "create", "store", "edit", "show", "update", "destroy"]
     );
+
+    // TRAMITES CLIENTES
+    Route::get("tramite_clientes/byTramite", [TramiteClienteController::class, 'byTramite'])->name("tramite_clientes.byTramite");
+    Route::post("tramite_clientes/registrarCertificado/{tramite_cliente}", [TramiteClienteController::class, 'registrarCertificado'])->name("tramite_clientes.registrarCertificado");
 
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");

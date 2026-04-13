@@ -119,6 +119,7 @@ class CertificadoService
             "sucursal_id" => $datos["sucursal_id"],
             "fecha_registro" => $fecha_actual,
             "hora_registro" => $hora_actual,
+            "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
         // detalles
@@ -166,6 +167,7 @@ class CertificadoService
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
             "sucursal_id" => $datos["sucursal_id"],
+            "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
         // detalles

@@ -23,9 +23,18 @@ class TramiteService
 
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private ClienteService $cliente_service) {}
 
-    public function listado(): Collection
+    public function listado($codigo = "", $fecha = ""): Collection
     {
-        $tramites = Tramite::select("tramites.*")->where("status", 1)->get();
+        $tramites = Tramite::select("tramites.*");
+
+        if (trim($codigo) != '') {
+            $tramites->where("codigo", $codigo);
+        }
+        if ($fecha && trim($fecha) != '') {
+            $tramites->where("fecha", $fecha);
+        }
+
+        $tramites = $tramites->get();
         return $tramites;
     }
     /**

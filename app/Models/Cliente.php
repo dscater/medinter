@@ -29,7 +29,10 @@ class Cliente extends Model
     }
     public function getFechaNacTAttribute()
     {
-        return date("d/m/Y", strtotime($this->fecha_nac));
+        if ($this->fecha_nac) {
+            return date("d/m/Y", strtotime($this->fecha_nac));
+        }
+        return "";
     }
     public function getFullCiAttribute()
     {

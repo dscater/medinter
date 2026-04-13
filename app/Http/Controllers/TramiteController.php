@@ -33,17 +33,50 @@ class TramiteController extends Controller
         return Inertia::render("Admin/Tramites/Index");
     }
 
+    public function atencion()
+    {
+        return Inertia::render("Admin/Tramites/Atencion");
+    }
+
     /**
      * Listado de tramites
      *
      * @return JsonResponse
      */
-    public function listado(): JsonResponse
+    public function listado(Request $request): JsonResponse
     {
+        $codigo = $request->input("codigo", "");
+        $fecha = $request->input("fecha", "");
+
         return response()->JSON([
-            "tramites" => $this->tramiteService->listado()
+            "tramites" => $this->tramiteService->listado($codigo, $fecha)
         ]);
     }
+
+    public function listadoExacto(Request $request): JsonResponse
+    {
+        $codigo = $request->input("codigo", "");
+        $fecha = $request->input("fecha", "");
+
+        $tramites = [];
+        if ($codigo || $fecha) {
+            $tramites = Tramite::select("tramites.*")
+                ->with(["tramitador:id,nombre"])
+                ->withCount(["tramite_clientes"]);
+            if (trim($codigo) != '') {
+                $tramites->where("codigo", $codigo);
+            }
+            if ($fecha && trim($fecha) != '') {
+                $tramites->where("fecha", $fecha);
+            }
+            $tramites = $tramites->get();
+        }
+
+        return response()->JSON([
+            "tramites" => $tramites
+        ]);
+    }
+
 
     public function paginado(Request $request)
     {

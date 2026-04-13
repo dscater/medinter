@@ -44,6 +44,18 @@ form .v-input.v-input--error {
 #app form input[type="date"].form-control {
     font-size: 0.84em;
 }
+button.quitar {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 10;
+}
 
 /* Contenedor relativo para que el label se posicione dentro */
 .form-floating {
@@ -103,6 +115,7 @@ form .v-input.v-input--error {
     cursor: pointer;
 }
 
+.cliente_listado:hover .card,
 .cliente_listado:hover .callout {
     background-color: var(--bg4);
 }

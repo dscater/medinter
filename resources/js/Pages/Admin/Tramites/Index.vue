@@ -6,10 +6,6 @@ import { useTramites } from "@/composables/tramites/useTramites";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
-// import { useMenu } from "@/composables/useMenu";
-import Formulario from "./Formulario.vue";
-import { buttonProps } from "element-plus";
-// const { mobile, identificaDispositivo } = useMenu();
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
@@ -141,9 +137,7 @@ const eliminarTramite = (item) => {
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
-                    <h1 class="m-0">
-                        <i class="fa fa-folder-open"></i> Trámites
-                    </h1>
+                    <h1 class="m-0"><i class="fa fa-folder"></i> Trámites</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">

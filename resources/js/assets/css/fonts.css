@@ -21,3 +21,8 @@ body {
 .text1 {
     color: var(--bg1);
 }
+
+table.table thead,
+table.table tbody {
+    /* font-size: 0.87em; */
+}

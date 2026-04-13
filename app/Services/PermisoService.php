@@ -83,12 +83,17 @@ class PermisoService
             "tramites.paginado",
             "tramites.index",
             "tramites.listado",
+            "tramites.listadoExacto",
             "tramites.create",
             "tramites.store",
             "tramites.edit",
             "tramites.show",
             "tramites.update",
             "tramites.destroy",
+            "tramites.atencion",
+
+            "tramite_clientes.byTramite",
+            "tramite_clientes.registrarCertificado",
 
             "configuracions.index",
             "configuracions.create",

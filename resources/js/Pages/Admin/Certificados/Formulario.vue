@@ -627,17 +627,4 @@ onBeforeMount(() => {
         </div>
     </form>
 </template>
-<style scoped>
-.quitar {
-    position: absolute;
-    right: 0;
-    top: -5px;
-    background-color: var(--danger);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1em;
-    cursor: pointer;
-    z-index: 10;
-}
-</style>
+<style scoped></style>
