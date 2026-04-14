@@ -21,7 +21,7 @@ class CertificadoService
 {
     private $modulo = "CERTIFICADOS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service, private CertificadoPagoService $certificado_pago_service) {}
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service, private PagoService $pago_service) {}
 
     public function listado(): Collection
     {
@@ -205,7 +205,9 @@ class CertificadoService
 
         // PAGO
         if ($certificado->cancelado > 0) {
-            $this->certificado_pago_service->crear($certificado, [
+            $this->pago_service->crear($certificado, [
+                "registro_id" => $certificado->id,
+                "modulo" => "Certificado",
                 "monto" => $certificado->cancelado,
                 "tipo_pago" => $certificado->tipo_pago,
             ]);

@@ -21,6 +21,8 @@ class CobroService
 
     public function crear(Certificado $certificado, $datos)
     {
+        $datos["registro_id"] = $certificado->id;
+        $datos["modulo"] = "Certificado";
         $certificado_pago = $this->certificado_pago_service->crear($certificado, $datos);
         return $certificado_pago;
     }

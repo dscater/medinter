@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 13-04-2026 a las 20:52:29
+-- Tiempo de generación: 14-04-2026 a las 02:14:07
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -36,7 +36,7 @@ CREATE TABLE `certificados` (
   `tipo_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `sucursal_id` bigint UNSIGNED NOT NULL,
-  `tipo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NORMAL',
+  `tipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NORMAL',
   `fecha_inicio` date DEFAULT NULL,
   `hora_inicio` time DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE `certificado_detalles` (
   `cancelado` decimal(24,2) DEFAULT NULL,
   `saldo` decimal(24,2) DEFAULT NULL,
   `tipo_certificado_id` bigint UNSIGNED NOT NULL,
-  `archivo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `archivo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -128,38 +128,6 @@ INSERT INTO `certificado_emitidos` (`id`, `fecha`, `user_id`, `tipo_certificado_
 (4, '2026-04-13', 1, 1, 9, '2026-04-13 14:10:25', '2026-04-13 19:46:53'),
 (5, '2026-04-13', 1, 2, 1, '2026-04-13 14:20:42', '2026-04-13 14:51:40'),
 (6, '2026-04-13', 1, 3, 1, '2026-04-13 19:44:26', '2026-04-13 19:44:32');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `certificado_pagos`
---
-
-CREATE TABLE `certificado_pagos` (
-  `id` bigint UNSIGNED NOT NULL,
-  `certificado_id` bigint UNSIGNED NOT NULL,
-  `monto` decimal(24,2) NOT NULL,
-  `tipo_pago` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fecha` date NOT NULL,
-  `hora` time NOT NULL,
-  `verificado` int NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `certificado_pagos`
---
-
-INSERT INTO `certificado_pagos` (`id`, `certificado_id`, `monto`, `tipo_pago`, `fecha`, `hora`, `verificado`, `created_at`, `updated_at`) VALUES
-(1, 10, 30.00, 'EFECTIVO', '2026-04-13', '16:48:44', 0, '2026-04-13 20:48:44', '2026-04-13 20:48:44'),
-(2, 9, 30.00, 'EFECTIVO', '2026-04-13', '16:48:57', 0, '2026-04-13 20:48:57', '2026-04-13 20:48:57'),
-(3, 8, 15.00, 'EFECTIVO', '2026-04-13', '16:49:03', 0, '2026-04-13 20:49:03', '2026-04-13 20:49:03'),
-(4, 8, 15.00, 'EFECTIVO', '2026-04-13', '16:49:41', 0, '2026-04-13 20:49:41', '2026-04-13 20:49:41'),
-(5, 7, 10.00, 'EFECTIVO', '2026-04-13', '16:50:24', 0, '2026-04-13 20:50:24', '2026-04-13 20:50:24'),
-(6, 7, 10.00, 'EFECTIVO', '2026-04-13', '16:50:36', 0, '2026-04-13 20:50:36', '2026-04-13 20:50:36'),
-(7, 7, 10.00, 'EFECTIVO', '2026-04-13', '16:50:48', 0, '2026-04-13 20:50:48', '2026-04-13 20:50:48'),
-(8, 6, 30.00, 'EFECTIVO', '2026-04-13', '16:51:01', 0, '2026-04-13 20:51:01', '2026-04-13 20:51:01');
 
 -- --------------------------------------------------------
 
@@ -359,6 +327,39 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `id` bigint UNSIGNED NOT NULL,
+  `certificado_id` bigint UNSIGNED NOT NULL,
+  `modulo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `monto` decimal(24,2) NOT NULL,
+  `tipo_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha` date NOT NULL,
+  `hora` time NOT NULL,
+  `verificado` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`id`, `certificado_id`, `modulo`, `monto`, `tipo_pago`, `fecha`, `hora`, `verificado`, `created_at`, `updated_at`) VALUES
+(1, 10, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:48:44', 0, '2026-04-13 20:48:44', '2026-04-13 20:48:44'),
+(2, 9, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:48:57', 0, '2026-04-13 20:48:57', '2026-04-13 20:48:57'),
+(3, 8, 'Certificado', 15.00, 'EFECTIVO', '2026-04-13', '16:49:03', 0, '2026-04-13 20:49:03', '2026-04-13 20:49:03'),
+(4, 8, 'Certificado', 15.00, 'EFECTIVO', '2026-04-13', '16:49:41', 0, '2026-04-13 20:49:41', '2026-04-13 20:49:41'),
+(5, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:24', 0, '2026-04-13 20:50:24', '2026-04-13 20:50:24'),
+(6, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:36', 0, '2026-04-13 20:50:36', '2026-04-13 20:50:36'),
+(7, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:48', 0, '2026-04-13 20:50:48', '2026-04-13 20:50:48'),
+(8, 6, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:51:01', 0, '2026-04-13 20:51:01', '2026-04-13 20:51:01');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `sucursals`
 --
 
@@ -412,9 +413,9 @@ INSERT INTO `tipo_certificados` (`id`, `nombre`, `precio`, `descripcion`, `fecha
 
 CREATE TABLE `tramitadors` (
   `id` bigint UNSIGNED NOT NULL,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ci` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ci_exp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ci` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ci_exp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `cel` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fecha_registro` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -438,7 +439,7 @@ INSERT INTO `tramitadors` (`id`, `nombre`, `ci`, `ci_exp`, `cel`, `fecha_registr
 CREATE TABLE `tramites` (
   `id` bigint UNSIGNED NOT NULL,
   `nro` bigint NOT NULL,
-  `codigo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `codigo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tramitador_id` bigint UNSIGNED NOT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
@@ -556,13 +557,6 @@ ALTER TABLE `certificado_emitidos`
   ADD KEY `certificado_emitidos_tipo_certificado_id_foreign` (`tipo_certificado_id`);
 
 --
--- Indices de la tabla `certificado_pagos`
---
-ALTER TABLE `certificado_pagos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `certificado_pagos_certificado_id_foreign` (`certificado_id`);
-
---
 -- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
@@ -591,6 +585,12 @@ ALTER TABLE `login_users`
 -- Indices de la tabla `migrations`
 --
 ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -660,12 +660,6 @@ ALTER TABLE `certificado_emitidos`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT de la tabla `certificado_pagos`
---
-ALTER TABLE `certificado_pagos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
@@ -694,6 +688,12 @@ ALTER TABLE `login_users`
 --
 ALTER TABLE `migrations`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `sucursals`
@@ -756,12 +756,6 @@ ALTER TABLE `certificado_detalles`
 ALTER TABLE `certificado_emitidos`
   ADD CONSTRAINT `certificado_emitidos_tipo_certificado_id_foreign` FOREIGN KEY (`tipo_certificado_id`) REFERENCES `tipo_certificados` (`id`),
   ADD CONSTRAINT `certificado_emitidos_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Filtros para la tabla `certificado_pagos`
---
-ALTER TABLE `certificado_pagos`
-  ADD CONSTRAINT `certificado_pagos_certificado_id_foreign` FOREIGN KEY (`certificado_id`) REFERENCES `certificados` (`id`);
 
 --
 -- Filtros para la tabla `historial_accions`

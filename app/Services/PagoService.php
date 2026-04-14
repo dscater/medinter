@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Certificado;
+use App\Models\Pago;
 use App\Services\HistorialAccionService;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -13,30 +14,29 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class CertificadoPagoService
+class PagoService
 {
-    private $modulo = "CERTIFICADOS PAGOS";
+    private $modulo = "PAGOS";
 
     public function __construct(private HistorialAccionService $historialAccionService) {}
 
-    public function crear(Certificado $certificado, $datos)
+    public function crear($datos)
     {
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
 
-        $certificado_pago =   $certificado->certificado_pagos()->create([
+        $pago = Pago::create([
+            "registro_id" => $datos["registro_id"],
+            "modulo" => $datos["modulo"],
             "monto" => $datos["monto"],
             "tipo_pago" => $datos["tipo_pago"],
             "fecha" => $fecha_actual,
             "hora" => $hora_actual,
         ]);
 
-        $certificado->saldo = (float)$certificado->total - ((float)$certificado->cancelado + (float)$certificado_pago->monto);
-        $certificado->cancelado = (float)$certificado->cancelado + (float)$certificado_pago->monto;
-        $certificado->save();
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO EL PAGO DE UN CERTIFICADO", $certificado_pago, null, ["certificado"]);
+        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO EL PAGO DE UN CERTIFICADO", $pago, null, ["certificado"]);
 
-        return $certificado_pago;
+        return $pago;
     }
 }

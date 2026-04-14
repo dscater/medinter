@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('certificado_pagos', function (Blueprint $table) {
+        Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("certificado_id");
+            $table->string("modulo", 255);
             $table->decimal("monto", 24, 2);
             $table->string("tipo_pago");
             $table->date("fecha");
