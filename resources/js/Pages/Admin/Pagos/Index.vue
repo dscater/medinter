@@ -146,7 +146,10 @@ onBeforeMount(() => {});
                     </div>
                 </div>
             </div>
-            <div class="col-12" v-if="listPagosVerificados.length > 0">
+            <div
+                class="col-12 overflow-auto"
+                v-if="listPagosVerificados.length > 0"
+            >
                 <table class="table table-bordered bg-white">
                     <thead>
                         <tr class="bg-principal">

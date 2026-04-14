@@ -140,7 +140,7 @@ onBeforeMount(() => {});
                     </div>
                 </div>
             </div> -->
-            <div class="col-12" v-if="pagos.length > 0">
+            <div class="col-12 overflow-auto" v-if="pagos.length > 0">
                 <h4>{{ pagos.length }} Pagos sin verificar</h4>
                 <table class="table table-bordered table-hover bg-white">
                     <thead>
