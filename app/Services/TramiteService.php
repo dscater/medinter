@@ -51,7 +51,7 @@ class TramiteService
         int $length,
         int $page,
         array $orderBy = [],
-        $cliente,
+        $tramitador,
         $tipo_tramite_id,
         $tipo_pago,
         $sucursal_id,
@@ -68,18 +68,10 @@ class TramiteService
 
         // FILTROS
         $tramites
-            ->when($cliente, function ($q) use ($cliente) {
-                $q->whereHas('cliente', function ($sub) use ($cliente) {
-                    $sub->buscarNombre($cliente);
+            ->when($tramitador, function ($q) use ($tramitador) {
+                $q->whereHas('tramitador', function ($sub) use ($tramitador) {
+                    $sub->buscarNombre($tramitador);
                 });
-            })
-            ->when($tipo_tramite_id && $tipo_tramite_id !== 'todos', function ($q) use ($tipo_tramite_id) {
-                $q->whereHas("tramite_clientes", function ($sub) use ($tipo_tramite_id) {
-                    $sub->whereIn("tipo_tramite_id", $tipo_tramite_id);
-                });
-            })
-            ->when($tipo_pago && $tipo_pago !== 'todos', function ($q) use ($tipo_pago) {
-                $q->where("tipo_pago", $tipo_pago);
             })
             ->when($sucursal_id && $sucursal_id !== 'todos', function ($q) use ($sucursal_id) {
                 $q->where("sucursal_id", $sucursal_id);

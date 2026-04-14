@@ -134,12 +134,20 @@ onUnmounted(() => {});
                     </li>
                     <ItemMenu
                         v-if="
+                            permisos == '*' || permisos.includes('pagos.index')
+                        "
+                        :label="'Arqueo de Caja'"
+                        :ruta="'pagos.index'"
+                        :icon="'fa fa-cash-register'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
                             permisos == '*' ||
                             permisos.includes('recepcion_pagos.index')
                         "
                         :label="'Recepción de Pagos'"
                         :ruta="'recepcion_pagos.index'"
-                        :icon="'fa fa-cash-register'"
+                        :icon="'fa fa-clipboard-check'"
                     ></ItemMenu>
                     <ItemMenu
                         v-if="
@@ -250,7 +258,7 @@ onUnmounted(() => {});
                             permisos == '*' ||
                             permisos.includes('reportes.gcemitidos')
                         "
-                        :label="'Cantidad de Certificados Emitidos por Médico'"
+                        :label="'Cantidad de Certificados Emitidos'"
                         :ruta="'reportes.gcemitidos'"
                         :icon="'fa fa-chart-bar'"
                     ></ItemMenu>

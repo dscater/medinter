@@ -21,8 +21,13 @@ class CertificadoDetalleRule implements ValidationRule
             return;
         }
 
-
         foreach ($value as $index => $detalle) {
+            // categoria
+            if ($detalle['categoria'] === "" || $detalle['categoria'] === null) {
+                $fail("La categoría en la fila " . ($index + 1) . " es obligatorio.");
+                continue;
+            }
+
             // precio
             if ($detalle['precio'] === "" || $detalle['precio'] === null) {
                 $fail("El precio en la fila " . ($index + 1) . " es obligatorio.");

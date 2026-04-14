@@ -8,6 +8,7 @@ class CertificadoDetalle extends Model
 {
     protected $fillable = [
         "certificado_id",
+        "categoria",
         "precio",
         "cancelado",
         "saldo",

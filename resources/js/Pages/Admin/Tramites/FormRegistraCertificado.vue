@@ -102,6 +102,10 @@ const enviarFormulario = () => {
     }
 
     form.certificado_detalles.forEach((elem, index) => {
+        formData.append(
+            `certificado_detalles[${index}][categoria]`,
+            elem.categoria,
+        );
         formData.append(`certificado_detalles[${index}][precio]`, elem.precio);
         formData.append(
             `certificado_detalles[${index}][tipo_certificado_id]`,
@@ -249,12 +253,13 @@ const detectarTipoCertificado = (value, index) => {
             .then((response) => {
                 nroTipoCertificadoDia.value = response.data.conteo_siguiente;
                 if (nroTipoCertificadoDia.value % 10 === 0) {
-                    // form.certificado_detalles[index].precio = 0;
-                    // form.certificado_detalles[index].muestra_conteo = true;
+                    form.certificado_detalles[index].precio = 0;
+                    form.certificado_detalles[index].muestra_conteo = true;
                 } else {
-                    // form.certificado_detalles[index].muestra_conteo = false;
-                    // form.certificado_detalles[index].precio = item.precio;
+                    form.certificado_detalles[index].muestra_conteo = false;
+                    form.certificado_detalles[index].precio = item.precio;
                 }
+                recalcularSaldoTotal();
             })
             .finally(() => {
                 nroTipoCertificadoDia.value = 0;
@@ -266,6 +271,7 @@ const agregarCertificado = () => {
     form.certificado_detalles.push({
         id: 0,
         certificado_id: "",
+        categoria: "",
         precio: "",
         cancelado: "",
         saldo: "",
@@ -542,6 +548,18 @@ onMounted(() => {});
                                                     >(Certificado
                                                     gratuito)</small
                                                 >
+                                            </div>
+                                            <div class="col-md-6 mt-1">
+                                                <label class=""
+                                                    >Categoría</label
+                                                >
+                                                <el-input
+                                                    type="text"
+                                                    v-model="
+                                                        certificado_detalle.categoria
+                                                    "
+                                                    autosize
+                                                ></el-input>
                                             </div>
                                         </div>
                                     </div>

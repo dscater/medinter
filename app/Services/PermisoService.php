@@ -101,6 +101,10 @@ class PermisoService
 
             "recepcion_pagos.index",
 
+            "pagos.index",
+            "pagos.verificados",
+            "pagos.registrarPagos",
+
             "configuracions.index",
             "configuracions.create",
             "configuracions.edit",
@@ -108,9 +112,11 @@ class PermisoService
             "configuracions.destroy",
 
             "certificadosEmitidosLinea",
+            "cantidadTramitesNormal",
 
             "reportes.usuarios",
             "reportes.r_usuarios",
+            "reportes.exportarCaja",
             "reportes.clientes",
             "reportes.r_clientes",
             "reportes.certificados",
@@ -148,6 +154,16 @@ class PermisoService
             "clientes.update",
             "clientes.destroy",
 
+            "tramitadors.paginado",
+            "tramitadors.index",
+            "tramitadors.listado",
+            "tramitadors.create",
+            "tramitadors.store",
+            "tramitadors.edit",
+            "tramitadors.show",
+            "tramitadors.update",
+            "tramitadors.destroy",
+
             "tipo_certificados.paginado",
             "tipo_certificados.index",
             "tipo_certificados.listado",
@@ -161,6 +177,7 @@ class PermisoService
             "tipo_pagos.listado",
 
             "certificados.paginado",
+            "certificados.listadoCobros",
             "certificados.index",
             "certificados.listado",
             "certificados.create",
@@ -172,14 +189,40 @@ class PermisoService
 
             "certificado_emitidos.verificaCantidad",
 
-            "configuracions.index",
-            "configuracions.create",
-            "configuracions.edit",
-            "configuracions.update",
-            "configuracions.destroy",
+            "tramites.paginado",
+            "tramites.index",
+            "tramites.listado",
+            "tramites.listadoExacto",
+            "tramites.create",
+            "tramites.store",
+            "tramites.edit",
+            "tramites.show",
+            "tramites.update",
+            "tramites.destroy",
+            "tramites.atencion",
+
+            "tramite_clientes.byTramite",
+            "tramite_clientes.registrarCertificado",
+
+            "cobros.index",
+            // "cobros.registrarPago",
+
+            // "recepcion_pagos.index",
+
+            "pagos.index",
+            "pagos.verificados",
+            // "pagos.registrarPagos",
+
+            // "configuracions.index",
+            // "configuracions.create",
+            // "configuracions.edit",
+            // "configuracions.update",
+            // "configuracions.destroy",
 
             "certificadosEmitidosLinea",
+            "cantidadTramitesNormal",
 
+            "reportes.exportarCaja",
             "reportes.clientes",
             "reportes.r_clientes",
             "reportes.certificados",
@@ -194,16 +237,6 @@ class PermisoService
         "SECRETARIA" => [
             "tipo_usuarios.listado",
 
-            "sucursals.paginado",
-            "sucursals.index",
-            "sucursals.listado",
-            // "sucursals.create",
-            // "sucursals.store",
-            // "sucursals.edit",
-            "sucursals.show",
-            // "sucursals.update",
-            // "sucursals.destroy",
-
             "clientes.paginado",
             "clientes.index",
             "clientes.listado",
@@ -214,46 +247,38 @@ class PermisoService
             "clientes.edit",
             "clientes.show",
             "clientes.update",
-            // "clientes.destroy",
+            "clientes.destroy",
+
+            "tipo_pagos.listado",
+
+            "certificados.paginado",
+            "certificados.listadoCobros",
+            "certificados.index",
+            "certificados.listado",
+            "certificados.show",
+
+            "certificado_emitidos.verificaCantidad",
+
+
+            "recepcion_pagos.index",
+
+            "pagos.index",
+            "pagos.verificados",
+            "pagos.registrarPagos",
+
+            "certificadosEmitidosLinea",
+            "cantidadTramitesNormal",
+
+            "reportes.exportarCaja",
+        ],
+        "MÉDICO" => [
+            "sucursals.listado",
 
             "tipo_certificados.paginado",
             "tipo_certificados.index",
             "tipo_certificados.listado",
-            "tipo_certificados.create",
-            "tipo_certificados.store",
-            // "tipo_certificados.edit",
             "tipo_certificados.show",
-            // "tipo_certificados.update",
-            // "tipo_certificados.destroy",
 
-            "tipo_pagos.listado",
-
-            "certificados.paginado",
-            "certificados.index",
-            "certificados.listado",
-            // "certificados.create",
-            // "certificados.store",
-            // "certificados.edit",
-            "certificados.show",
-            // "certificados.update",
-            // "certificados.destroy",
-
-            "certificado_emitidos.verificaCantidad",
-
-            "certificadosEmitidosLinea",
-
-            "reportes.clientes",
-            "reportes.r_clientes",
-            "reportes.certificados",
-            "reportes.r_certificados",
-            "reportes.gcemitidos",
-            "reportes.r_gcemitidos",
-            "reportes.gmemitidos",
-            "reportes.r_gmemitidos",
-            // "reportes.historial_accions",
-            // "reportes.r_historial_accions",
-        ],
-        "MÉDICO" => [
             "clientes.paginado",
             "clientes.index",
             "clientes.listado",
@@ -264,18 +289,22 @@ class PermisoService
             "clientes.edit",
             "clientes.show",
             "clientes.update",
-            // "clientes.destroy",
+            "clientes.destroy",
+
+            "tramitadors.paginado",
+            "tramitadors.index",
+            "tramitadors.listado",
+            "tramitadors.create",
+            "tramitadors.store",
+            "tramitadors.edit",
+            "tramitadors.show",
+            "tramitadors.update",
+            "tramitadors.destroy",
 
             "tipo_pagos.listado",
 
-            "sucursals.listado",
-
-            "login_users.verificaSucursal",
-            "login_users.asignaSucursal",
-
-            "tipo_certificados.listado",
-
             "certificados.paginado",
+            "certificados.listadoCobros",
             "certificados.index",
             "certificados.listado",
             "certificados.create",
@@ -287,7 +316,35 @@ class PermisoService
 
             "certificado_emitidos.verificaCantidad",
 
+            "tramites.paginado",
+            "tramites.index",
+            "tramites.listado",
+            "tramites.listadoExacto",
+            "tramites.create",
+            "tramites.store",
+            "tramites.edit",
+            "tramites.show",
+            "tramites.update",
+            "tramites.destroy",
+            "tramites.atencion",
+
+            "tramite_clientes.byTramite",
+            "tramite_clientes.registrarCertificado",
+
+            "cobros.index",
+            "cobros.registrarPago",
+
+            // "recepcion_pagos.index",
+
+            // "pagos.index",
+            // "pagos.verificados",
+            // "pagos.registrarPagos",
+
             "certificadosEmitidosLinea",
+            "cantidadTramitesNormal",
+
+            "login_users.verificaSucursal",
+            "login_users.asignaSucursal",
         ],
     ];
 

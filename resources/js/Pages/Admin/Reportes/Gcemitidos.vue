@@ -220,9 +220,7 @@ const renderChart = (containerId, categories, total_final, data) => {
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">
-                        Gráfico Certificados Emitidos por Médico
-                    </h1>
+                    <h1 class="m-0">Gráfico Certificados Emitidos</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -231,7 +229,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes > Gráfico Certificados Emitidos por Médico
+                            Reportes > Gráfico Certificados Emitidos
                         </li>
                     </ol>
                 </div>
@@ -246,7 +244,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                     <div class="card-body">
                         <form @submit.prevent="generarReporte">
                             <div class="row">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Seleccionar Cliente*</label>
                                     <el-select
                                         v-model="form.cliente_id"
@@ -260,7 +258,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12">
                                     <label>Sucursal*</label>
                                     <el-select
@@ -291,7 +289,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Seleccionar Tipo de Pago*</label>
                                     <el-select
                                         v-model="form.tipo_pago"
@@ -305,7 +303,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12">
                                     <label>Tipo de Certificado*</label>
                                     <el-select

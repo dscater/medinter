@@ -31,11 +31,11 @@
         }
 
         table thead tr th {
-            font-size: 7pt;
+            font-size: 9pt;
         }
 
         table tbody tr td {
-            font-size: 6pt;
+            font-size: 8pt;
         }
 
 
@@ -54,7 +54,6 @@
             width: 450px;
             margin: auto;
             margin-top: 0PX;
-            margin-bottom: 15px;
             text-align: center;
             font-size: 14pt;
         }
@@ -63,7 +62,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -72,7 +70,6 @@
             width: 250px;
             text-align: center;
             margin: auto;
-            margin-top: 15px;
             font-weight: normal;
             font-size: 0.85em;
         }
@@ -122,6 +119,12 @@
         .derecha {
             text-align: right;
         }
+
+        .lista {
+            border: solid 1px;
+            padding-left: 4px;
+            margin-left: 0px;
+        }
     </style>
 </head>
 
@@ -140,13 +143,12 @@
     <table border="1">
         <thead class="bg-principal">
             <tr>
-                <th width="3%">N°</th>
-                <th>CLIENTE</th>
-                <th>TIPO CERTIFICADO</th>
-                <th>COSTO BS.</th>
-                <th>TIPO DE PAGO</th>
-                <th>MÉDICO</th>
-                <th>FECHA REGISTRO</th>
+                <th width="5%">N°</th>
+                <th>PACIENTE</th>
+                <th>CERTIFICADO(S)</th>
+                <th>USUARIO</th>
+                <th width="12%">TOTAL BS.</th>
+                <th width="9%">FECHA REGISTRO</th>
             </tr>
         </thead>
         <tbody>
@@ -157,11 +159,16 @@
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
                     <td>{{ $certificado->cliente->full_name }}<br />{{ $certificado->cliente->full_ci }}</td>
-                    <td>{{ $certificado->tipo_certificado->nombre }}</td>
-                    <td class="derecha">{{ $certificado->precio }}</td>
-                    <td>{{ $certificado->tipo_pago }}</td>
+                    <td>
+                        <ul clas="lista">
+                            @foreach ($certificado->certificado_detalles as $d)
+                                <li>{{ $d->tipo_certificado->nombre }}</li>
+                            @endforeach
+                        </ul>
+                    </td>
                     <td>{{ $certificado->user->full_name }}</td>
-                    <td>{{ $certificado->fecha_registro_t }} {{ $certificado->hora_registro }}</td>
+                    <td class="derecha">{{ $certificado->total }}</td>
+                    <td>{{ $certificado->fecha_registro_t }}<br /> {{ $certificado->hora_registro }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -149,8 +149,106 @@ const renderChart1 = (containerId, categories, total_final, data) => {
     });
 };
 
+const generarReporte2 = () => {
+    axios.get(route("cantidadTramitesNormal")).then((response) => {
+        nextTick(() => {
+            const containerId = `container2`;
+            const container = document.getElementById(containerId);
+            // Verificar que el contenedor exista y tenga un tamaño válido
+            if (container) {
+                renderChart2(
+                    containerId,
+                    response.data.categories,
+                    response.data.total_final,
+                    response.data.data,
+                );
+            } else {
+                console.error(`Contenedor ${containerId} no válido.`);
+            }
+        });
+        // Create the chart
+    });
+};
+
+const renderChart2 = (containerId, categories, total_final, data) => {
+    Highcharts.chart(containerId, {
+        chart: {
+            type: "pie",
+        },
+        title: {
+            align: "center",
+            text: `NORMAL/TRÁMITE`,
+        },
+        subtitle: {
+            align: "center",
+            text: `Total emitidos: ${total_final}`,
+        },
+        accessibility: {
+            announceNewData: {
+                enabled: true,
+            },
+        },
+        yAxis: {
+            title: {
+                text: "TOTAL",
+            },
+        },
+        legend: {
+            enabled: true,
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: "pointer",
+                dataLabels: [
+                    {
+                        enabled: true,
+                        distance: 20,
+                    },
+                    {
+                        enabled: true,
+                        distance: -40,
+                        format: "{point.percentage:.1f}%",
+                        style: {
+                            fontSize: "1.2em",
+                            textOutline: "none",
+                            opacity: 0.7,
+                        },
+                        filter: {
+                            operator: ">",
+                            property: "percentage",
+                            value: 10,
+                        },
+                    },
+                ],
+            },
+        },
+        tooltip: {
+            useHTML: true,
+            formatter: function () {
+                return `
+                    <div style="text-align:center;">
+                        <div style="display:inline-block; width:12px; height:12px; background:${this.point.color}; border-radius:50%; margin-right:5px;"></div>
+                        <strong style="color:${this.point.color};">${this.point.series.name}</strong>
+                        <br>
+                        <span class="text-md"><strong>Total:</strong> ${this.point.y}</span>
+                    </div>
+                    `;
+            },
+        },
+
+        series: [
+            {
+                name: "Certificados emitidos",
+                data: data,
+            },
+        ],
+    });
+};
+
 onMounted(() => {
     generarReporte1();
+    generarReporte2();
     appStore.stopLoading();
 });
 </script>
@@ -195,7 +293,7 @@ onMounted(() => {
         </div>
 
         <div class="row">
-            <div class="col-12">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
@@ -217,6 +315,13 @@ onMounted(() => {
                                 <div id="container"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="container2"></div>
                     </div>
                 </div>
             </div>

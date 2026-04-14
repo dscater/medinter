@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 14-04-2026 a las 02:14:07
+-- Tiempo de generación: 14-04-2026 a las 21:14:43
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -62,7 +62,32 @@ INSERT INTO `certificados` (`id`, `cliente_id`, `total`, `cancelado`, `saldo`, `
 (7, 1, 30.00, 30.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-13', '15:07:25', 1, '2026-04-13 19:07:25', '2026-04-13 20:50:48'),
 (8, 12, 30.00, 30.00, 0.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-13', '15:37:00', 1, '2026-04-13 19:37:00', '2026-04-13 20:49:41'),
 (9, 13, 60.00, 30.00, 0.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-13', '15:44:32', 1, '2026-04-13 19:44:32', '2026-04-13 20:48:57'),
-(10, 14, 30.00, 0.00, 0.00, 'QR', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-13', '15:46:53', 1, '2026-04-13 19:46:53', '2026-04-13 20:48:44');
+(10, 14, 30.00, 0.00, 0.00, 'QR', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-13', '15:46:53', 1, '2026-04-13 19:46:53', '2026-04-13 20:48:44'),
+(19, 15, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '14:21:27', 1, '2026-04-14 18:21:27', '2026-04-14 18:21:27'),
+(20, 17, 110.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:23:02', 1, '2026-04-14 18:23:02', '2026-04-14 18:23:02'),
+(21, 18, 50.00, 0.00, 0.00, 'QR', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:26:27', 1, '2026-04-14 18:26:27', '2026-04-14 18:26:27'),
+(22, 19, 50.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:28:13', 1, '2026-04-14 18:28:13', '2026-04-14 18:28:13'),
+(23, 20, 50.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:29:19', 1, '2026-04-14 18:29:19', '2026-04-14 18:29:19'),
+(24, 21, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:30:21', 1, '2026-04-14 18:30:21', '2026-04-14 18:30:21'),
+(25, 1, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:31:15', 1, '2026-04-14 18:31:15', '2026-04-14 18:31:15'),
+(26, 22, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:32:16', 1, '2026-04-14 18:32:16', '2026-04-14 18:32:16'),
+(27, 6, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:32:33', 1, '2026-04-14 18:32:33', '2026-04-14 18:32:33'),
+(28, 23, 0.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:34:05', 1, '2026-04-14 18:34:05', '2026-04-14 18:34:05'),
+(29, 25, 50.00, 50.00, 0.00, 'QR', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '14:38:07', 1, '2026-04-14 18:38:07', '2026-04-14 18:38:07'),
+(30, 26, 50.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:00:15', 1, '2026-04-14 19:00:15', '2026-04-14 19:00:15'),
+(31, 29, 50.00, 0.00, 0.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:30:25', 1, '2026-04-14 19:30:25', '2026-04-14 19:30:25'),
+(32, 27, 50.00, 0.00, 50.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:32:51', 1, '2026-04-14 19:32:51', '2026-04-14 19:32:51'),
+(33, 28, 50.00, 0.00, 50.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:35:31', 1, '2026-04-14 19:35:31', '2026-04-14 19:35:31'),
+(34, 30, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '15:36:57', 1, '2026-04-14 19:36:57', '2026-04-14 19:36:57'),
+(35, 6, 50.00, 50.00, 0.00, 'EFECTIVO', 1, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '15:38:46', 1, '2026-04-14 19:38:46', '2026-04-14 19:38:46'),
+(36, 31, 50.00, 0.00, 50.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:39:37', 1, '2026-04-14 19:39:37', '2026-04-14 19:39:37'),
+(37, 32, 110.00, 60.00, 50.00, 'EFECTIVO', 1, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '15:40:35', 1, '2026-04-14 19:40:35', '2026-04-14 19:40:35'),
+(38, 1, 50.00, 50.00, 0.00, 'EFECTIVO', 4, 1, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '17:01:58', 1, '2026-04-14 21:01:58', '2026-04-14 21:01:58'),
+(39, 33, 50.00, 0.00, 50.00, 'EFECTIVO', 4, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '17:08:53', 1, '2026-04-14 21:08:53', '2026-04-14 21:08:53'),
+(40, 6, 50.00, 50.00, 0.00, 'EFECTIVO', 4, 1, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '17:09:07', 1, '2026-04-14 21:09:07', '2026-04-14 21:09:07'),
+(41, 34, 50.00, 50.00, 0.00, 'EFECTIVO', 2, 2, 'NORMAL', NULL, NULL, NULL, NULL, '2026-04-14', '17:11:10', 1, '2026-04-14 21:11:10', '2026-04-14 21:11:10'),
+(42, 35, 140.00, 0.00, 140.00, 'EFECTIVO', 2, 2, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '17:12:37', 1, '2026-04-14 21:12:37', '2026-04-14 21:12:37'),
+(43, 36, 50.00, 50.00, 0.00, 'EFECTIVO', 2, 2, 'TRAMITE', NULL, NULL, NULL, NULL, '2026-04-14', '17:12:52', 1, '2026-04-14 21:12:52', '2026-04-14 21:12:52');
 
 -- --------------------------------------------------------
 
@@ -73,6 +98,7 @@ INSERT INTO `certificados` (`id`, `cliente_id`, `total`, `cancelado`, `saldo`, `
 CREATE TABLE `certificado_detalles` (
   `id` bigint UNSIGNED NOT NULL,
   `certificado_id` bigint UNSIGNED NOT NULL,
+  `categoria` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `precio` decimal(24,2) NOT NULL,
   `cancelado` decimal(24,2) DEFAULT NULL,
   `saldo` decimal(24,2) DEFAULT NULL,
@@ -86,20 +112,48 @@ CREATE TABLE `certificado_detalles` (
 -- Volcado de datos para la tabla `certificado_detalles`
 --
 
-INSERT INTO `certificado_detalles` (`id`, `certificado_id`, `precio`, `cancelado`, `saldo`, `tipo_certificado_id`, `archivo`, `created_at`, `updated_at`) VALUES
-(1, 1, 50.00, 50.00, 0.00, 1, '011775953329.pdf', '2026-04-12 00:22:08', '2026-04-12 00:22:09'),
-(2, 1, 60.00, 60.00, 0.00, 3, '121775953329.pdf', '2026-04-12 00:22:09', '2026-04-12 00:22:09'),
-(3, 2, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:49:32', '2026-04-13 14:49:32'),
-(4, 3, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:50:23', '2026-04-13 14:50:23'),
-(5, 4, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:51:40', '2026-04-13 14:51:40'),
-(6, 4, 20.00, 20.00, 0.00, 2, NULL, '2026-04-13 14:51:40', '2026-04-13 14:51:40'),
-(7, 5, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:52:23', '2026-04-13 14:52:23'),
-(8, 6, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 18:49:00', '2026-04-13 18:49:00'),
-(9, 7, 30.00, 30.00, 0.00, 1, '091776107599.pdf', '2026-04-13 19:07:25', '2026-04-13 19:13:19'),
-(10, 8, 30.00, 30.00, 0.00, 1, '0101776109020.pdf', '2026-04-13 19:37:00', '2026-04-13 19:37:00'),
-(11, 9, 30.00, 30.00, 0.00, 1, '0111776109472.pdf', '2026-04-13 19:44:32', '2026-04-13 19:44:32'),
-(12, 9, 30.00, 30.00, 0.00, 3, '1121776109472.pdf', '2026-04-13 19:44:32', '2026-04-13 19:44:32'),
-(13, 10, 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 19:46:53', '2026-04-13 19:46:53');
+INSERT INTO `certificado_detalles` (`id`, `certificado_id`, `categoria`, `precio`, `cancelado`, `saldo`, `tipo_certificado_id`, `archivo`, `created_at`, `updated_at`) VALUES
+(1, 1, 'A', 50.00, 50.00, 0.00, 1, '011775953329.pdf', '2026-04-12 00:22:08', '2026-04-12 00:22:09'),
+(2, 1, 'A', 60.00, 60.00, 0.00, 3, '121775953329.pdf', '2026-04-12 00:22:09', '2026-04-12 00:22:09'),
+(3, 2, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:49:32', '2026-04-13 14:49:32'),
+(4, 3, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:50:23', '2026-04-13 14:50:23'),
+(5, 4, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:51:40', '2026-04-13 14:51:40'),
+(6, 4, 'A', 20.00, 20.00, 0.00, 2, NULL, '2026-04-13 14:51:40', '2026-04-13 14:51:40'),
+(7, 5, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 14:52:23', '2026-04-13 14:52:23'),
+(8, 6, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 18:49:00', '2026-04-13 18:49:00'),
+(9, 7, 'A', 30.00, 30.00, 0.00, 1, '091776107599.pdf', '2026-04-13 19:07:25', '2026-04-13 19:13:19'),
+(10, 8, 'A', 30.00, 30.00, 0.00, 1, '0101776109020.pdf', '2026-04-13 19:37:00', '2026-04-13 19:37:00'),
+(11, 9, 'A', 30.00, 30.00, 0.00, 1, '0111776109472.pdf', '2026-04-13 19:44:32', '2026-04-13 19:44:32'),
+(12, 9, 'A', 30.00, 30.00, 0.00, 3, '1121776109472.pdf', '2026-04-13 19:44:32', '2026-04-13 19:44:32'),
+(13, 10, 'A', 30.00, 30.00, 0.00, 1, NULL, '2026-04-13 19:46:53', '2026-04-13 19:46:53'),
+(22, 19, 'A', 50.00, 50.00, 0.00, 1, '0221776190887.pdf', '2026-04-14 18:21:27', '2026-04-14 18:21:27'),
+(23, 20, 'B', 50.00, 50.00, 0.00, 1, '0231776190982.pdf', '2026-04-14 18:23:02', '2026-04-14 18:23:02'),
+(24, 20, 'B', 60.00, 60.00, 0.00, 3, '1241776190982.pdf', '2026-04-14 18:23:02', '2026-04-14 18:23:02'),
+(25, 21, 'A', 50.00, 50.00, 0.00, 1, '0251776191187.pdf', '2026-04-14 18:26:27', '2026-04-14 18:26:27'),
+(26, 22, 'a', 50.00, 50.00, 0.00, 1, '0261776191293.pdf', '2026-04-14 18:28:13', '2026-04-14 18:28:13'),
+(27, 23, 'A', 50.00, 50.00, 0.00, 1, '0271776191359.pdf', '2026-04-14 18:29:19', '2026-04-14 18:29:19'),
+(28, 24, 'A', 50.00, 50.00, 0.00, 1, '0281776191421.pdf', '2026-04-14 18:30:21', '2026-04-14 18:30:21'),
+(29, 25, 'A', 50.00, 50.00, 0.00, 1, '0291776191475.pdf', '2026-04-14 18:31:15', '2026-04-14 18:31:15'),
+(30, 26, 'A', 50.00, 50.00, 0.00, 1, '0301776191536.pdf', '2026-04-14 18:32:16', '2026-04-14 18:32:16'),
+(31, 27, 'A', 50.00, 50.00, 0.00, 1, '0311776191553.pdf', '2026-04-14 18:32:33', '2026-04-14 18:32:33'),
+(32, 28, 'A', 0.00, 0.00, 0.00, 1, '0321776191645.pdf', '2026-04-14 18:34:05', '2026-04-14 18:34:05'),
+(33, 29, 'A', 50.00, 50.00, 0.00, 1, '0331776191887.pdf', '2026-04-14 18:38:07', '2026-04-14 18:38:07'),
+(34, 30, 'a', 50.00, 50.00, 0.00, 1, '0341776193215.pdf', '2026-04-14 19:00:15', '2026-04-14 19:00:15'),
+(35, 31, 'A', 50.00, 50.00, 0.00, 1, '0351776195025.pdf', '2026-04-14 19:30:25', '2026-04-14 19:30:25'),
+(36, 32, 'A', 50.00, 50.00, 0.00, 1, '0361776195171.pdf', '2026-04-14 19:32:51', '2026-04-14 19:32:51'),
+(37, 33, 'A', 50.00, 50.00, 0.00, 1, '0371776195331.pdf', '2026-04-14 19:35:31', '2026-04-14 19:35:31'),
+(38, 34, 'A', 50.00, 50.00, 0.00, 1, '0381776195417.pdf', '2026-04-14 19:36:57', '2026-04-14 19:36:57'),
+(39, 35, 'A', 50.00, 50.00, 0.00, 1, '0391776195526.pdf', '2026-04-14 19:38:46', '2026-04-14 19:38:46'),
+(40, 36, 'A', 50.00, 50.00, 0.00, 1, NULL, '2026-04-14 19:39:37', '2026-04-14 19:39:37'),
+(41, 37, 'A', 50.00, 50.00, 0.00, 1, '0411776195635.pdf', '2026-04-14 19:40:35', '2026-04-14 19:40:35'),
+(42, 37, 'A', 60.00, 60.00, 0.00, 3, '1421776195635.pdf', '2026-04-14 19:40:35', '2026-04-14 19:40:35'),
+(43, 38, 'A', 50.00, 50.00, 0.00, 1, '0431776200518.pdf', '2026-04-14 21:01:58', '2026-04-14 21:01:58'),
+(44, 39, 'A', 50.00, 50.00, 0.00, 1, '0441776200933.pdf', '2026-04-14 21:08:53', '2026-04-14 21:08:53'),
+(45, 40, 'C', 50.00, 50.00, 0.00, 1, '0451776200947.pdf', '2026-04-14 21:09:07', '2026-04-14 21:09:07'),
+(46, 41, 'A', 50.00, 50.00, 0.00, 1, '0461776201070.pdf', '2026-04-14 21:11:10', '2026-04-14 21:11:10'),
+(47, 42, 'A', 50.00, 50.00, 0.00, 1, '0471776201157.pdf', '2026-04-14 21:12:37', '2026-04-14 21:12:37'),
+(48, 42, 'A', 90.00, 90.00, 0.00, 2, '1481776201157.pdf', '2026-04-14 21:12:37', '2026-04-14 21:12:37'),
+(49, 43, 'A', 50.00, 50.00, 0.00, 1, '0491776201172.pdf', '2026-04-14 21:12:52', '2026-04-14 21:12:52');
 
 -- --------------------------------------------------------
 
@@ -127,7 +181,13 @@ INSERT INTO `certificado_emitidos` (`id`, `fecha`, `user_id`, `tipo_certificado_
 (3, '2026-04-11', 1, 3, 1, '2026-04-11 23:14:53', '2026-04-12 00:22:09'),
 (4, '2026-04-13', 1, 1, 9, '2026-04-13 14:10:25', '2026-04-13 19:46:53'),
 (5, '2026-04-13', 1, 2, 1, '2026-04-13 14:20:42', '2026-04-13 14:51:40'),
-(6, '2026-04-13', 1, 3, 1, '2026-04-13 19:44:26', '2026-04-13 19:44:32');
+(6, '2026-04-13', 1, 3, 1, '2026-04-13 19:44:26', '2026-04-13 19:44:32'),
+(7, '2026-04-14', 1, 1, 19, '2026-04-14 18:12:02', '2026-04-14 19:40:35'),
+(8, '2026-04-14', 1, 3, 2, '2026-04-14 18:22:57', '2026-04-14 19:40:35'),
+(9, '2026-04-14', 1, 2, 0, '2026-04-14 19:35:25', '2026-04-14 19:35:25'),
+(10, '2026-04-14', 4, 1, 3, '2026-04-14 21:01:49', '2026-04-14 21:09:07'),
+(11, '2026-04-14', 2, 1, 3, '2026-04-14 21:10:46', '2026-04-14 21:12:52'),
+(12, '2026-04-14', 2, 2, 1, '2026-04-14 21:12:32', '2026-04-14 21:12:37');
 
 -- --------------------------------------------------------
 
@@ -170,7 +230,29 @@ INSERT INTO `clientes` (`id`, `nombre`, `paterno`, `materno`, `ci`, `ci_exp`, `c
 (11, 'GROVER', 'CHOQUE', '', '2323232', 'LP', '', '1999-02-02', 27, NULL, '2026-04-12', 1, '2026-04-12 19:14:44', '2026-04-12 19:14:44'),
 (12, 'FRANCISCA', 'MALDONADO', '', '34343434', 'LP', '', '2000-02-02', 26, NULL, '2026-04-12', 1, '2026-04-12 19:14:44', '2026-04-12 19:14:44'),
 (13, 'JOSE', 'CALCINA', 'GONZALES', '2222332', 'CH', '', '1994-01-01', 32, NULL, '2026-04-12', 1, '2026-04-12 19:14:44', '2026-04-12 19:14:44'),
-(14, 'ALEX', 'CONTRERAS', '', '5443333', 'SC', '', '2026-02-02', 0, NULL, '2026-04-13', 1, '2026-04-13 19:46:37', '2026-04-13 19:46:37');
+(14, 'ALEX', 'CONTRERAS', '', '5443333', 'SC', '', '2026-02-02', 0, NULL, '2026-04-13', 1, '2026-04-13 19:46:37', '2026-04-13 19:46:37'),
+(15, 'ALBERTO', 'GONZALES', 'GONZALES', '5464565', 'PT', '', '2026-02-02', 20, NULL, '2026-04-14', 1, '2026-04-14 18:11:14', '2026-04-14 18:11:42'),
+(16, 'MAGDALENA', 'SUAREZ', 'CALCINA', '5766667', 'CB', '', '2002-01-01', 24, NULL, '2026-04-14', 1, '2026-04-14 18:22:12', '2026-04-14 18:22:12'),
+(17, 'ELVIRA', 'GONZALES', '', '2342424', 'CB', '', '1990-01-01', 36, NULL, '2026-04-14', 1, '2026-04-14 18:22:41', '2026-04-14 18:22:41'),
+(18, 'ELVIS', 'CARDOZO', '', '76867886', 'CB', '', '1999-01-01', 27, NULL, '2026-04-14', 1, '2026-04-14 18:26:14', '2026-04-14 18:26:14'),
+(19, 'JUAN', 'FLORES', '', '6756756', 'LP', '', '1998-03-01', 28, NULL, '2026-04-14', 1, '2026-04-14 18:28:00', '2026-04-14 18:28:00'),
+(20, 'CARLOS', 'FERNANDEZ', 'MARTINEZ', '6756757', 'CB', '', '1995-02-02', 31, NULL, '2026-04-14', 1, '2026-04-14 18:29:11', '2026-04-14 18:29:11'),
+(21, 'EDWIN', 'CONDORI', '', '675756567', 'LP', '', '1995-01-01', 31, NULL, '2026-04-14', 1, '2026-04-14 18:30:12', '2026-04-14 18:30:12'),
+(22, 'EFRAIN', 'MAMANI', '', '2432342', 'LP', '', '2000-01-01', 26, NULL, '2026-04-14', 1, '2026-04-14 18:31:49', '2026-04-14 18:31:49'),
+(23, 'GLADYS', 'CONDORI', '', '23423423', 'LP', '', '1999-01-01', 27, NULL, '2026-04-14', 1, '2026-04-14 18:32:51', '2026-04-14 18:32:51'),
+(24, 'FRANCO', 'MARTINEZ', '', '324234234', 'CB', '', '1997-01-01', 29, NULL, '2026-04-14', 1, '2026-04-14 18:33:42', '2026-04-14 18:33:42'),
+(25, 'ALEXIS', 'CONTREAS', '', '564456', 'LP', '', '2000-01-01', 26, NULL, '2026-04-14', 1, '2026-04-14 18:37:59', '2026-04-14 18:37:59'),
+(26, 'EDUARDO', 'MARTINEZ', '', '24243333', 'LP', '', '1999-12-12', 26, NULL, '2026-04-14', 1, '2026-04-14 18:59:54', '2026-04-14 18:59:54'),
+(27, 'ELVIS', 'GONZALES', '', '45345345', 'LP', '', '2000-01-01', 26, NULL, '2026-04-14', 1, '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(28, 'ELIZABETH', 'CARDONA', '', '455345', 'LP', '', '2000-01-01', 26, NULL, '2026-04-14', 1, '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(29, 'FRANCISCA', 'CALLISAYA', '', '343434', 'PT', '', '1999-02-02', 27, NULL, '2026-04-14', 1, '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(30, 'ALEJANDRA', 'MARCELL', '', '4534544', 'LP', '', '2001-01-01', 25, NULL, '2026-04-14', 1, '2026-04-14 19:36:50', '2026-04-14 19:36:50'),
+(31, 'ALEXA', 'MARTINEZ', '', '34534544', 'TJ', '', '1999-01-01', 27, NULL, '2026-04-14', 1, '2026-04-14 19:39:23', '2026-04-14 19:39:23'),
+(32, 'FRANCIS', 'CALDERON', '', '32423434', 'LP', '', '2001-02-02', 25, NULL, '2026-04-14', 1, '2026-04-14 19:40:04', '2026-04-14 19:40:04'),
+(33, 'FERNANDO', 'GONZALES', '', '234234', 'LP', '', '2006-02-02', 20, NULL, '2026-04-14', 1, '2026-04-14 21:08:16', '2026-04-14 21:08:16'),
+(34, 'PEDRO', 'CASTRO', '', '43534534', 'CB', '', '1996-01-01', 30, NULL, '2026-04-14', 1, '2026-04-14 21:11:08', '2026-04-14 21:11:08'),
+(35, 'FELIX', 'MAMANI', '', '1332332', 'PT', '', '2000-01-01', 26, NULL, '2026-04-14', 1, '2026-04-14 21:12:12', '2026-04-14 21:12:12'),
+(36, 'ALEX', 'CONTRERAS', '', '45445444', 'LP', '', '2003-03-03', 23, NULL, '2026-04-14', 1, '2026-04-14 21:12:12', '2026-04-14 21:12:12');
 
 -- --------------------------------------------------------
 
@@ -274,7 +356,75 @@ INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `dato
 (47, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 5, \"hora\": \"16:50:24\", \"fecha\": \"2026-04-13\", \"monto\": \"10\", \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-13T20:50:24.000000Z\", \"updated_at\": \"2026-04-13T20:50:24.000000Z\", \"certificado\": {\"id\": 7, \"tipo\": \"NORMAL\", \"saldo\": \"20.00\", \"total\": \"30.00\", \"status\": 1, \"user_id\": 1, \"hora_fin\": null, \"cancelado\": \"10.00\", \"fecha_fin\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 1, \"created_at\": \"2026-04-13T19:07:25.000000Z\", \"updated_at\": \"2026-04-13T20:50:24.000000Z\", \"hora_inicio\": null, \"sucursal_id\": 1, \"fecha_inicio\": null, \"hora_registro\": \"15:07:25\", \"fecha_registro\": \"2026-04-13\", \"fecha_registro_t\": \"13/04/2026\"}, \"certificado_id\": 7}', NULL, 'CERTIFICADOS PAGOS', '2026-04-13', '16:50:24', '2026-04-13 20:50:24', '2026-04-13 20:50:24'),
 (48, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 6, \"hora\": \"16:50:36\", \"fecha\": \"2026-04-13\", \"monto\": \"10\", \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-13T20:50:36.000000Z\", \"updated_at\": \"2026-04-13T20:50:36.000000Z\", \"certificado\": {\"id\": 7, \"tipo\": \"NORMAL\", \"saldo\": \"10.00\", \"total\": \"30.00\", \"status\": 1, \"user_id\": 1, \"hora_fin\": null, \"cancelado\": \"20.00\", \"fecha_fin\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 1, \"created_at\": \"2026-04-13T19:07:25.000000Z\", \"updated_at\": \"2026-04-13T20:50:36.000000Z\", \"hora_inicio\": null, \"sucursal_id\": 1, \"fecha_inicio\": null, \"hora_registro\": \"15:07:25\", \"fecha_registro\": \"2026-04-13\", \"fecha_registro_t\": \"13/04/2026\"}, \"certificado_id\": 7}', NULL, 'CERTIFICADOS PAGOS', '2026-04-13', '16:50:36', '2026-04-13 20:50:36', '2026-04-13 20:50:36'),
 (49, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 7, \"hora\": \"16:50:48\", \"fecha\": \"2026-04-13\", \"monto\": \"10\", \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-13T20:50:48.000000Z\", \"updated_at\": \"2026-04-13T20:50:48.000000Z\", \"certificado\": {\"id\": 7, \"tipo\": \"NORMAL\", \"saldo\": \"0.00\", \"total\": \"30.00\", \"status\": 1, \"user_id\": 1, \"hora_fin\": null, \"cancelado\": \"30.00\", \"fecha_fin\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 1, \"created_at\": \"2026-04-13T19:07:25.000000Z\", \"updated_at\": \"2026-04-13T20:50:48.000000Z\", \"hora_inicio\": null, \"sucursal_id\": 1, \"fecha_inicio\": null, \"hora_registro\": \"15:07:25\", \"fecha_registro\": \"2026-04-13\", \"fecha_registro_t\": \"13/04/2026\"}, \"certificado_id\": 7}', NULL, 'CERTIFICADOS PAGOS', '2026-04-13', '16:50:48', '2026-04-13 20:50:48', '2026-04-13 20:50:48'),
-(50, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 8, \"hora\": \"16:51:01\", \"fecha\": \"2026-04-13\", \"monto\": \"30\", \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-13T20:51:01.000000Z\", \"updated_at\": \"2026-04-13T20:51:01.000000Z\", \"certificado\": {\"id\": 6, \"tipo\": \"TRAMITE\", \"saldo\": \"0.00\", \"total\": \"30.00\", \"status\": 1, \"user_id\": 1, \"hora_fin\": null, \"cancelado\": \"30.00\", \"fecha_fin\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 10, \"created_at\": \"2026-04-13T18:49:00.000000Z\", \"updated_at\": \"2026-04-13T20:51:01.000000Z\", \"hora_inicio\": null, \"sucursal_id\": 1, \"fecha_inicio\": null, \"hora_registro\": \"14:49:00\", \"fecha_registro\": \"2026-04-13\", \"fecha_registro_t\": \"13/04/2026\"}, \"certificado_id\": 6}', NULL, 'CERTIFICADOS PAGOS', '2026-04-13', '16:51:01', '2026-04-13 20:51:01', '2026-04-13 20:51:01');
+(50, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 8, \"hora\": \"16:51:01\", \"fecha\": \"2026-04-13\", \"monto\": \"30\", \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-13T20:51:01.000000Z\", \"updated_at\": \"2026-04-13T20:51:01.000000Z\", \"certificado\": {\"id\": 6, \"tipo\": \"TRAMITE\", \"saldo\": \"0.00\", \"total\": \"30.00\", \"status\": 1, \"user_id\": 1, \"hora_fin\": null, \"cancelado\": \"30.00\", \"fecha_fin\": null, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": 10, \"created_at\": \"2026-04-13T18:49:00.000000Z\", \"updated_at\": \"2026-04-13T20:51:01.000000Z\", \"hora_inicio\": null, \"sucursal_id\": 1, \"fecha_inicio\": null, \"hora_registro\": \"14:49:00\", \"fecha_registro\": \"2026-04-13\", \"fecha_registro_t\": \"13/04/2026\"}, \"certificado_id\": 6}', NULL, 'CERTIFICADOS PAGOS', '2026-04-13', '16:51:01', '2026-04-13 20:51:01', '2026-04-13 20:51:01'),
+(51, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"5464565\", \"id\": 15, \"cel\": null, \"edad\": 0, \"ci_exp\": \"PT\", \"nombre\": \"ALBERTO\", \"materno\": \"GONZALES\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"2026-02-02\", \"created_at\": \"2026-04-14T18:11:14.000000Z\", \"updated_at\": \"2026-04-14T18:11:14.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:11:14', '2026-04-14 18:11:14', '2026-04-14 18:11:14'),
+(52, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN CLIENTE', '{\"ci\": \"5464565\", \"id\": 15, \"cel\": null, \"edad\": 0, \"ci_exp\": \"PT\", \"nombre\": \"ALBERTO\", \"status\": 1, \"materno\": \"GONZALES\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"2026-02-02\", \"created_at\": \"2026-04-14T18:11:14.000000Z\", \"updated_at\": \"2026-04-14T18:11:14.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', '{\"ci\": \"5464565\", \"id\": 15, \"cel\": null, \"edad\": \"20\", \"ci_exp\": \"PT\", \"nombre\": \"ALBERTO\", \"status\": 1, \"materno\": \"GONZALES\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"2026-02-02\", \"created_at\": \"2026-04-14T18:11:14.000000Z\", \"updated_at\": \"2026-04-14T18:11:42.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', 'CLIENTES', '2026-04-14', '14:11:42', '2026-04-14 18:11:42', '2026-04-14 18:11:42'),
+(53, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 9, \"hora\": \"14:21:27\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T18:21:27.000000Z\", \"updated_at\": \"2026-04-14T18:21:27.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 19, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:21:27', '2026-04-14 18:21:27', '2026-04-14 18:21:27');
+INSERT INTO `historial_accions` (`id`, `user_id`, `accion`, `descripcion`, `datos_original`, `datos_nuevo`, `modulo`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
+(54, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 19, \"tipo\": \"TRAMITE\", \"saldo\": \"0.00\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"15\", \"created_at\": \"2026-04-14T18:21:27.000000Z\", \"updated_at\": \"2026-04-14T18:21:27.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:21:27\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 22, \"name\": \"0221776190887.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0221776190887.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:21:27.000000Z\", \"updated_at\": \"2026-04-14T18:21:27.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0221776190887.pdf\", \"certificado_id\": 19, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:21:27', '2026-04-14 18:21:27', '2026-04-14 18:21:27'),
+(55, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"5766667\", \"id\": 16, \"cel\": null, \"edad\": 24, \"ci_exp\": \"CB\", \"nombre\": \"MAGDALENA\", \"materno\": \"CALCINA\", \"paterno\": \"SUAREZ\", \"fecha_nac\": \"2002-01-01\", \"created_at\": \"2026-04-14T18:22:12.000000Z\", \"updated_at\": \"2026-04-14T18:22:12.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:22:12', '2026-04-14 18:22:12', '2026-04-14 18:22:12'),
+(56, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"2342424\", \"id\": 17, \"cel\": null, \"edad\": 36, \"ci_exp\": \"CB\", \"nombre\": \"ELVIRA\", \"materno\": \"\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"1990-01-01\", \"created_at\": \"2026-04-14T18:22:41.000000Z\", \"updated_at\": \"2026-04-14T18:22:41.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:22:41', '2026-04-14 18:22:41', '2026-04-14 18:22:41'),
+(57, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 20, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"110\", \"user_id\": 1, \"cancelado\": 0, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"17\", \"created_at\": \"2026-04-14T18:23:02.000000Z\", \"updated_at\": \"2026-04-14T18:23:02.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:23:02\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 23, \"name\": \"0231776190982.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0231776190982.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"B\", \"created_at\": \"2026-04-14T18:23:02.000000Z\", \"updated_at\": \"2026-04-14T18:23:02.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0231776190982.pdf\", \"certificado_id\": 20, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}, {\"id\": 24, \"name\": \"1241776190982.pdf\", \"saldo\": \"0.00\", \"precio\": \"60.00\", \"archivo\": \"1241776190982.pdf\", \"cancelado\": \"60.00\", \"categoria\": \"B\", \"created_at\": \"2026-04-14T18:23:02.000000Z\", \"updated_at\": \"2026-04-14T18:23:02.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/1241776190982.pdf\", \"certificado_id\": 20, \"muestra_conteo\": false, \"tipo_certificado_id\": 3}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:23:02', '2026-04-14 18:23:02', '2026-04-14 18:23:02'),
+(58, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"76867886\", \"id\": 18, \"cel\": null, \"edad\": 27, \"ci_exp\": \"CB\", \"nombre\": \"ELVIS\", \"materno\": \"\", \"paterno\": \"CARDOZO\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-14T18:26:14.000000Z\", \"updated_at\": \"2026-04-14T18:26:14.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:26:14', '2026-04-14 18:26:14', '2026-04-14 18:26:14'),
+(59, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 21, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": 0, \"tipo_pago\": \"QR\", \"cliente_id\": \"18\", \"created_at\": \"2026-04-14T18:26:27.000000Z\", \"updated_at\": \"2026-04-14T18:26:27.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:26:27\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 25, \"name\": \"0251776191187.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0251776191187.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:26:27.000000Z\", \"updated_at\": \"2026-04-14T18:26:27.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0251776191187.pdf\", \"certificado_id\": 21, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:26:27', '2026-04-14 18:26:27', '2026-04-14 18:26:27'),
+(60, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"6756756\", \"id\": 19, \"cel\": null, \"edad\": 28, \"ci_exp\": \"LP\", \"nombre\": \"JUAN\", \"materno\": \"\", \"paterno\": \"FLORES\", \"fecha_nac\": \"1998-03-01\", \"created_at\": \"2026-04-14T18:28:00.000000Z\", \"updated_at\": \"2026-04-14T18:28:00.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:28:00', '2026-04-14 18:28:00', '2026-04-14 18:28:00'),
+(61, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 22, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": 0, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"19\", \"created_at\": \"2026-04-14T18:28:13.000000Z\", \"updated_at\": \"2026-04-14T18:28:13.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:28:13\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 26, \"name\": \"0261776191293.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0261776191293.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"a\", \"created_at\": \"2026-04-14T18:28:13.000000Z\", \"updated_at\": \"2026-04-14T18:28:13.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0261776191293.pdf\", \"certificado_id\": 22, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:28:13', '2026-04-14 18:28:13', '2026-04-14 18:28:13'),
+(62, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"6756757\", \"id\": 20, \"cel\": null, \"edad\": 31, \"ci_exp\": \"CB\", \"nombre\": \"CARLOS\", \"materno\": \"MARTINEZ\", \"paterno\": \"FERNANDEZ\", \"fecha_nac\": \"1995-02-02\", \"created_at\": \"2026-04-14T18:29:11.000000Z\", \"updated_at\": \"2026-04-14T18:29:11.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:29:11', '2026-04-14 18:29:11', '2026-04-14 18:29:11'),
+(63, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 23, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": 0, \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"20\", \"created_at\": \"2026-04-14T18:29:19.000000Z\", \"updated_at\": \"2026-04-14T18:29:19.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:29:19\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 27, \"name\": \"0271776191359.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0271776191359.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:29:19.000000Z\", \"updated_at\": \"2026-04-14T18:29:19.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0271776191359.pdf\", \"certificado_id\": 23, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:29:19', '2026-04-14 18:29:19', '2026-04-14 18:29:19'),
+(64, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"675756567\", \"id\": 21, \"cel\": null, \"edad\": 31, \"ci_exp\": \"LP\", \"nombre\": \"EDWIN\", \"materno\": \"\", \"paterno\": \"CONDORI\", \"fecha_nac\": \"1995-01-01\", \"created_at\": \"2026-04-14T18:30:12.000000Z\", \"updated_at\": \"2026-04-14T18:30:12.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:30:12', '2026-04-14 18:30:12', '2026-04-14 18:30:12'),
+(65, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 10, \"hora\": \"14:30:21\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T18:30:21.000000Z\", \"updated_at\": \"2026-04-14T18:30:21.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 24, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:30:21', '2026-04-14 18:30:21', '2026-04-14 18:30:21'),
+(66, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 24, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"21\", \"created_at\": \"2026-04-14T18:30:21.000000Z\", \"updated_at\": \"2026-04-14T18:30:21.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:30:21\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 28, \"name\": \"0281776191421.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0281776191421.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:30:21.000000Z\", \"updated_at\": \"2026-04-14T18:30:21.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0281776191421.pdf\", \"certificado_id\": 24, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:30:21', '2026-04-14 18:30:21', '2026-04-14 18:30:21'),
+(67, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 11, \"hora\": \"14:31:15\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T18:31:15.000000Z\", \"updated_at\": \"2026-04-14T18:31:15.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 25, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:31:15', '2026-04-14 18:31:15', '2026-04-14 18:31:15'),
+(68, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 25, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"1\", \"created_at\": \"2026-04-14T18:31:15.000000Z\", \"updated_at\": \"2026-04-14T18:31:15.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:31:15\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 29, \"name\": \"0291776191475.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0291776191475.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:31:15.000000Z\", \"updated_at\": \"2026-04-14T18:31:15.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0291776191475.pdf\", \"certificado_id\": 25, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:31:15', '2026-04-14 18:31:15', '2026-04-14 18:31:15'),
+(69, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"2432342\", \"id\": 22, \"cel\": null, \"edad\": 26, \"ci_exp\": \"LP\", \"nombre\": \"EFRAIN\", \"materno\": \"\", \"paterno\": \"MAMANI\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-14T18:31:49.000000Z\", \"updated_at\": \"2026-04-14T18:31:49.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:31:49', '2026-04-14 18:31:49', '2026-04-14 18:31:49'),
+(70, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 12, \"hora\": \"14:32:16\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T18:32:16.000000Z\", \"updated_at\": \"2026-04-14T18:32:16.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 26, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:32:16', '2026-04-14 18:32:16', '2026-04-14 18:32:16'),
+(71, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 26, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"22\", \"created_at\": \"2026-04-14T18:32:16.000000Z\", \"updated_at\": \"2026-04-14T18:32:16.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:32:16\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 30, \"name\": \"0301776191536.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0301776191536.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:32:16.000000Z\", \"updated_at\": \"2026-04-14T18:32:16.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0301776191536.pdf\", \"certificado_id\": 26, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:32:16', '2026-04-14 18:32:16', '2026-04-14 18:32:16'),
+(72, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 13, \"hora\": \"14:32:33\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T18:32:33.000000Z\", \"updated_at\": \"2026-04-14T18:32:33.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 27, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:32:33', '2026-04-14 18:32:33', '2026-04-14 18:32:33'),
+(73, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 27, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"6\", \"created_at\": \"2026-04-14T18:32:33.000000Z\", \"updated_at\": \"2026-04-14T18:32:33.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:32:33\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 31, \"name\": \"0311776191553.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0311776191553.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:32:33.000000Z\", \"updated_at\": \"2026-04-14T18:32:33.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0311776191553.pdf\", \"certificado_id\": 27, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:32:33', '2026-04-14 18:32:33', '2026-04-14 18:32:33'),
+(74, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"23423423\", \"id\": 23, \"cel\": null, \"edad\": 27, \"ci_exp\": \"LP\", \"nombre\": \"GLADYS\", \"materno\": \"\", \"paterno\": \"CONDORI\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-14T18:32:51.000000Z\", \"updated_at\": \"2026-04-14T18:32:51.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:32:51', '2026-04-14 18:32:51', '2026-04-14 18:32:51'),
+(75, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"324234234\", \"id\": 24, \"cel\": null, \"edad\": 29, \"ci_exp\": \"CB\", \"nombre\": \"FRANCO\", \"materno\": \"\", \"paterno\": \"MARTINEZ\", \"fecha_nac\": \"1997-01-01\", \"created_at\": \"2026-04-14T18:33:42.000000Z\", \"updated_at\": \"2026-04-14T18:33:42.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:33:42', '2026-04-14 18:33:42', '2026-04-14 18:33:42'),
+(76, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 28, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"0\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"23\", \"created_at\": \"2026-04-14T18:34:05.000000Z\", \"updated_at\": \"2026-04-14T18:34:05.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:34:05\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 32, \"name\": \"0321776191645.pdf\", \"saldo\": \"0.00\", \"precio\": \"0.00\", \"archivo\": \"0321776191645.pdf\", \"cancelado\": \"0.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:34:05.000000Z\", \"updated_at\": \"2026-04-14T18:34:05.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0321776191645.pdf\", \"certificado_id\": 28, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:34:05', '2026-04-14 18:34:05', '2026-04-14 18:34:05'),
+(77, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"564456\", \"id\": 25, \"cel\": null, \"edad\": 26, \"ci_exp\": \"LP\", \"nombre\": \"ALEXIS\", \"materno\": \"\", \"paterno\": \"CONTREAS\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-14T18:37:59.000000Z\", \"updated_at\": \"2026-04-14T18:37:59.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:37:59', '2026-04-14 18:37:59', '2026-04-14 18:37:59'),
+(78, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 14, \"hora\": \"14:38:07\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"QR\", \"created_at\": \"2026-04-14T18:38:07.000000Z\", \"updated_at\": \"2026-04-14T18:38:07.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 29, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '14:38:07', '2026-04-14 18:38:07', '2026-04-14 18:38:07'),
+(79, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 29, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"QR\", \"cliente_id\": \"25\", \"created_at\": \"2026-04-14T18:38:07.000000Z\", \"updated_at\": \"2026-04-14T18:38:07.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"14:38:07\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 33, \"name\": \"0331776191887.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0331776191887.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T18:38:07.000000Z\", \"updated_at\": \"2026-04-14T18:38:07.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0331776191887.pdf\", \"certificado_id\": 29, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '14:38:07', '2026-04-14 18:38:07', '2026-04-14 18:38:07'),
+(80, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"24243333\", \"id\": 26, \"cel\": null, \"edad\": 26, \"ci_exp\": \"LP\", \"nombre\": \"EDUARDO\", \"materno\": \"\", \"paterno\": \"MARTINEZ\", \"fecha_nac\": \"1999-12-12\", \"created_at\": \"2026-04-14T18:59:54.000000Z\", \"updated_at\": \"2026-04-14T18:59:54.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '14:59:54', '2026-04-14 18:59:54', '2026-04-14 18:59:54'),
+(81, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 30, \"tipo\": \"TRAMITE\", \"saldo\": \"0\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"26\", \"created_at\": \"2026-04-14T19:00:15.000000Z\", \"updated_at\": \"2026-04-14T19:00:15.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:00:15\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 34, \"name\": \"0341776193215.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0341776193215.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"a\", \"created_at\": \"2026-04-14T19:00:15.000000Z\", \"updated_at\": \"2026-04-14T19:00:15.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0341776193215.pdf\", \"certificado_id\": 30, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:00:15', '2026-04-14 19:00:15', '2026-04-14 19:00:15'),
+(82, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"45345345\", \"id\": 27, \"cel\": null, \"edad\": 26, \"ci_exp\": \"LP\", \"nombre\": \"ELVIS\", \"materno\": \"\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:30:09', '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(83, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTEadmin REGISTRO UN CLIENTE', '{\"ci\": \"455345\", \"id\": 28, \"cel\": null, \"edad\": 26, \"ci_exp\": \"LP\", \"nombre\": \"ELIZABETH\", \"materno\": \"\", \"paterno\": \"CARDONA\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:30:09', '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(84, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTEadmin REGISTRO UN CLIENTEadmin REGISTRO UN CLIENTE', '{\"ci\": \"343434\", \"id\": 29, \"cel\": null, \"edad\": 27, \"ci_exp\": \"PT\", \"nombre\": \"FRANCISCA\", \"materno\": \"\", \"paterno\": \"CALLISAYA\", \"fecha_nac\": \"1999-02-02\", \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:30:09', '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(85, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN TRAMITE', '{\"id\": 3, \"nro\": 3, \"hora\": \"15:30:09\", \"fecha\": \"2026-04-14\", \"codigo\": \"T3\", \"user_id\": 1, \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"sucursal_id\": \"1\", \"tramitador_id\": \"1\", \"tramite_clientes\": [{\"id\": 12, \"estado\": 0, \"existente\": false, \"cliente_id\": 27, \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"tramite_id\": 3, \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"certificado_id\": null}, {\"id\": 13, \"estado\": 0, \"existente\": false, \"cliente_id\": 28, \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"tramite_id\": 3, \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"certificado_id\": null}, {\"id\": 14, \"estado\": 0, \"existente\": false, \"cliente_id\": 29, \"created_at\": \"2026-04-14T19:30:09.000000Z\", \"tramite_id\": 3, \"updated_at\": \"2026-04-14T19:30:09.000000Z\", \"certificado_id\": null}]}', NULL, 'TRAMITES', '2026-04-14', '15:30:09', '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(86, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 31, \"tipo\": \"TRAMITE\", \"saldo\": \"0\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"29\", \"created_at\": \"2026-04-14T19:30:25.000000Z\", \"updated_at\": \"2026-04-14T19:30:25.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:30:25\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 35, \"name\": \"0351776195025.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0351776195025.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:30:25.000000Z\", \"updated_at\": \"2026-04-14T19:30:25.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0351776195025.pdf\", \"certificado_id\": 31, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:30:25', '2026-04-14 19:30:25', '2026-04-14 19:30:25'),
+(87, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 32, \"tipo\": \"TRAMITE\", \"saldo\": \"50.00\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"27\", \"created_at\": \"2026-04-14T19:32:51.000000Z\", \"updated_at\": \"2026-04-14T19:32:51.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:32:51\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 36, \"name\": \"0361776195171.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0361776195171.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:32:51.000000Z\", \"updated_at\": \"2026-04-14T19:32:51.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0361776195171.pdf\", \"certificado_id\": 32, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:32:51', '2026-04-14 19:32:51', '2026-04-14 19:32:51'),
+(88, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 33, \"tipo\": \"TRAMITE\", \"saldo\": \"50.00\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"28\", \"created_at\": \"2026-04-14T19:35:31.000000Z\", \"updated_at\": \"2026-04-14T19:35:31.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:35:31\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 37, \"name\": \"0371776195331.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0371776195331.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:35:31.000000Z\", \"updated_at\": \"2026-04-14T19:35:31.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0371776195331.pdf\", \"certificado_id\": 33, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:35:31', '2026-04-14 19:35:31', '2026-04-14 19:35:31'),
+(89, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"4534544\", \"id\": 30, \"cel\": null, \"edad\": 25, \"ci_exp\": \"LP\", \"nombre\": \"ALEJANDRA\", \"materno\": \"\", \"paterno\": \"MARCELL\", \"fecha_nac\": \"2001-01-01\", \"created_at\": \"2026-04-14T19:36:50.000000Z\", \"updated_at\": \"2026-04-14T19:36:50.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:36:50', '2026-04-14 19:36:50', '2026-04-14 19:36:50'),
+(90, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 15, \"hora\": \"15:36:57\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T19:36:57.000000Z\", \"updated_at\": \"2026-04-14T19:36:57.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 34, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '15:36:57', '2026-04-14 19:36:57', '2026-04-14 19:36:57'),
+(91, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 34, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"30\", \"created_at\": \"2026-04-14T19:36:57.000000Z\", \"updated_at\": \"2026-04-14T19:36:57.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:36:57\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 38, \"name\": \"0381776195417.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0381776195417.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:36:57.000000Z\", \"updated_at\": \"2026-04-14T19:36:57.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0381776195417.pdf\", \"certificado_id\": 34, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:36:57', '2026-04-14 19:36:57', '2026-04-14 19:36:57'),
+(92, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 16, \"hora\": \"15:38:46\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T19:38:46.000000Z\", \"updated_at\": \"2026-04-14T19:38:46.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 35, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '15:38:46', '2026-04-14 19:38:46', '2026-04-14 19:38:46'),
+(93, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 35, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"6\", \"created_at\": \"2026-04-14T19:38:46.000000Z\", \"updated_at\": \"2026-04-14T19:38:46.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:38:46\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 39, \"name\": \"0391776195526.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0391776195526.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:38:46.000000Z\", \"updated_at\": \"2026-04-14T19:38:46.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0391776195526.pdf\", \"certificado_id\": 35, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:38:46', '2026-04-14 19:38:46', '2026-04-14 19:38:46'),
+(94, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"34534544\", \"id\": 31, \"cel\": null, \"edad\": 27, \"ci_exp\": \"TJ\", \"nombre\": \"ALEXA\", \"materno\": \"\", \"paterno\": \"MARTINEZ\", \"fecha_nac\": \"1999-01-01\", \"created_at\": \"2026-04-14T19:39:23.000000Z\", \"updated_at\": \"2026-04-14T19:39:23.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:39:23', '2026-04-14 19:39:23', '2026-04-14 19:39:23'),
+(95, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 36, \"tipo\": \"TRAMITE\", \"saldo\": \"50.00\", \"total\": \"50\", \"user_id\": 1, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"31\", \"created_at\": \"2026-04-14T19:39:37.000000Z\", \"updated_at\": \"2026-04-14T19:39:37.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:39:37\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 40, \"name\": null, \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": null, \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:39:37.000000Z\", \"updated_at\": \"2026-04-14T19:39:37.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados\", \"certificado_id\": 36, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:39:37', '2026-04-14 19:39:37', '2026-04-14 19:39:37'),
+(96, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CLIENTE', '{\"ci\": \"32423434\", \"id\": 32, \"cel\": null, \"edad\": 25, \"ci_exp\": \"LP\", \"nombre\": \"FRANCIS\", \"materno\": \"\", \"paterno\": \"CALDERON\", \"fecha_nac\": \"2001-02-02\", \"created_at\": \"2026-04-14T19:40:04.000000Z\", \"updated_at\": \"2026-04-14T19:40:04.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '15:40:04', '2026-04-14 19:40:04', '2026-04-14 19:40:04'),
+(97, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 17, \"hora\": \"15:40:35\", \"fecha\": \"2026-04-14\", \"monto\": \"60\", \"modulo\": \"Certificado\", \"user_id\": 1, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T19:40:35.000000Z\", \"updated_at\": \"2026-04-14T19:40:35.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 37, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '15:40:35', '2026-04-14 19:40:35', '2026-04-14 19:40:35'),
+(98, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN CERTIFICADO', '{\"id\": 37, \"tipo\": \"TRAMITE\", \"saldo\": 50, \"total\": \"110\", \"user_id\": 1, \"cancelado\": \"60\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"32\", \"created_at\": \"2026-04-14T19:40:35.000000Z\", \"updated_at\": \"2026-04-14T19:40:35.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"15:40:35\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 41, \"name\": \"0411776195635.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0411776195635.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:40:35.000000Z\", \"updated_at\": \"2026-04-14T19:40:35.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0411776195635.pdf\", \"certificado_id\": 37, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}, {\"id\": 42, \"name\": \"1421776195635.pdf\", \"saldo\": \"0.00\", \"precio\": \"60.00\", \"archivo\": \"1421776195635.pdf\", \"cancelado\": \"60.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T19:40:35.000000Z\", \"updated_at\": \"2026-04-14T19:40:35.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/1421776195635.pdf\", \"certificado_id\": 37, \"muestra_conteo\": false, \"tipo_certificado_id\": 3}]}', NULL, 'CERTIFICADOS', '2026-04-14', '15:40:35', '2026-04-14 19:40:35', '2026-04-14 19:40:35'),
+(99, 1, 'MODIFICACIÓN', 'EL USUARIO admin ACTUALIZÓ UN USUARIO', '{\"ci\": \"32234234\", \"id\": 4, \"dir\": \"\", \"fono\": \"67676767\", \"foto\": \"41775258996.jpg\", \"tipo\": \"MÉDICO\", \"acceso\": 1, \"ci_exp\": \"CB\", \"correo\": null, \"nombre\": \"GEOVANA\", \"status\": 1, \"materno\": \"MARTINEZ\", \"paterno\": \"MARTINEZ\", \"usuario\": \"GMARTINEZ\", \"created_at\": \"2026-04-04T03:29:56.000000Z\", \"updated_at\": \"2026-04-11T23:35:41.000000Z\", \"sucursal_id\": 2, \"fecha_registro\": \"2026-04-03\"}', '{\"ci\": \"32234234\", \"id\": 4, \"dir\": \"\", \"fono\": \"67676767\", \"foto\": \"41775258996.jpg\", \"tipo\": \"MÉDICO\", \"acceso\": \"1\", \"ci_exp\": \"CB\", \"correo\": null, \"nombre\": \"GEOVANA\", \"status\": 1, \"materno\": \"MARTINEZ\", \"paterno\": \"MARTINEZ\", \"usuario\": \"GMARTINEZ\", \"created_at\": \"2026-04-04T03:29:56.000000Z\", \"updated_at\": \"2026-04-14T20:55:35.000000Z\", \"sucursal_id\": \"1\", \"fecha_registro\": \"2026-04-03\"}', 'USUARIOS', '2026-04-14', '16:55:35', '2026-04-14 20:55:35', '2026-04-14 20:55:35'),
+(100, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 18, \"hora\": \"17:01:58\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T21:01:58.000000Z\", \"updated_at\": \"2026-04-14T21:01:58.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 38, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '17:01:58', '2026-04-14 21:01:58', '2026-04-14 21:01:58'),
+(101, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 38, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 4, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"1\", \"created_at\": \"2026-04-14T21:01:58.000000Z\", \"updated_at\": \"2026-04-14T21:01:58.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"17:01:58\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 43, \"name\": \"0431776200518.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0431776200518.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:01:58.000000Z\", \"updated_at\": \"2026-04-14T21:01:58.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0431776200518.pdf\", \"certificado_id\": 38, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:01:58', '2026-04-14 21:01:58', '2026-04-14 21:01:58'),
+(102, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CLIENTE', '{\"ci\": \"234234\", \"id\": 33, \"cel\": null, \"edad\": 20, \"ci_exp\": \"LP\", \"nombre\": \"FERNANDO\", \"materno\": \"\", \"paterno\": \"GONZALES\", \"fecha_nac\": \"2006-02-02\", \"created_at\": \"2026-04-14T21:08:16.000000Z\", \"updated_at\": \"2026-04-14T21:08:16.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '17:08:16', '2026-04-14 21:08:16', '2026-04-14 21:08:16'),
+(103, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN TRAMITE', '{\"id\": 4, \"nro\": 4, \"hora\": \"17:08:16\", \"fecha\": \"2026-04-14\", \"codigo\": \"T4\", \"user_id\": 4, \"created_at\": \"2026-04-14T21:08:16.000000Z\", \"updated_at\": \"2026-04-14T21:08:16.000000Z\", \"sucursal_id\": \"1\", \"tramitador_id\": \"1\", \"tramite_clientes\": [{\"id\": 17, \"estado\": 0, \"existente\": false, \"cliente_id\": 33, \"created_at\": \"2026-04-14T21:08:16.000000Z\", \"tramite_id\": 4, \"updated_at\": \"2026-04-14T21:08:16.000000Z\", \"certificado_id\": null}, {\"id\": 18, \"estado\": 0, \"existente\": true, \"cliente_id\": 6, \"created_at\": \"2026-04-14T21:08:16.000000Z\", \"tramite_id\": 4, \"updated_at\": \"2026-04-14T21:08:16.000000Z\", \"certificado_id\": null}]}', NULL, 'TRAMITES', '2026-04-14', '17:08:16', '2026-04-14 21:08:16', '2026-04-14 21:08:16'),
+(104, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 39, \"tipo\": \"TRAMITE\", \"saldo\": \"50.00\", \"total\": \"50\", \"user_id\": 4, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"33\", \"created_at\": \"2026-04-14T21:08:53.000000Z\", \"updated_at\": \"2026-04-14T21:08:53.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"17:08:53\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 44, \"name\": \"0441776200933.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0441776200933.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:08:53.000000Z\", \"updated_at\": \"2026-04-14T21:08:53.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0441776200933.pdf\", \"certificado_id\": 39, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:08:53', '2026-04-14 21:08:53', '2026-04-14 21:08:53'),
+(105, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 19, \"hora\": \"17:09:07\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 4, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T21:09:07.000000Z\", \"updated_at\": \"2026-04-14T21:09:07.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 40, \"sucursal_id\": 1}', NULL, 'PAGOS', '2026-04-14', '17:09:07', '2026-04-14 21:09:07', '2026-04-14 21:09:07'),
+(106, 4, 'CREACIÓN', 'EL USUARIO GMARTINEZ REGISTRO UN CERTIFICADO', '{\"id\": 40, \"tipo\": \"TRAMITE\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 4, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"6\", \"created_at\": \"2026-04-14T21:09:07.000000Z\", \"updated_at\": \"2026-04-14T21:09:07.000000Z\", \"sucursal_id\": \"1\", \"hora_registro\": \"17:09:07\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 45, \"name\": \"0451776200947.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0451776200947.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"C\", \"created_at\": \"2026-04-14T21:09:07.000000Z\", \"updated_at\": \"2026-04-14T21:09:07.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0451776200947.pdf\", \"certificado_id\": 40, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:09:07', '2026-04-14 21:09:07', '2026-04-14 21:09:07'),
+(107, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CLIENTE', '{\"ci\": \"43534534\", \"id\": 34, \"cel\": null, \"edad\": 30, \"ci_exp\": \"CB\", \"nombre\": \"PEDRO\", \"materno\": \"\", \"paterno\": \"CASTRO\", \"fecha_nac\": \"1996-01-01\", \"created_at\": \"2026-04-14T21:11:08.000000Z\", \"updated_at\": \"2026-04-14T21:11:08.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '17:11:08', '2026-04-14 21:11:08', '2026-04-14 21:11:08'),
+(108, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 20, \"hora\": \"17:11:10\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T21:11:10.000000Z\", \"updated_at\": \"2026-04-14T21:11:10.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 41, \"sucursal_id\": 2}', NULL, 'PAGOS', '2026-04-14', '17:11:10', '2026-04-14 21:11:10', '2026-04-14 21:11:10'),
+(109, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 41, \"tipo\": \"NORMAL\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 2, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"34\", \"created_at\": \"2026-04-14T21:11:10.000000Z\", \"updated_at\": \"2026-04-14T21:11:10.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"17:11:10\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 46, \"name\": \"0461776201070.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0461776201070.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:11:10.000000Z\", \"updated_at\": \"2026-04-14T21:11:10.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0461776201070.pdf\", \"certificado_id\": 41, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:11:10', '2026-04-14 21:11:10', '2026-04-14 21:11:10'),
+(110, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN TRAMITADOR', '{\"ci\": \"45334534\", \"id\": 3, \"cel\": \"65656565\", \"ci_exp\": \"LP\", \"nombre\": \"ELVIRA MARTINEZ\", \"created_at\": \"2026-04-14T21:11:37.000000Z\", \"updated_at\": \"2026-04-14T21:11:37.000000Z\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'TRAMITADORES', '2026-04-14', '17:11:37', '2026-04-14 21:11:37', '2026-04-14 21:11:37'),
+(111, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CLIENTE', '{\"ci\": \"1332332\", \"id\": 35, \"cel\": null, \"edad\": 26, \"ci_exp\": \"PT\", \"nombre\": \"FELIX\", \"materno\": \"\", \"paterno\": \"MAMANI\", \"fecha_nac\": \"2000-01-01\", \"created_at\": \"2026-04-14T21:12:12.000000Z\", \"updated_at\": \"2026-04-14T21:12:12.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '17:12:12', '2026-04-14 21:12:12', '2026-04-14 21:12:12'),
+(112, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CLIENTEJPERES REGISTRO UN CLIENTE', '{\"ci\": \"45445444\", \"id\": 36, \"cel\": null, \"edad\": 23, \"ci_exp\": \"LP\", \"nombre\": \"ALEX\", \"materno\": \"\", \"paterno\": \"CONTRERAS\", \"fecha_nac\": \"2003-03-03\", \"created_at\": \"2026-04-14T21:12:12.000000Z\", \"updated_at\": \"2026-04-14T21:12:12.000000Z\", \"complemento\": \"\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'CLIENTES', '2026-04-14', '17:12:12', '2026-04-14 21:12:12', '2026-04-14 21:12:12'),
+(113, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN TRAMITE', '{\"id\": 5, \"nro\": 5, \"hora\": \"17:12:12\", \"fecha\": \"2026-04-14\", \"codigo\": \"T5\", \"user_id\": 2, \"created_at\": \"2026-04-14T21:12:12.000000Z\", \"updated_at\": \"2026-04-14T21:12:12.000000Z\", \"sucursal_id\": \"2\", \"tramitador_id\": \"3\", \"tramite_clientes\": [{\"id\": 19, \"estado\": 0, \"existente\": false, \"cliente_id\": 35, \"created_at\": \"2026-04-14T21:12:12.000000Z\", \"tramite_id\": 5, \"updated_at\": \"2026-04-14T21:12:12.000000Z\", \"certificado_id\": null}, {\"id\": 20, \"estado\": 0, \"existente\": false, \"cliente_id\": 36, \"created_at\": \"2026-04-14T21:12:12.000000Z\", \"tramite_id\": 5, \"updated_at\": \"2026-04-14T21:12:12.000000Z\", \"certificado_id\": null}]}', NULL, 'TRAMITES', '2026-04-14', '17:12:12', '2026-04-14 21:12:12', '2026-04-14 21:12:12'),
+(114, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 42, \"tipo\": \"TRAMITE\", \"saldo\": \"140.00\", \"total\": \"140\", \"user_id\": 2, \"cancelado\": \"0\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"35\", \"created_at\": \"2026-04-14T21:12:37.000000Z\", \"updated_at\": \"2026-04-14T21:12:37.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"17:12:37\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 47, \"name\": \"0471776201157.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0471776201157.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:12:37.000000Z\", \"updated_at\": \"2026-04-14T21:12:37.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0471776201157.pdf\", \"certificado_id\": 42, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}, {\"id\": 48, \"name\": \"1481776201157.pdf\", \"saldo\": \"0.00\", \"precio\": \"90.00\", \"archivo\": \"1481776201157.pdf\", \"cancelado\": \"90.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:12:37.000000Z\", \"updated_at\": \"2026-04-14T21:12:37.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/1481776201157.pdf\", \"certificado_id\": 42, \"muestra_conteo\": false, \"tipo_certificado_id\": 2}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:12:37', '2026-04-14 21:12:37', '2026-04-14 21:12:37'),
+(115, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO EL PAGO DE UN CERTIFICADO', '{\"id\": 21, \"hora\": \"17:12:52\", \"fecha\": \"2026-04-14\", \"monto\": \"50\", \"modulo\": \"Certificado\", \"user_id\": 2, \"tipo_pago\": \"EFECTIVO\", \"created_at\": \"2026-04-14T21:12:52.000000Z\", \"updated_at\": \"2026-04-14T21:12:52.000000Z\", \"descripcion\": \"PAGO POR CERTIFICADO\", \"registro_id\": 43, \"sucursal_id\": 2}', NULL, 'PAGOS', '2026-04-14', '17:12:52', '2026-04-14 21:12:52', '2026-04-14 21:12:52'),
+(116, 2, 'CREACIÓN', 'EL USUARIO JPERES REGISTRO UN CERTIFICADO', '{\"id\": 43, \"tipo\": \"TRAMITE\", \"saldo\": 0, \"total\": \"50\", \"user_id\": 2, \"cancelado\": \"50\", \"tipo_pago\": \"EFECTIVO\", \"cliente_id\": \"36\", \"created_at\": \"2026-04-14T21:12:52.000000Z\", \"updated_at\": \"2026-04-14T21:12:52.000000Z\", \"sucursal_id\": \"2\", \"hora_registro\": \"17:12:52\", \"fecha_registro\": \"2026-04-14\", \"certificado_detalles\": [{\"id\": 49, \"name\": \"0491776201172.pdf\", \"saldo\": \"0.00\", \"precio\": \"50.00\", \"archivo\": \"0491776201172.pdf\", \"cancelado\": \"50.00\", \"categoria\": \"A\", \"created_at\": \"2026-04-14T21:12:52.000000Z\", \"updated_at\": \"2026-04-14T21:12:52.000000Z\", \"url_archivo\": \"http://medinter.test/files/certificados/0491776201172.pdf\", \"certificado_id\": 43, \"muestra_conteo\": false, \"tipo_certificado_id\": 1}]}', NULL, 'CERTIFICADOS', '2026-04-14', '17:12:52', '2026-04-14 21:12:52', '2026-04-14 21:12:52'),
+(117, 1, 'CREACIÓN', 'EL USUARIO admin REGISTRO UN USUARIO', '{\"ci\": \"343434\", \"id\": 6, \"dir\": \"\", \"fono\": \"67676767\", \"tipo\": \"SECRETARIA\", \"acceso\": \"1\", \"ci_exp\": \"LP\", \"correo\": null, \"nombre\": \"MARIA\", \"materno\": \"GONZALES\", \"paterno\": \"GONZALES\", \"usuario\": \"MGONZALES1\", \"created_at\": \"2026-04-14T21:13:22.000000Z\", \"updated_at\": \"2026-04-14T21:13:22.000000Z\", \"sucursal_id\": \"2\", \"fecha_registro\": \"2026-04-14\"}', NULL, 'USUARIOS', '2026-04-14', '17:13:22', '2026-04-14 21:13:22', '2026-04-14 21:13:22');
 
 -- --------------------------------------------------------
 
@@ -291,6 +441,14 @@ CREATE TABLE `login_users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `login_users`
+--
+
+INSERT INTO `login_users` (`id`, `user_id`, `sucursal_id`, `fecha`, `hora`, `created_at`, `updated_at`) VALUES
+(1, 4, 1, '2026-04-14', '16:55:47', '2026-04-14 20:55:47', '2026-04-14 20:55:47'),
+(2, 2, 2, '2026-04-14', '17:10:28', '2026-04-14 21:10:28', '2026-04-14 21:10:28');
 
 -- --------------------------------------------------------
 
@@ -332,13 +490,18 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 CREATE TABLE `pagos` (
   `id` bigint UNSIGNED NOT NULL,
-  `certificado_id` bigint UNSIGNED NOT NULL,
+  `registro_id` bigint UNSIGNED NOT NULL,
   `modulo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `monto` decimal(24,2) NOT NULL,
   `tipo_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descripcion` varchar(900) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `sucursal_id` bigint UNSIGNED NOT NULL,
   `verificado` int NOT NULL DEFAULT '0',
+  `fecha_verificado` date DEFAULT NULL,
+  `hora_verificado` time DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -347,15 +510,28 @@ CREATE TABLE `pagos` (
 -- Volcado de datos para la tabla `pagos`
 --
 
-INSERT INTO `pagos` (`id`, `certificado_id`, `modulo`, `monto`, `tipo_pago`, `fecha`, `hora`, `verificado`, `created_at`, `updated_at`) VALUES
-(1, 10, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:48:44', 0, '2026-04-13 20:48:44', '2026-04-13 20:48:44'),
-(2, 9, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:48:57', 0, '2026-04-13 20:48:57', '2026-04-13 20:48:57'),
-(3, 8, 'Certificado', 15.00, 'EFECTIVO', '2026-04-13', '16:49:03', 0, '2026-04-13 20:49:03', '2026-04-13 20:49:03'),
-(4, 8, 'Certificado', 15.00, 'EFECTIVO', '2026-04-13', '16:49:41', 0, '2026-04-13 20:49:41', '2026-04-13 20:49:41'),
-(5, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:24', 0, '2026-04-13 20:50:24', '2026-04-13 20:50:24'),
-(6, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:36', 0, '2026-04-13 20:50:36', '2026-04-13 20:50:36'),
-(7, 7, 'Certificado', 10.00, 'EFECTIVO', '2026-04-13', '16:50:48', 0, '2026-04-13 20:50:48', '2026-04-13 20:50:48'),
-(8, 6, 'Certificado', 30.00, 'EFECTIVO', '2026-04-13', '16:51:01', 0, '2026-04-13 20:51:01', '2026-04-13 20:51:01');
+INSERT INTO `pagos` (`id`, `registro_id`, `modulo`, `monto`, `tipo_pago`, `descripcion`, `fecha`, `hora`, `user_id`, `sucursal_id`, `verificado`, `fecha_verificado`, `hora_verificado`, `created_at`, `updated_at`) VALUES
+(1, 10, 'Certificado', 30.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:48:44', 1, 1, 1, '2026-04-14', '09:31:04', '2026-04-13 20:48:44', '2026-04-14 13:31:04'),
+(2, 9, 'Certificado', 30.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:48:57', 1, 1, 1, '2026-04-14', '09:31:04', '2026-04-13 20:48:57', '2026-04-14 13:31:04'),
+(3, 8, 'Certificado', 15.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:49:03', 1, 1, 1, '2026-04-14', '09:31:04', '2026-04-13 20:49:03', '2026-04-14 13:31:04'),
+(4, 8, 'Certificado', 15.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:49:41', 1, 1, 0, NULL, NULL, '2026-04-13 20:49:41', '2026-04-13 20:49:41'),
+(5, 7, 'Certificado', 10.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:50:24', 1, 1, 0, NULL, NULL, '2026-04-13 20:50:24', '2026-04-13 20:50:24'),
+(6, 7, 'Certificado', 10.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:50:36', 1, 1, 0, NULL, NULL, '2026-04-13 20:50:36', '2026-04-13 20:50:36'),
+(7, 7, 'Certificado', 10.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:50:48', 1, 1, 1, '2026-04-14', '14:30:35', '2026-04-13 20:50:48', '2026-04-14 18:30:35'),
+(8, 6, 'Certificado', 30.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-13', '16:51:01', 1, 1, 1, '2026-04-14', '14:30:35', '2026-04-13 20:51:01', '2026-04-14 18:30:35'),
+(9, 19, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '14:21:27', 1, 1, 0, NULL, NULL, '2026-04-14 18:21:27', '2026-04-14 18:21:27'),
+(10, 24, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '14:30:21', 1, 1, 0, NULL, NULL, '2026-04-14 18:30:21', '2026-04-14 18:30:21'),
+(11, 25, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '14:31:15', 1, 1, 1, '2026-04-14', '15:15:57', '2026-04-14 18:31:15', '2026-04-14 19:15:57'),
+(12, 26, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '14:32:16', 1, 1, 1, '2026-04-14', '15:15:57', '2026-04-14 18:32:16', '2026-04-14 19:15:57'),
+(13, 27, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '14:32:33', 1, 1, 1, '2026-04-14', '14:39:07', '2026-04-14 18:32:33', '2026-04-14 18:39:07'),
+(14, 29, 'Certificado', 50.00, 'QR', 'PAGO POR CERTIFICADO', '2026-04-14', '14:38:07', 1, 1, 1, '2026-04-14', '14:39:07', '2026-04-14 18:38:07', '2026-04-14 18:39:07'),
+(15, 34, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '15:36:57', 1, 1, 0, NULL, NULL, '2026-04-14 19:36:57', '2026-04-14 19:36:57'),
+(16, 35, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '15:38:46', 1, 1, 1, '2026-04-14', '16:54:10', '2026-04-14 19:38:46', '2026-04-14 20:54:10'),
+(17, 37, 'Certificado', 60.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '15:40:35', 1, 1, 1, '2026-04-14', '16:54:10', '2026-04-14 19:40:35', '2026-04-14 20:54:10'),
+(18, 38, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '17:01:58', 4, 1, 0, NULL, NULL, '2026-04-14 21:01:58', '2026-04-14 21:01:58'),
+(19, 40, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '17:09:07', 4, 1, 0, NULL, NULL, '2026-04-14 21:09:07', '2026-04-14 21:09:07'),
+(20, 41, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '17:11:10', 2, 2, 1, '2026-04-14', '17:13:58', '2026-04-14 21:11:10', '2026-04-14 21:13:58'),
+(21, 43, 'Certificado', 50.00, 'EFECTIVO', 'PAGO POR CERTIFICADO', '2026-04-14', '17:12:52', 2, 2, 1, '2026-04-14', '17:13:58', '2026-04-14 21:12:52', '2026-04-14 21:13:58');
 
 -- --------------------------------------------------------
 
@@ -428,7 +604,8 @@ CREATE TABLE `tramitadors` (
 
 INSERT INTO `tramitadors` (`id`, `nombre`, `ci`, `ci_exp`, `cel`, `fecha_registro`, `created_at`, `updated_at`) VALUES
 (1, 'EDUARDO GONZALES', '32423423', 'LP', '67676767', '2026-04-11', '2026-04-11 20:28:02', '2026-04-11 20:28:02'),
-(2, 'MARIA MAMANI', '34343434', 'LP', '67676767', '2026-04-12', '2026-04-12 15:58:07', '2026-04-12 15:58:07');
+(2, 'MARIA MAMANI', '34343434', 'LP', '67676767', '2026-04-12', '2026-04-12 15:58:07', '2026-04-12 15:58:07'),
+(3, 'ELVIRA MARTINEZ', '45334534', 'LP', '65656565', '2026-04-14', '2026-04-14 21:11:37', '2026-04-14 21:11:37');
 
 -- --------------------------------------------------------
 
@@ -455,7 +632,10 @@ CREATE TABLE `tramites` (
 
 INSERT INTO `tramites` (`id`, `nro`, `codigo`, `tramitador_id`, `fecha`, `hora`, `sucursal_id`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 'T1', 1, '2026-04-12', '15:13:26', 1, 1, '2026-04-12 19:13:26', '2026-04-12 19:13:26'),
-(2, 2, 'T2', 2, '2026-04-12', '15:14:44', 1, 1, '2026-04-12 19:14:44', '2026-04-12 19:14:44');
+(2, 2, 'T2', 2, '2026-04-12', '15:14:44', 1, 1, '2026-04-12 19:14:44', '2026-04-12 19:14:44'),
+(3, 3, 'T3', 1, '2026-04-14', '15:30:09', 1, 1, '2026-04-14 19:30:09', '2026-04-14 19:30:09'),
+(4, 4, 'T4', 1, '2026-04-14', '17:08:16', 1, 4, '2026-04-14 21:08:16', '2026-04-14 21:08:16'),
+(5, 5, 'T5', 3, '2026-04-14', '17:12:12', 2, 2, '2026-04-14 21:12:12', '2026-04-14 21:12:12');
 
 -- --------------------------------------------------------
 
@@ -486,7 +666,19 @@ INSERT INTO `tramite_clientes` (`id`, `tramite_id`, `cliente_id`, `certificado_i
 (5, 2, 11, 5, 1, 0, '2026-04-12 19:14:44', '2026-04-13 14:52:23'),
 (6, 2, 12, 8, 1, 0, '2026-04-12 19:14:44', '2026-04-13 19:37:00'),
 (7, 2, 13, 9, 1, 0, '2026-04-12 19:14:44', '2026-04-13 19:44:32'),
-(8, 1, 14, 10, 1, 0, '2026-04-13 19:46:37', '2026-04-13 19:46:53');
+(8, 1, 14, 10, 1, 0, '2026-04-13 19:46:37', '2026-04-13 19:46:53'),
+(9, 2, 15, 19, 1, 0, '2026-04-14 18:11:14', '2026-04-14 18:21:27'),
+(10, 1, 24, NULL, 0, 0, '2026-04-14 18:33:42', '2026-04-14 18:33:42'),
+(11, 2, 26, 30, 1, 0, '2026-04-14 18:59:54', '2026-04-14 19:00:15'),
+(12, 3, 27, 32, 1, 0, '2026-04-14 19:30:09', '2026-04-14 19:32:51'),
+(13, 3, 28, 33, 1, 0, '2026-04-14 19:30:09', '2026-04-14 19:35:31'),
+(14, 3, 29, 31, 1, 0, '2026-04-14 19:30:09', '2026-04-14 19:30:25'),
+(15, 3, 31, 36, 1, 0, '2026-04-14 19:39:23', '2026-04-14 19:39:37'),
+(16, 3, 32, 37, 1, 0, '2026-04-14 19:40:04', '2026-04-14 19:40:35'),
+(17, 4, 33, 39, 1, 0, '2026-04-14 21:08:16', '2026-04-14 21:08:53'),
+(18, 4, 6, 40, 1, 1, '2026-04-14 21:08:16', '2026-04-14 21:09:07'),
+(19, 5, 35, 42, 1, 0, '2026-04-14 21:12:12', '2026-04-14 21:12:37'),
+(20, 5, 36, 43, 1, 0, '2026-04-14 21:12:12', '2026-04-14 21:12:52');
 
 -- --------------------------------------------------------
 
@@ -524,8 +716,9 @@ INSERT INTO `users` (`id`, `usuario`, `nombre`, `paterno`, `materno`, `ci`, `ci_
 (1, 'admin', 'admin', 'admin', '', '0', '', '', '', '', '$2y$12$65d4fgZsvBV5Lc/AxNKh4eoUdbGyaczQ4sSco20feSQANshNLuxSC', 1, 'ADMINISTRADOR', NULL, 1, '2025-10-01', 1, '2026-02-17 22:21:27', '2026-02-17 22:21:27'),
 (2, 'JPERES', 'JUAN', 'PERES', 'MAMANI', '123456', 'LP', 'LOS PEDREGALES', 'juan@gmail.com', '67676767', '$2y$12$NAk3MUCLFIo9isfVaA/Cbe5K8IYui6VwjyVSCkQtxegaMM3/Q4R3y', 1, 'MÉDICO', '21775258381.jpg', 2, '2026-04-03', 1, '2026-04-04 03:19:41', '2026-04-11 23:35:55'),
 (3, 'MGONZALES', 'MARIA', 'GONZALES', '', '1234567', 'LP', '', NULL, '6767676', '$2y$12$okLv9H49WTpjRipKuglJO.iS4QPMl62lvwhtbJGG/EtQ5aJaLJ3bi', 1, 'SECRETARIA', '31775258613.jpg', 1, '2026-04-03', 1, '2026-04-04 03:23:20', '2026-04-11 23:35:46'),
-(4, 'GMARTINEZ', 'GEOVANA', 'MARTINEZ', 'MARTINEZ', '32234234', 'CB', '', NULL, '67676767', '$2y$12$hqaROKdsJFiFWcbuTXm7tugbl1s3LR6Rt3hA4JZ2JTdr/dJGIa0Ou', 1, 'MÉDICO', '41775258996.jpg', 2, '2026-04-03', 1, '2026-04-04 03:29:56', '2026-04-11 23:35:41'),
-(5, 'SMARTINEZ', 'SANDRA', 'MARTINEZ', '', '56445645', 'LP', '', NULL, '67676767', '$2y$12$BOrmYu5SAJSSdxrpToSux.PR4DRFWiN6YMFsvBUDmyJBUTO52cFQi', 1, 'GERENTE', NULL, 1, '2026-04-07', 1, '2026-04-07 17:27:08', '2026-04-11 23:34:50');
+(4, 'GMARTINEZ', 'GEOVANA', 'MARTINEZ', 'MARTINEZ', '32234234', 'CB', '', NULL, '67676767', '$2y$12$hqaROKdsJFiFWcbuTXm7tugbl1s3LR6Rt3hA4JZ2JTdr/dJGIa0Ou', 1, 'MÉDICO', '41775258996.jpg', 1, '2026-04-03', 1, '2026-04-04 03:29:56', '2026-04-14 20:55:35'),
+(5, 'SMARTINEZ', 'SANDRA', 'MARTINEZ', '', '56445645', 'LP', '', NULL, '67676767', '$2y$12$BOrmYu5SAJSSdxrpToSux.PR4DRFWiN6YMFsvBUDmyJBUTO52cFQi', 1, 'GERENTE', NULL, 1, '2026-04-07', 1, '2026-04-07 17:27:08', '2026-04-11 23:34:50'),
+(6, 'MGONZALES1', 'MARIA', 'GONZALES', 'GONZALES', '343434', 'LP', '', NULL, '67676767', '$2y$12$7diTukpdlOCZwh9RHgX4n.Vn61luSHVRgI8/j.Qvr4VZFLHzTePha', 1, 'SECRETARIA', NULL, 2, '2026-04-14', 1, '2026-04-14 21:13:22', '2026-04-14 21:13:22');
 
 --
 -- Índices para tablas volcadas
@@ -591,7 +784,9 @@ ALTER TABLE `migrations`
 -- Indices de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_user_pagos_id` (`user_id`),
+  ADD KEY `fk_sucursal_pagos_id` (`sucursal_id`);
 
 --
 -- Indices de la tabla `sucursals`
@@ -645,25 +840,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `certificados`
 --
 ALTER TABLE `certificados`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `certificado_detalles`
 --
 ALTER TABLE `certificado_detalles`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `certificado_emitidos`
 --
 ALTER TABLE `certificado_emitidos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `configuracions`
@@ -675,13 +870,13 @@ ALTER TABLE `configuracions`
 -- AUTO_INCREMENT de la tabla `historial_accions`
 --
 ALTER TABLE `historial_accions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
 
 --
 -- AUTO_INCREMENT de la tabla `login_users`
 --
 ALTER TABLE `login_users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
@@ -693,7 +888,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `sucursals`
@@ -711,25 +906,25 @@ ALTER TABLE `tipo_certificados`
 -- AUTO_INCREMENT de la tabla `tramitadors`
 --
 ALTER TABLE `tramitadors`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `tramites`
 --
 ALTER TABLE `tramites`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tramite_clientes`
 --
 ALTER TABLE `tramite_clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Restricciones para tablas volcadas
@@ -762,6 +957,13 @@ ALTER TABLE `certificado_emitidos`
 --
 ALTER TABLE `historial_accions`
   ADD CONSTRAINT `historial_accions_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `fk_sucursal_pagos_id` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursals` (`id`),
+  ADD CONSTRAINT `fk_user_pagos_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Filtros para la tabla `tramites`

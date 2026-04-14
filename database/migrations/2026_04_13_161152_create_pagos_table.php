@@ -17,9 +17,12 @@ return new class extends Migration
             $table->string("modulo", 255);
             $table->decimal("monto", 24, 2);
             $table->string("tipo_pago");
+            $table->string("descripcion", 900);
             $table->date("fecha");
             $table->time("hora");
             $table->integer("verificado")->default(0);
+            $table->date("fecha_verificado")->nullable();
+            $table->time("hora_verificado")->nullable();
             $table->timestamps();
 
             $table->foreign("certificado_id")->on("certificados")->references("id");

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificado;
+use App\Models\CertificadoDetalle;
 use App\Models\Cliente;
 use App\Models\Configuracion;
 use App\Models\HistorialAccion;
 use App\Models\Inscripcion;
+use App\Models\Pago;
 use App\Models\TipoCertificado;
 use App\Models\User;
 use App\Services\ReporteService;
@@ -305,6 +307,131 @@ class ReporteController extends Controller
         }
     }
 
+    public function exportarCaja(Request $request)
+    {
+        ini_set('memory_limit', '1024M');
+        set_time_limit(-1);
+        $fecha =  $request->fecha;
+        $formato =  $request->formato;
+        $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])
+            ->where("fecha_verificado", $fecha);
+
+        $sucursal_id = Auth::user()->sucursal_id;
+        $pagos->where("sucursal_id", $sucursal_id);
+        $pagos = $pagos->where("verificado", 1)->get();
+
+        if ($formato == 'pdf') {
+            $pdf = PDF::loadView('reportes.exportarCaja', compact('pagos', 'fecha'))->setPaper('letter', '´portrait');
+
+            // ENUMERAR LAS PÁGINAS USANDO CANVAS
+            $pdf->output();
+            $dom_pdf = $pdf->getDomPDF();
+            $canvas = $dom_pdf->get_canvas();
+            $alto = $canvas->get_height();
+            $ancho = $canvas->get_width();
+            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+
+            return $pdf->stream('caja.pdf');
+        } else {
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getProperties()
+                ->setCreator("ADMIN")
+                ->setLastModifiedBy('Administración')
+                ->setTitle('Registros')
+                ->setSubject('Registros')
+                ->setDescription('Registros')
+                ->setKeywords('PHPSpreadsheet')
+                ->setCategory('Listado');
+
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+
+            $fila = 1;
+            if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('logo');
+                $drawing->setDescription('logo');
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setCoordinates('A' . $fila);
+                $drawing->setOffsetX(5);
+                $drawing->setOffsetY(0);
+                $drawing->setHeight(70);
+                $drawing->setWorksheet($sheet);
+            }
+
+            $fila = 2;
+            $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
+            $sheet->mergeCells("A" . $fila . ":E" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $sheet->setCellValue('A' . $fila, "ARQUEO DE CAJA");
+            $sheet->mergeCells("A" . $fila . ":E" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->titulo);
+            $fila++;
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'Fecha:');
+            $sheet->mergeCells("A" . $fila . ":B" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':b' . $fila)->applyFromArray($this->textRight);
+            $sheet->setCellValue('C' . $fila, date("d/m/Y", strtotime($fecha)));
+            $fila++;
+            $sheet->setCellValue('A' . $fila, 'N°');
+            $sheet->setCellValue('B' . $fila, 'FECHA');
+            $sheet->setCellValue('C' . $fila, 'SUCURSAL');
+            $sheet->setCellValue('D' . $fila, 'DESCRIPCIÓN');
+            $sheet->setCellValue('E' . $fila, 'MONTO BS.');
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->headerTabla);
+            $fila++;
+
+            foreach ($pagos as $key => $item) {
+                $sheet->setCellValue('A' . $fila, $key + 1);
+                $sheet->setCellValue('B' . $fila, $item->fecha_verificado_t . "\n" . $item->hora_verificado);
+                $sheet->setCellValue('C' . $fila, $item->sucursal->nombre);
+                $sheet->setCellValue('D' . $fila, $item->descripcion);
+                $sheet->setCellValue('E' . $fila, number_format($item->monto, 2, ".", ""));
+                $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->bodyTabla);
+                $fila++;
+            }
+            $sheet->setCellValue('A' . $fila, "TOTAL BS.");
+            $sheet->mergeCells("A" . $fila . ":D" . $fila);  //COMBINAR CELDAS
+            $sheet->setCellValue('E' . $fila, number_format($pagos->sum("monto"), 2, ".", ""));
+            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->headerTabla);
+
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(12);
+            $sheet->getColumnDimension('C')->setWidth(15);
+            $sheet->getColumnDimension('D')->setWidth(25);
+            $sheet->getColumnDimension('E')->setWidth(15);
+
+            foreach (range('A', 'E') as $columnID) {
+                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            }
+
+            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getPageMargins()->setTop(0.5);
+            $sheet->getPageMargins()->setRight(0.1);
+            $sheet->getPageMargins()->setLeft(0.1);
+            $sheet->getPageMargins()->setBottom(0.1);
+            $sheet->getPageSetup()->setPrintArea('A:E');
+            $sheet->getPageSetup()->setFitToWidth(1);
+            $sheet->getPageSetup()->setFitToHeight(0);
+
+            return response()->streamDownload(
+                function () use ($spreadsheet) {
+                    $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                    $writer->save('php://output');
+                },
+                'caja_' . time() . '.xlsx',
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        }
+    }
+
+
     public function clientes()
     {
         return Inertia::render("Admin/Reportes/Clientes");
@@ -464,7 +591,9 @@ class ReporteController extends Controller
         }
 
         if ($tipo_certificado_id != 'todos') {
-            $certificados->where('tipo_certificado_id', $tipo_certificado_id);
+            $certificados->whereHas('certificado_detalles', function ($q) use ($tipo_certificado_id) {
+                $q->where("tipo_certificado_id", $tipo_certificado_id);
+            });
         }
 
         $certificados = $certificados->get();
@@ -511,35 +640,37 @@ class ReporteController extends Controller
 
             $fila = 2;
             $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
-            $sheet->mergeCells("A" . $fila . ":G" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':G' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $sheet->setCellValue('A' . $fila, "CERTIFICADOS EMITIDOS");
-            $sheet->mergeCells("A" . $fila . ":G" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':G' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $fila++;
             $sheet->setCellValue('A' . $fila, 'N°');
-            $sheet->setCellValue('B' . $fila, 'CLIENTE');
-            $sheet->setCellValue('C' . $fila, 'TIPO CERTIFICADO');
-            $sheet->setCellValue('D' . $fila, 'COSTO BS.');
-            $sheet->setCellValue('E' . $fila, 'TIPO DE PAGO');
-            $sheet->setCellValue('F' . $fila, 'MÉDICO');
-            $sheet->setCellValue('G' . $fila, 'FECHA DE REGISTRO');
-            $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->headerTabla);
+            $sheet->setCellValue('B' . $fila, 'PACIENTE');
+            $sheet->setCellValue('C' . $fila, 'CERTIFICADO(S)');
+            $sheet->setCellValue('D' . $fila, 'USUARIO');
+            $sheet->setCellValue('E' . $fila, 'TOTAL BS.');
+            $sheet->setCellValue('F' . $fila, 'FECHA DE REGISTRO');
+            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->headerTabla);
             $fila++;
 
             foreach ($certificados as $key => $item) {
                 $sheet->setCellValue('A' . $fila, $key + 1);
                 $sheet->setCellValue('B' . $fila, $item->cliente->full_name . "\n" . $item->cliente->full_ci);
-                $sheet->setCellValue('C' . $fila, $item->tipo_certificado->nombre);
-                $sheet->setCellValue('D' . $fila, $item->precio);
-                $sheet->setCellValue('E' . $fila, $item->tipo_pago);
-                $sheet->setCellValue('F' . $fila, $item->user->full_name);
-                $sheet->setCellValue('G' . $fila, $item->fecha_registro_t . ' ' . $item->hora_registro);
-                $sheet->getStyle('A' . $fila . ':G' . $fila)->applyFromArray($this->bodyTabla);
+                $lista = "";
+                foreach ($item->certificado_detalles as $d) {
+                    $lista .= "- " . $d->tipo_certificado->nombre . "\n";
+                }
+                $sheet->setCellValue('C' . $fila, $lista);
+                $sheet->setCellValue('D' . $fila, $item->user->full_name);
+                $sheet->setCellValue('E' . $fila, $item->total);
+                $sheet->setCellValue('F' . $fila, $item->fecha_registro_t . ' ' . $item->hora_registro);
+                $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->bodyTabla);
                 $fila++;
             }
 
@@ -549,9 +680,8 @@ class ReporteController extends Controller
             $sheet->getColumnDimension('D')->setWidth(10);
             $sheet->getColumnDimension('E')->setWidth(15);
             $sheet->getColumnDimension('F')->setWidth(20);
-            $sheet->getColumnDimension('G')->setWidth(15);
 
-            foreach (range('A', 'G') as $columnID) {
+            foreach (range('A', 'F') as $columnID) {
                 $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
             }
 
@@ -560,7 +690,7 @@ class ReporteController extends Controller
             $sheet->getPageMargins()->setRight(0.1);
             $sheet->getPageMargins()->setLeft(0.1);
             $sheet->getPageMargins()->setBottom(0.1);
-            $sheet->getPageSetup()->setPrintArea('A:G');
+            $sheet->getPageSetup()->setPrintArea('A:F');
             $sheet->getPageSetup()->setFitToWidth(1);
             $sheet->getPageSetup()->setFitToHeight(0);
 
@@ -731,7 +861,6 @@ class ReporteController extends Controller
             $users->where("id", $user_id);
         }
 
-
         $users = $users->get();
         $categorias = $users->map(function ($user) {
             return $user->nombre . ' ' . $user->paterno . ' ' . $user->materno;
@@ -751,23 +880,23 @@ class ReporteController extends Controller
         foreach ($tipo_certificados as $tipo_certificado) {
             $cantidad_por_tipo = [];
             foreach ($users as $key => $user) {
-                $total = Certificado::where("status", 1)
-                    ->where("user_id", $user->id)
-                    ->where("tipo_certificado_id", $tipo_certificado->id);
-                if ($fecha_ini && $fecha_fin) {
-                    $total->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
-                }
-                if ($sucursal_id != 'todos') {
-                    $total->where("sucursal_id", $sucursal_id);
-                }
-                if ($cliente_id != 'todos') {
-                    $total->where("cliente_id", $cliente_id);
-                }
+                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($user, $fecha_ini, $fecha_fin, $sucursal_id, $cliente_id) {
+                    $q->where("status", 1);
+                    $q->where("user_id", $user->id);
+                    if ($fecha_ini && $fecha_fin) {
+                        $q->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
+                    }
+                    if ($sucursal_id != 'todos') {
+                        $q->where("sucursal_id", $sucursal_id);
+                    }
+                    if ($cliente_id != 'todos') {
+                        $q->where("cliente_id", $cliente_id);
+                    }
+                })->where("tipo_certificado_id", $tipo_certificado->id);
                 $total = $total->count();
                 $cantidad_por_tipo[] = $total;
                 $total_final += (int)$total;
             }
-
             $data[] = [
                 'name' => $tipo_certificado->nombre,
                 'data' => $cantidad_por_tipo,
@@ -790,48 +919,50 @@ class ReporteController extends Controller
         $cliente_id =  $request->cliente_id;
         $sucursal_id =  $request->sucursal_id;
         $user_id =  $request->user_id;
-        $tipo_certificado_id =  $request->tipo_certificado_id;
+        $tipo_pago =  $request->tipo_pago;
         $fecha_ini = $request->fecha_ini;
         $fecha_fin = $request->fecha_fin;
 
-        $tipo_certificados = TipoCertificado::select("tipo_certificados.*");
+        // Si no vienen fechas
+        if (!$request->fecha_ini || !$request->fecha_fin) {
 
-        if ($tipo_certificado_id != 'todos') {
-            $tipo_certificados->where("id", $tipo_certificado_id);
+            $primerPago = Pago::orderBy('fecha_verificado', 'asc')->first();
+
+            $fecha_ini = $primerPago
+                ? Carbon::parse($primerPago->fecha_verificado)->startOfDay()
+                : Carbon::now()->startOfDay();
+
+            $fecha_fin = Carbon::now()->endOfDay();
+        } else {
+            $fecha_ini = Carbon::parse($request->fecha_ini)->startOfDay();
+            $fecha_fin = Carbon::parse($request->fecha_fin)->endOfDay();
         }
 
-        $tipo_certificados = $tipo_certificados->get();
-
-
+        $categories = [];
         $data = [];
-        $total_final = 0;
-        foreach ($tipo_certificados as $tipo_certificado) {
-            $categorias[] = $tipo_certificado->nombre;
-            $total = Certificado::where("status", 1)
-                ->where("tipo_certificado_id", $tipo_certificado->id);
-            if ($fecha_ini && $fecha_fin) {
-                $total->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
-            }
-            if ($user_id != 'todos') {
-                $total->where("user_id", $user_id);
-            }
-            if ($sucursal_id != 'todos') {
-                $total->where("sucursal_id", $sucursal_id);
-            }
-            if ($cliente_id != 'todos') {
-                $total->where("cliente_id", $cliente_id);
-            }
-            $total = $total->sum("precio");
-            $total_final += (int)$total;
 
-            $data[] = [
-                'name' => $tipo_certificado->nombre,
-                'y' => (float) $total,
-            ];
+        $periodo = Carbon::parse($fecha_ini);
+        $total_final = 0;
+        while ($periodo <= $fecha_fin) {
+            $fecha = $periodo->format('Y-m-d');
+            $categories[] = date("d/m/Y", strtotime($fecha));
+
+            $total_fecha = Pago::select("id,monto,fecha_verificado,verificado");
+            $total_fecha->when($sucursal_id != 'todos', fn($q) => $q->where("sucursal_id", $sucursal_id));
+            $total_fecha->when($user_id != 'todos', fn($q) => $q->where("user_id", $user_id));
+            $total_fecha->when($tipo_pago != 'todos', fn($q) => $q->where("tipo_pago", $tipo_pago));
+            $total_fecha->where("verificado", 1);
+            $total_fecha->where("fecha_verificado", $fecha);
+            $total_fecha = $total_fecha->sum("monto");
+            $data[] = (float)$total_fecha;
+            $total_final += (float)$total_fecha;
+            $periodo->addDay();
         }
+
+        $total_final = array_sum($data);
 
         return response()->JSON([
-            "categories" => $categorias,
+            "categories" => $categories,
             "data" => $data,
             "total_final" => number_format($total_final, 2, ".", ",")
         ]);

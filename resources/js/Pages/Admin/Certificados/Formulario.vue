@@ -9,7 +9,7 @@ const loginUserStore = useLoginUserStore();
 const props = defineProps({
     certificado: {
         type: Object,
-        default: { id: 0 },
+        default: { id: 0, errors: null },
     },
     cliente: {
         type: Object,
@@ -49,6 +49,7 @@ const enviarFormulario = () => {
     } else {
         form["sucursal_id"] = propsPage.auth.user.sucursal_id;
     }
+    form.tipo = "NORMAL";
     form.post(url, {
         preserveScroll: true,
         forceFormData: true,
@@ -225,6 +226,7 @@ const agregarCertificado = () => {
     form.certificado_detalles.push({
         id: 0,
         certificado_id: "",
+        categoria: "",
         precio: "",
         cancelado: "",
         saldo: "",
@@ -254,6 +256,8 @@ const total = computed(() => {
         return total;
     }, 0);
 
+    form.cancelado = total;
+    form.saldo = 0;
     form.total = total;
 
     return total ? total.toFixed(2) : "0.00";
@@ -578,6 +582,16 @@ onBeforeMount(() => {
                                             "
                                             >(Certificado gratuito)</small
                                         >
+                                    </div>
+                                    <div class="col-md-6 mt-1">
+                                        <label class="">Categoría</label>
+                                        <el-input
+                                            type="text"
+                                            v-model="
+                                                certificado_detalle.categoria
+                                            "
+                                            autosize
+                                        ></el-input>
                                     </div>
                                 </div>
                             </div>

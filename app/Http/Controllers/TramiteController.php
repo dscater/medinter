@@ -69,6 +69,11 @@ class TramiteController extends Controller
             if ($fecha && trim($fecha) != '') {
                 $tramites->where("fecha", $fecha);
             }
+
+            if (Auth::user()->tipo == 'MÉDICO') {
+                $tramites->where("user_id", Auth::user()->id);
+            }
+
             $tramites = $tramites->get();
         }
 
@@ -82,7 +87,7 @@ class TramiteController extends Controller
     {
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
-        $cliente = (string)$request->input("cliente", "");
+        $tramitador = (string)$request->input("tramitador", "");
         $tipo_tramite_id = $request->input("tipo_tramite_id", []);
         $tipo_pago = (string)$request->input("tipo_pago", "todos");
         $sucursal_id = (string)$request->input("sucursal_id", "todos");
@@ -102,7 +107,7 @@ class TramiteController extends Controller
             $perPage,
             $page,
             $arrayOrderBy,
-            $cliente,
+            $tramitador,
             $tipo_tramite_id,
             $tipo_pago,
             $sucursal_id,

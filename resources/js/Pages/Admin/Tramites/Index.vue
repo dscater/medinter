@@ -92,7 +92,7 @@ const headers = [
 ];
 
 const multiSearch = ref({
-    cliente: "",
+    tramitador: "",
     tipo_certificado_id: [],
     tipo_pago: "todos",
     sucursal_id: "todos",
@@ -173,16 +173,16 @@ const eliminarTramite = (item) => {
                         <div class="row">
                             <div class="col-md-2">
                                 <small class="text-muted text-xs"
-                                    >Cliente</small
+                                    >Tramitador</small
                                 >
                                 <input
                                     type="search"
-                                    v-model="multiSearch.cliente"
-                                    placeholder="Cliente"
+                                    v-model="multiSearch.tramitador"
+                                    placeholder="Tramitador"
                                     class="form-control border-1 border-right-0"
                                 />
                             </div>
-                            <div class="col-md-2">
+                            <!-- <div class="col-md-2">
                                 <small class="text-muted text-xs"
                                     >Tipo de Tramite</small
                                 >
@@ -201,8 +201,8 @@ const eliminarTramite = (item) => {
                                         :label="item.nombre"
                                     ></el-option>
                                 </el-select>
-                            </div>
-                            <div class="col-md-2">
+                            </div> -->
+                            <!-- <div class="col-md-2">
                                 <small class="text-muted text-xs"
                                     >Tipo de Pago</small
                                 >
@@ -220,7 +220,7 @@ const eliminarTramite = (item) => {
                                         :label="item.label"
                                     ></el-option>
                                 </el-select>
-                            </div>
+                            </div> -->
                             <div
                                 class="col-md-2"
                                 v-if="props_page.auth.user.tipo != 'MÉDICO'"

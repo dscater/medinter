@@ -1,27 +1,35 @@
 <script setup>
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
+import Content from "@/Components/Content.vue";
 const { props: props_page } = usePage();
 </script>
 <template>
     <Head title="Acceso no autorizado"></Head>
-
-    <!-- BEGIN breadcrumb -->
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="javascript:;">Inicio</a></li>
-        <li class="breadcrumb-item active">Sin autorización</li>
-    </ol>
-    <!-- END breadcrumb -->
-    <!-- BEGIN page-header -->
-    <h1 class="page-header w-100 text-center">Sin autorización</h1>
-    <!-- END page-header -->
-
-    <div class="container bg-principal">
+    <Content>
+        <template #header>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Inicio</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <Link :href="route('inicio')">Inicio</Link>
+                        </li>
+                        <li class="breadcrumb-item active">401</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </template>
         <div class="row">
             <div class="col-md-12">
-                <!-- BEGIN panel -->
-                <div class="panel panel-inverse">
-                    <!-- BEGIN panel-body -->
-                    <div class="panel-body text-center pb-5 pt-3">
+                <!-- BEGIN card -->
+                <div class="card card-inverse">
+                    <!-- BEGIN card-body -->
+                    <div class="card-body text-center pb-5 pt-3">
                         <h4 class="w-100 text-center">
                             No tienes autorización para ver esta página
                         </h4>
@@ -29,15 +37,11 @@ const { props: props_page } = usePage();
                             >Volver al inicio</Link
                         >
                     </div>
-                    <!-- END panel-body -->
+                    <!-- END card-body -->
                 </div>
-                <!-- END panel -->
+                <!-- END card -->
             </div>
         </div>
-    </div>
+    </Content>
 </template>
-<style>
-body {
-    background-color: var(--bg5);
-}
-</style>
+<style></style>

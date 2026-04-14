@@ -138,4 +138,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_id');
     }
+
+    public function login_user()
+    {
+        return $this->hasMany(LoginUser::class, 'user_id');
+    }
 }

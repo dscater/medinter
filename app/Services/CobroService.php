@@ -17,13 +17,18 @@ class CobroService
 {
     private $modulo = "CERTIFICADOS PAGOS";
 
-    public function __construct(private HistorialAccionService $historialAccionService, private CertificadoPagoService $certificado_pago_service) {}
+    public function __construct(private HistorialAccionService $historialAccionService, private PagoService $pago_service) {}
 
     public function crear(Certificado $certificado, $datos)
     {
         $datos["registro_id"] = $certificado->id;
         $datos["modulo"] = "Certificado";
-        $certificado_pago = $this->certificado_pago_service->crear($certificado, $datos);
+        $certificado_pago = $this->pago_service->crear($datos);
+
+        // actualizar Saldo
+        $certificado->saldo = $certificado->total - ((float)$certificado->cancelado + (float)$datos["monto"]);
+        $certificado->save();
+
         return $certificado_pago;
     }
 }

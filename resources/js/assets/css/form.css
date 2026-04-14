@@ -190,3 +190,9 @@ button.quitar {
 .contenedorFile input[type="file"] {
     display: none;
 }
+
+.checkboxTable {
+    cursor: pointer;
+    height: 23px;
+    width: 23px;
+}

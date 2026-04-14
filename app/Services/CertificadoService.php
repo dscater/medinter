@@ -172,10 +172,16 @@ class CertificadoService
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
 
+        // saldo
+        if ($datos["tipo"] == 'TRAMITE' && isset($datos["cancelado"]) && $datos["cancelado"]) {
+            $cancelado = (float)$datos["cancelado"];
+            $datos["saldo"] = (float)$datos["total"] - (float)$cancelado;
+        }
+
         $certificado = Certificado::create([
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
-            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : 0,
+            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : $datos["total"],
             "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
@@ -188,6 +194,7 @@ class CertificadoService
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
             $certificado_detalle = $certificado->certificado_detalles()->create([
+                "categoria" => $item["categoria"],
                 "precio" => $item["precio"],
                 "cancelado" => $item["precio"],
                 "saldo" => 0,
@@ -204,12 +211,14 @@ class CertificadoService
         }
 
         // PAGO
+        Log::debug($certificado->cancelado);
         if ($certificado->cancelado > 0) {
-            $this->pago_service->crear($certificado, [
+            $this->pago_service->crear([
                 "registro_id" => $certificado->id,
                 "modulo" => "Certificado",
                 "monto" => $certificado->cancelado,
                 "tipo_pago" => $certificado->tipo_pago,
+                "descripcion" => "PAGO POR CERTIFICADO",
             ]);
         }
 
@@ -245,6 +254,7 @@ class CertificadoService
         foreach ($datos["certificado_detalles"] as $key => $item) {
             if ($item["id"] == 0) {
                 $certificado_detalle = $certificado->certificado_detalles()->create([
+                    "categoria" => $item["categoria"],
                     "precio" => $item["precio"],
                     "cancelado" => $item["cancelado"],
                     "saldo" => 0,
@@ -305,13 +315,13 @@ class CertificadoService
         $old_certificado = clone $certificado;
 
         foreach ($certificado->certificado_detalles as $item) {
-            if ($item->tipo == 'NORMAL') {
-                $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
-            } else {
-                $tramite_cliente = TramiteCliente::where("certificado_id", $item->id);
-                $tramite_cliente->certificado_id = null;
-                $tramite_cliente->save();
-            }
+            // if ($item->tipo == 'NORMAL') {
+            $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
+            // } else {
+            $tramite_cliente = TramiteCliente::where("certificado_id", $item->id);
+            $tramite_cliente->certificado_id = null;
+            $tramite_cliente->save();
+            // }
         }
 
         $certificado->status = 0;

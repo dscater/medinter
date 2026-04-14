@@ -48,6 +48,18 @@ const listModulos = ref([
         label: "CERTIFICADOS",
     },
     {
+        value: "PAGOS",
+        label: "PAGOS",
+    },
+    {
+        value: "TRAMITES",
+        label: "TRAMITES",
+    },
+    {
+        value: "TRAMITADORES",
+        label: "TRAMITADORES",
+    },
+    {
         value: "CLIENTES",
         label: "CLIENTES",
     },

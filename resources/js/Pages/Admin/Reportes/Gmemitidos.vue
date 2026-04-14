@@ -160,7 +160,7 @@ const renderChart = (containerId, categories, total_final, data) => {
     const calculatedHeight = Math.max(minHeight, categories.length * rowHeight);
     Highcharts.chart(containerId, {
         chart: {
-            type: "column",
+            type: "line",
         },
         title: {
             align: "center",
@@ -176,7 +176,7 @@ const renderChart = (containerId, categories, total_final, data) => {
             },
         },
         xAxis: {
-            type: "category",
+            categories: categories,
         },
         yAxis: {
             title: {
@@ -210,7 +210,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                 return `
                     <div style="text-align:center;">
                         <div style="display:inline-block; width:12px; height:12px; background:${this.point.color}; border-radius:50%; margin-right:5px;"></div>
-                        <strong style="color:${this.point.color};">${this.point.point.name}</strong>
+                        <strong style="color:${this.point.color};">${this.point.category}</strong>
                         <br>
                         <span class="text-md"><strong>Total:</strong> ${getFormatoMoneda(this.point.y)}</span>
                     </div>
@@ -222,7 +222,6 @@ const renderChart = (containerId, categories, total_final, data) => {
             {
                 name: "Ingresos por Certificados",
                 data: data,
-                colorByPoint: true,
             },
         ],
     });
@@ -258,7 +257,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                     <div class="card-body">
                         <form @submit.prevent="generarReporte">
                             <div class="row">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Seleccionar Cliente*</label>
                                     <el-select
                                         v-model="form.cliente_id"
@@ -272,7 +271,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12">
                                     <label>Sucursal*</label>
                                     <el-select
@@ -318,7 +317,7 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Tipo de Certificado*</label>
                                     <el-select
                                         v-model="form.tipo_certificado_id"
@@ -332,8 +331,8 @@ const renderChart = (containerId, categories, total_final, data) => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
-                                <div class="col-12 mt-3">
+                                </div> -->
+                                <div class="col-12 mt-1">
                                     <label>Rango de Fechas</label>
                                     <div class="row">
                                         <div class="col-md-6">

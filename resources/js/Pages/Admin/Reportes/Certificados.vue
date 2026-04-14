@@ -95,12 +95,22 @@ const listFormatos = ref([
     },
 ]);
 
+const obtenerFechaActual = () => {
+    const fecha = new Date();
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Mes empieza desde 0
+    const dia = String(fecha.getDate()).padStart(2, "0"); // Día del mes
+    return `${anio}-${mes}-${dia}`;
+};
+
 const form = ref({
     cliente_id: "todos",
     sucursal_id: "todos",
     user_id: "todos",
     tipo_pago: "todos",
     tipo_certificado_id: "todos",
+    fecha_ini: obtenerFechaActual(),
+    fecha_fin: obtenerFechaActual(),
     formato: "pdf",
 });
 
@@ -150,7 +160,7 @@ const generarReporte = () => {
                     <div class="card-body">
                         <form @submit.prevent="generarReporte">
                             <div class="row">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Seleccionar Cliente*</label>
                                     <el-select
                                         v-model="form.cliente_id"
@@ -164,7 +174,7 @@ const generarReporte = () => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12">
                                     <label>Sucursal*</label>
                                     <el-select
@@ -195,7 +205,7 @@ const generarReporte = () => {
                                         </el-option>
                                     </el-select>
                                 </div>
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <label>Seleccionar Tipo de Pago*</label>
                                     <el-select
                                         v-model="form.tipo_pago"
@@ -209,7 +219,7 @@ const generarReporte = () => {
                                         >
                                         </el-option>
                                     </el-select>
-                                </div>
+                                </div> -->
                                 <div class="col-md-12">
                                     <label>Tipo de Certificado*</label>
                                     <el-select
@@ -224,6 +234,25 @@ const generarReporte = () => {
                                         >
                                         </el-option>
                                     </el-select>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <label>Rango de Fechas</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <input
+                                                type="date"
+                                                class="form-control"
+                                                v-model="form.fecha_ini"
+                                            />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input
+                                                type="date"
+                                                class="form-control"
+                                                v-model="form.fecha_fin"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="col-md-12 text-center mt-2">
                                     <el-radio-group v-model="form.formato">

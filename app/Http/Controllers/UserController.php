@@ -44,6 +44,22 @@ class UserController extends Controller
                     "url" => "usuarios.index"
                 ];
             }
+            if ($permisos == '*' || (is_array($permisos) && in_array('cobros.index', $permisos))) {
+                $certificados = Certificado::select("certificados.id");
+                $certificados->where("status", 1);
+                $certificados->where("saldo", ">", 0);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $certificados->where("user_id", Auth::user()->id);
+                }
+                $certificados = $certificados->count();
+                $array_infos[] = [
+                    'label' => 'COBROS',
+                    'cantidad' => $certificados,
+                    'color' => 'bgWhite',
+                    'icon' => "fa-hand-holding-usd",
+                    "url" => "cobros.index"
+                ];
+            }
             if ($permisos == '*' || (is_array($permisos) && in_array('clientes.index', $permisos))) {
                 $array_infos[] = [
                     'label' => 'CLIENTES',

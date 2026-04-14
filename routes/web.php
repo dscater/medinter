@@ -7,6 +7,7 @@ use App\Http\Controllers\CobroController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioController;
 use App\Http\Controllers\LoginUserController;
+use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecepcionPagoController;
 use App\Http\Controllers\ReporteController;
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // INICIO
     Route::get('/inicio', [InicioController::class, 'inicio'])->name('inicio');
     Route::get('/certificadosEmitidosLinea', [InicioController::class, 'certificadosEmitidosLinea'])->name('certificadosEmitidosLinea');
+    Route::get('/cantidadTramitesNormal', [InicioController::class, 'cantidadTramitesNormal'])->name('cantidadTramitesNormal');
 
     // CONFIGURACION
     Route::resource("configuracions", ConfiguracionController::class)->only(
@@ -151,9 +153,16 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     // RECEPCION PAGOS
     Route::get("recepcion_pagos", [RecepcionPagoController::class, 'index'])->name("recepcion_pagos.index");
 
+    // PAGOS
+    Route::get("pagos/verificados", [PagoController::class, 'verificados'])->name("pagos.verificados");
+    Route::get("pagos", [PagoController::class, 'index'])->name("pagos.index");
+    Route::post("pagos", [PagoController::class, 'registrarPagos'])->name("pagos.registrarPagos");
+
     // REPORTES
     Route::get('reportes/usuarios', [ReporteController::class, 'usuarios'])->name("reportes.usuarios");
     Route::get('reportes/r_usuarios', [ReporteController::class, 'r_usuarios'])->name("reportes.r_usuarios");
+
+    Route::get("reportes/exportarCaja", [ReporteController::class, 'exportarCaja'])->name("reportes.exportarCaja");
 
     Route::get('reportes/clientes', [ReporteController::class, 'clientes'])->name("reportes.clientes");
     Route::get('reportes/r_clientes', [ReporteController::class, 'r_clientes'])->name("reportes.r_clientes");
