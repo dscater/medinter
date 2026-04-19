@@ -7,6 +7,7 @@
     --bg6: #f3f3f3;
     --bg2t: rgba(0, 94, 141, 0.822);
     --bgVerificado: rgb(243, 253, 150);
+    --bgVerificado2: rgb(251, 255, 218);
     --bgDarkPrincipal: #1d1f21;
     --bgGrayLight: #e7eaee;
     --bgDarkGray: rgb(161, 161, 161);
@@ -15,6 +16,7 @@
     --bgSuccessH: #127756;
     --bgDanger: #c00404;
     --bgDanger2: #b90000;
+    --bgDanger3: #ffebeb;
     --bgWhite: #fdfdfd;
     --bgYellow: yellow;
 }

@@ -43,11 +43,7 @@ class CertificadoService
         int $page,
         array $orderBy = [],
         $cliente,
-        $tipo_certificado_id,
-        $tipo_pago,
-        $sucursal_id,
-        $medico,
-        $fecha
+        $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
             ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
@@ -57,36 +53,16 @@ class CertificadoService
         }
 
         // FILTROS
-        $certificados
-            ->when($cliente, function ($q) use ($cliente) {
-                $q->whereHas('cliente', function ($sub) use ($cliente) {
-                    $sub->buscarNombre($cliente);
-                });
-            })
-            ->when($tipo_certificado_id && $tipo_certificado_id !== 'todos', function ($q) use ($tipo_certificado_id) {
-                $q->whereHas("certificado_detalles", function ($sub) use ($tipo_certificado_id) {
-                    $sub->whereIn("tipo_certificado_id", $tipo_certificado_id);
-                });
-            })
-            ->when($tipo_pago && $tipo_pago !== 'todos', function ($q) use ($tipo_pago) {
-                $q->where("tipo_pago", $tipo_pago);
-            })
-            ->when($sucursal_id && $sucursal_id !== 'todos', function ($q) use ($sucursal_id) {
-                $q->where("sucursal_id", $sucursal_id);
-            })
-            ->when($medico && $medico !== '', function ($q) use ($medico) {
-                $q->whereHas('user', function ($sub) use ($medico) {
-                    $sub->where(function ($query) use ($medico) {
-                        $query->where('nombre', 'like', "%$medico%")
-                            ->orWhere('paterno', 'like', "%$medico%")
-                            ->orWhere('materno', 'like', "%$medico%");
-                    });
-                });
-            })
-            ->when($fecha, function ($q) use ($fecha) {
-                $q->whereDate("fecha_registro", $fecha); // ajusta el campo si es otro
+        $certificados->when($cliente, function ($q) use ($cliente) {
+            $q->whereHas('cliente', function ($sub) use ($cliente) {
+                $sub->whereRaw("CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?", ["%$cliente%"]);
             });
-
+        })
+            ->when($ci, function ($q) use ($ci) {
+                $q->whereHas('cliente', function ($sub) use ($ci) {
+                    $sub->where('ci', 'like', "%$ci%");
+                });
+            });
 
         // Ordenamiento
         foreach ($orderBy as $value) {

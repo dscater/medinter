@@ -174,29 +174,6 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
-                            permisos.includes('tramites.atencion')
-                        "
-                        :label="'Atención de Trámites'"
-                        :ruta="'tramites.atencion'"
-                        :icon="'fa fa-folder-open'"
-                    ></ItemMenu>
-                    <ItemMenu
-                        v-if="
-                            permisos == '*' ||
-                            permisos.includes('tramites.index')
-                        "
-                        :arrayRutaClassActive="[
-                            'tramites.index',
-                            'tramites.create',
-                            'tramites.edit',
-                        ]"
-                        :label="'Trámites'"
-                        :ruta="'tramites.index'"
-                        :icon="'fa fa-folder'"
-                    ></ItemMenu>
-                    <ItemMenu
-                        v-if="
-                            permisos == '*' ||
                             permisos.includes('clientes.index')
                         "
                         :label="'Clientes'"

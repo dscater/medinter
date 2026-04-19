@@ -116,11 +116,12 @@ const headers = [
 
 const multiSearch = ref({
     cliente: "",
-    tipo_certificado_id: [],
-    tipo_pago: "todos",
-    sucursal_id: "todos",
-    medico: "",
-    fecha: "",
+    ci: "",
+    // tipo_certificado_id: [],
+    // tipo_pago: "todos",
+    // sucursal_id: "todos",
+    // medico: "",
+    // fecha: "",
     filtro: [],
 });
 
@@ -209,85 +210,12 @@ const eliminarCertificado = (item) => {
                             </div>
                             <div class="col-md-2">
                                 <small class="text-muted text-xs"
-                                    >Tipo de Certificado</small
-                                >
-                                <el-select
-                                    type="search"
-                                    v-model="multiSearch.tipo_certificado_id"
-                                    placeholder="Tipo de Certificado"
-                                    size="large"
-                                    multiple
-                                    filterable
-                                >
-                                    <el-option
-                                        v-for="item in listTipoCertificados"
-                                        :key="item.id"
-                                        :value="item.id"
-                                        :label="item.nombre"
-                                    ></el-option>
-                                </el-select>
-                            </div>
-                            <div class="col-md-2">
-                                <small class="text-muted text-xs"
-                                    >Tipo de Pago</small
-                                >
-                                <el-select
-                                    type="search"
-                                    v-model="multiSearch.tipo_pago"
-                                    placeholder="Tipo de Certificado"
-                                    size="large"
-                                    filterable
-                                >
-                                    <el-option
-                                        v-for="item in listTipoPagos"
-                                        :key="item.value"
-                                        :value="item.value"
-                                        :label="item.label"
-                                    ></el-option>
-                                </el-select>
-                            </div>
-                            <div
-                                class="col-md-2"
-                                v-if="props_page.auth.user.tipo != 'MÉDICO'"
-                            >
-                                <small class="text-muted text-xs"
-                                    >Sucursal</small
-                                >
-                                <el-select
-                                    type="search"
-                                    v-model="multiSearch.sucursal_id"
-                                    placeholder="Tipo de Certificado"
-                                    size="large"
-                                    filterable
-                                >
-                                    <el-option
-                                        v-for="item in listSucursals"
-                                        :key="item.id"
-                                        :value="item.id"
-                                        :label="item.nombre"
-                                    ></el-option>
-                                </el-select>
-                            </div>
-                            <div
-                                class="col-md-2"
-                                v-if="props_page.auth.user.tipo != 'MÉDICO'"
-                            >
-                                <small class="text-muted text-xs"
-                                    >Usuario</small
+                                    >Nro. de C.I.</small
                                 >
                                 <input
                                     type="search"
-                                    v-model="multiSearch.medico"
-                                    placeholder="Usuario"
-                                    class="form-control border-1 border-right-0"
-                                />
-                            </div>
-                            <div class="col-md-2">
-                                <small class="text-muted text-xs">Fecha</small>
-                                <input
-                                    type="date"
-                                    v-model="multiSearch.fecha"
-                                    placeholder="Fecha"
+                                    v-model="multiSearch.ci"
+                                    placeholder="Nro. de C.I."
                                     class="form-control border-1 border-right-0"
                                 />
                             </div>

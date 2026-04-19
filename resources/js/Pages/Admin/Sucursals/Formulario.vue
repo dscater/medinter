@@ -18,7 +18,7 @@ const { oSucursal, limpiarSucursal } = useSucursals();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-let form = useForm(oSucursal.value);
+const form = useForm(oSucursal.value);
 watch(
     () => props.muestra_formulario,
     (newValue) => {
@@ -27,7 +27,11 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oSucursal.value);
+
+            form.id = oSucursal.value.id;
+            form.nombre = oSucursal.value.nombre;
+            form.descripcion = oSucursal.value.descripcion;
+            form._method = oSucursal.value._method;
         } else {
             document
                 .getElementsByTagName("body")[0]
@@ -71,7 +75,7 @@ const textBtn = computed(() => {
 const enviarFormulario = () => {
     enviando.value = true;
     let url =
-        accion_form.value == 0
+        form.id == 0
             ? route("sucursals.store")
             : route("sucursals.update", form.id);
 

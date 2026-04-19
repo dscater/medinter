@@ -15,12 +15,14 @@ class Certificado extends Model
         "user_id",
         "sucursal_id",
         "tipo", //NORMAL: registrado por medicto, TRAMITE: grupo
+        "tramitador_id",
         "fecha_inicio",
         "hora_inicio",
         "fecha_fin",
         "hora_fin",
         "fecha_registro",
         "hora_registro",
+        "estado", // 0: PENDIENTE, 1: ATENDIDO
         "status",
     ];
 
@@ -51,14 +53,8 @@ class Certificado extends Model
         return $this->hasMany(CertificadoDetalle::class, 'certificado_id');
     }
 
-    public function certificado_pagos()
+    public function tramitador()
     {
-        return $this->hasMany(CertificadoPago::class, 'certificado_id');
-    }
-
-
-    public function tramite_cliente()
-    {
-        return $this->hasOne(TramiteCliente::class, 'certificado_id');
+        return $this->belongsTo(Tramitador::class, 'tramitador_id');
     }
 }

@@ -81,21 +81,6 @@ class PermisoService
 
             "certificado_emitidos.verificaCantidad",
 
-            "tramites.paginado",
-            "tramites.index",
-            "tramites.listado",
-            "tramites.listadoExacto",
-            "tramites.create",
-            "tramites.store",
-            "tramites.edit",
-            "tramites.show",
-            "tramites.update",
-            "tramites.destroy",
-            "tramites.atencion",
-
-            "tramite_clientes.byTramite",
-            "tramite_clientes.registrarCertificado",
-
             "cobros.index",
             "cobros.registrarPago",
 
@@ -188,21 +173,6 @@ class PermisoService
             "certificados.destroy",
 
             "certificado_emitidos.verificaCantidad",
-
-            "tramites.paginado",
-            "tramites.index",
-            "tramites.listado",
-            "tramites.listadoExacto",
-            "tramites.create",
-            "tramites.store",
-            "tramites.edit",
-            "tramites.show",
-            "tramites.update",
-            "tramites.destroy",
-            "tramites.atencion",
-
-            "tramite_clientes.byTramite",
-            "tramite_clientes.registrarCertificado",
 
             "cobros.index",
             // "cobros.registrarPago",
@@ -315,21 +285,6 @@ class PermisoService
             "certificados.destroy",
 
             "certificado_emitidos.verificaCantidad",
-
-            "tramites.paginado",
-            "tramites.index",
-            "tramites.listado",
-            "tramites.listadoExacto",
-            "tramites.create",
-            "tramites.store",
-            "tramites.edit",
-            "tramites.show",
-            "tramites.update",
-            "tramites.destroy",
-            "tramites.atencion",
-
-            "tramite_clientes.byTramite",
-            "tramite_clientes.registrarCertificado",
 
             "cobros.index",
             "cobros.registrarPago",

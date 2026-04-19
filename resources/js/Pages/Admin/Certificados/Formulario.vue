@@ -19,11 +19,27 @@ const props = defineProps({
 
 const { oCertificado, limpiarCertificado } = useCertificados();
 const enviando = ref(false);
-let form = useForm(props.certificado);
+const form = useForm(props.certificado);
 watch(
     () => props.certificado,
     (newValue) => {
-        form = useForm(newValue);
+        form.id = newValue.id;
+        form.cliente_id = newValue.cliente_id;
+        form.total = newValue.total;
+        form.cancelado = newValue.cancelado;
+        form.saldo = newValue.saldo;
+        form.tipo_pago = newValue.tipo_pago;
+        form.tipo = newValue.tipo;
+        form.user_id = newValue.user_id;
+        form.sucursal_id = newValue.sucursal_id;
+        form.fecha_inicio = newValue.fecha_inicio;
+        form.hora_inicio = newValue.hora_inicio;
+        form.fecha_fin = newValue.fecha_fin;
+        form.hora_fin = newValue.hora_fin;
+        form.estado = newValue.estado;
+        form.certificado_detalles = newValue.certificado_detalles;
+        form.eliminados = newValue.eliminados;
+        form._method = newValue._method;
     },
 );
 
@@ -192,6 +208,7 @@ const quitarSeleccionCliente = () => {
 
 const nroTipoCertificadoDia = ref(0);
 const detectarTipoCertificado = (value, index) => {
+    form.certificado_detalles[index].precio = "";
     if (!value) {
         return;
     }
@@ -199,27 +216,29 @@ const detectarTipoCertificado = (value, index) => {
     const item = listTipoCertificados.value.filter(
         (item) => item.id == value,
     )[0];
-    if (item.id) {
-        axios
-            .get(route("certificado_emitidos.verificaCantidad"), {
-                params: {
-                    tipo_certificado_id: item.id,
-                },
-            })
-            .then((response) => {
-                nroTipoCertificadoDia.value = response.data.conteo_siguiente;
-                if (nroTipoCertificadoDia.value % 10 === 0) {
-                    form.certificado_detalles[index].precio = 0;
-                    form.certificado_detalles[index].muestra_conteo = true;
-                } else {
-                    form.certificado_detalles[index].muestra_conteo = false;
-                    form.certificado_detalles[index].precio = item.precio;
-                }
-            })
-            .finally(() => {
-                nroTipoCertificadoDia.value = 0;
-            });
-    }
+    if (!item) return;
+    form.certificado_detalles[index].precio = item.precio;
+    // if (item.id) {
+    //     axios
+    //         .get(route("certificado_emitidos.verificaCantidad"), {
+    //             params: {
+    //                 tipo_certificado_id: item.id,
+    //             },
+    //         })
+    //         .then((response) => {
+    //             nroTipoCertificadoDia.value = response.data.conteo_siguiente;
+    //             if (nroTipoCertificadoDia.value % 10 === 0) {
+    //                 form.certificado_detalles[index].precio = 0;
+    //                 form.certificado_detalles[index].muestra_conteo = true;
+    //             } else {
+    //                 form.certificado_detalles[index].muestra_conteo = false;
+    //                 form.certificado_detalles[index].precio = item.precio;
+    //             }
+    //         })
+    //         .finally(() => {
+    //             nroTipoCertificadoDia.value = 0;
+    //         });
+    // }
 };
 
 const agregarCertificado = () => {
@@ -232,7 +251,7 @@ const agregarCertificado = () => {
         saldo: "",
         tipo_certificado_id: "",
         archivo: null,
-        muestra_conteo: false,
+        con_saldo: false,
     });
 };
 
@@ -575,13 +594,6 @@ onBeforeMount(() => {
                                             v-model="certificado_detalle.precio"
                                             autosize
                                         ></el-input>
-                                        <small
-                                            class="text-xs text-success"
-                                            v-if="
-                                                certificado_detalle.muestra_conteo
-                                            "
-                                            >(Certificado gratuito)</small
-                                        >
                                     </div>
                                     <div class="col-md-6 mt-1">
                                         <label class="">Categoría</label>

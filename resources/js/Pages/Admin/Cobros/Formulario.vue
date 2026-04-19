@@ -25,7 +25,7 @@ const muestra_form = ref(props.muestra_formulario);
 const oCertificado = ref(props.certificado);
 const saldo_aux = ref(props.certificado?.saldo);
 const enviando = ref(false);
-let form = useForm({
+const form = useForm({
     monto: 0,
     tipo_pago: "",
 });
@@ -38,10 +38,8 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm({
-                monto: 0,
-                tipo_pago: "",
-            });
+            form.monto = 0;
+            form.tipo_pago = "";
         } else {
             document
                 .getElementsByTagName("body")[0]

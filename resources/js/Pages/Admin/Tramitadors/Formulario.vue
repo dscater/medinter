@@ -35,10 +35,13 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oTramitador.value);
-            if (form.id == 0) {
-                form.ci = props.ci ?? "";
-            }
+
+            form.id = oTramitador.value.id;
+            form.nombre = oTramitador.value.nombre;
+            form.ci = oTramitador.value.ci;
+            form.ci_exp = oTramitador.value.ci_exp;
+            form.cel = oTramitador.value.cel;
+            form._method = oTramitador.value._method;
         } else {
             document
                 .getElementsByTagName("body")[0]
@@ -89,7 +92,7 @@ const textBtn = computed(() => {
 const enviarFormulario = () => {
     enviando.value = true;
     let url =
-        accion_form.value == 0
+        form.id == 0
             ? route("tramitadors.store")
             : route("tramitadors.update", form.id);
     if (props.metodo == "inertia") {

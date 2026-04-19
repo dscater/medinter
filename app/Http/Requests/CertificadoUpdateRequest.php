@@ -30,7 +30,8 @@ class CertificadoUpdateRequest extends FormRequest
             "sucursal_id" => "required",
             "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()],
             "eliminados" => "nullable",
-            "tipo" => "nullable"
+            "tipo" => "nullable",
+            "estado" => "nullable",
         ];
     }
 

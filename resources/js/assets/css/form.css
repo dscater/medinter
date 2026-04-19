@@ -1,5 +1,5 @@
 #app form label {
-    font-size: 0.8em;
+    font-size: 0.78em;
     font-weight: 400;
     margin-bottom: 0;
 }
@@ -18,11 +18,11 @@ form .v-input.v-input--error {
 }
 
 .btn-agregar {
-    border: dashed 2px var(--bgDarkGray);
+    border: dashed 1px var(--bgDarkGray);
     color: var(--bgDarkGray);
 }
 .btn-agregar:hover {
-    border: dashed 2px var(--bgDarkPrincipal);
+    border: dashed 1px var(--bgDarkPrincipal);
     color: var(--bgDarkPrincipal);
 }
 
@@ -195,4 +195,49 @@ button.quitar {
     cursor: pointer;
     height: 23px;
     width: 23px;
+}
+
+.table-pago {
+    width: 100%;
+}
+
+.table-pago .saldo {
+    background-color: var(--bgDanger3);
+}
+
+.table-pago .cancelado {
+    background-color: var(--bgVerificado2);
+}
+
+.table-pago tbody tr td input {
+    border: none;
+    height: 100%;
+}
+
+.table-pago tbody tr td {
+    border-top: solid 1px var(--bgDarkGray);
+    border-left: solid 1px var(--bgDarkGray);
+    border-right: solid 1px var(--bgDarkGray);
+}
+
+.table-pago tbody tr td:nth-child(1) {
+    padding: 4px;
+    vertical-align: middle;
+    font-size: 0.7em;
+    font-weight: 600;
+    width: 50%;
+    text-align: right;
+}
+
+.table-pago tbody tr:last-child td input {
+    font-weight: 700;
+    background-color: transparent;
+}
+.table-pago tbody tr:last-child td {
+    font-size: 1em;
+    border-bottom: solid 1px var(--bgDarkGray);
+}
+
+.table-pago tbody tr td:nth-child(3) {
+    width: 10%;
 }

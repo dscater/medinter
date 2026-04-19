@@ -50,11 +50,12 @@ class CertificadoController extends Controller
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
         $cliente = (string)$request->input("cliente", "");
-        $tipo_certificado_id = $request->input("tipo_certificado_id", []);
-        $tipo_pago = (string)$request->input("tipo_pago", "todos");
-        $sucursal_id = (string)$request->input("sucursal_id", "todos");
-        $medico = (string)$request->input("medico", "");
-        $fecha = (string)$request->input("fecha", "");
+        $ci = (string)$request->input("ci", "");
+        // $tipo_certificado_id = $request->input("tipo_certificado_id", []);
+        // $tipo_pago = (string)$request->input("tipo_pago", "todos");
+        // $sucursal_id = (string)$request->input("sucursal_id", "todos");
+        // $medico = (string)$request->input("medico", "");
+        // $fecha = (string)$request->input("fecha", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
@@ -70,11 +71,7 @@ class CertificadoController extends Controller
             $page,
             $arrayOrderBy,
             $cliente,
-            $tipo_certificado_id,
-            $tipo_pago,
-            $sucursal_id,
-            $medico,
-            $fecha
+            $ci,
         );
         return response()->JSON([
             "data" => $certificados->items(),

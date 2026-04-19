@@ -1,6 +1,6 @@
 <script setup>
 import MiModal from "@/Components/MiModal.vue";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { Form, useForm, usePage } from "@inertiajs/vue3";
 import { useClientes } from "@/composables/clientes/useClientes";
 import { watch, ref, computed, onMounted, nextTick } from "vue";
 const props = defineProps({
@@ -26,7 +26,7 @@ const { oCliente, limpiarCliente } = useClientes();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-let form = useForm(oCliente.value);
+const form = useForm(oCliente.value);
 watch(
     () => props.muestra_formulario,
     (newValue) => {
@@ -35,8 +35,31 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oCliente.value);
+
+            form.id = oCliente.value.id;
+            form.nombre = oCliente.value.nombre;
+            form.paterno = oCliente.value.paterno;
+            form.materno = oCliente.value.materno;
+            form.ci = oCliente.value.ci;
+            form.ci_exp = oCliente.value.ci_exp;
+            form.complemento = oCliente.value.complemento;
+            form.fecha_nac = oCliente.value.fecha_nac;
+            form.edad = oCliente.value.edad;
+            form.cel = oCliente.value.cel;
+            form.respuesta = oCliente.value.respuesta;
+            form._method = oCliente.value._method;
+
+            // PAGO
+            form.con_certificado = oCliente.value.con_certificado;
+            form.tipo = oCliente.value.tipo;
+            form.tramitador_id = oCliente.value.tramitador_id;
+            form.certificado_detalles = oCliente.value.certificado_detalles;
+            form.total = oCliente.value.total;
+            form.cancelado = oCliente.value.cancelado;
+            form.saldo = oCliente.value.saldo;
             if (form.id == 0) {
+                cargarListas();
+                agregarCertificado();
                 form.ci = props.ci ?? "";
             }
         } else {
@@ -89,7 +112,7 @@ const textBtn = computed(() => {
 const enviarFormulario = () => {
     enviando.value = true;
     let url =
-        accion_form.value == 0
+        form.id == 0
             ? route("clientes.store")
             : route("clientes.update", form.id);
     if (props.metodo == "inertia") {
@@ -276,6 +299,114 @@ const calcularEdad = () => {
     form.edad = edad;
 };
 
+const listTramitadors = ref([]);
+const cargarTramitadors = () => {
+    axios.get(route("tramitadors.listado")).then((response) => {
+        listTramitadors.value = response.data.tramitadors;
+    });
+};
+
+const listTipoCertificados = ref([]);
+const cargarTipoCertificados = () => {
+    axios.get(route("tipo_certificados.listado")).then((response) => {
+        listTipoCertificados.value = response.data.tipo_certificados;
+    });
+};
+
+const listTipoPagos = ref([]);
+const cargarTipoPagos = () => {
+    axios.get(route("tipo_pagos.listado")).then((response) => {
+        listTipoPagos.value = response.data;
+    });
+};
+
+const detectarTipoCertificado = (value, index) => {
+    form.certificado_detalles[index].precio = "";
+    if (!value) {
+        return;
+    }
+    const item = listTipoCertificados.value.filter(
+        (item) => item.id == value,
+    )[0];
+    if (!item) return;
+    form.certificado_detalles[index].tipo_certificado = item;
+    form.certificado_detalles[index].precio = item.precio;
+    form.certificado_detalles[index].saldo = item.precio;
+    form.certificado_detalles[index].cancelado = 0;
+    form.certificado_detalles[index].con_saldo = false;
+};
+
+const agregarCertificado = () => {
+    form.certificado_detalles.push({
+        id: 0,
+        certificado_id: "",
+        categoria: "",
+        precio: "",
+        cancelado: "",
+        saldo: "",
+        tipo_certificado_id: "",
+        archivo: null,
+        con_saldo: false,
+        tipo_certificado: null,
+    });
+};
+
+const quitarCertificado = (index) => {
+    const item = form.certificado_detalles[index];
+    if (item.id != 0) {
+        form.eliminados.push(item.id);
+    }
+    form.certificado_detalles.splice(index, 1);
+};
+
+watch(
+    () => form.certificado_detalles,
+    () => {
+        calcularSaldo();
+    },
+    { deep: true },
+);
+
+const calcularSaldo = () => {
+    let cancelado = 0;
+
+    form.certificado_detalles.forEach((item) => {
+        // SUMAR LOS QUE ESTÁN PAGADOS
+        if (item.con_saldo === true) {
+            cancelado += parseFloat(item.precio || 0);
+        }
+    });
+
+    form.cancelado = cancelado.toFixed(2);
+
+    const total = parseFloat(form.total || 0);
+    form.saldo = (total - cancelado).toFixed(2);
+};
+const total = computed(() => {
+    const total = form.certificado_detalles.reduce((total, item) => {
+        const subtotal = parseFloat(
+            item.precio && item.precio != 0 ? item.precio : 0,
+        );
+        if (subtotal !== null && subtotal !== undefined && subtotal !== "") {
+            return total + Number(subtotal);
+        }
+
+        return total;
+    }, 0);
+
+    form.cancelado = 0;
+    form.saldo = total;
+    form.total = total;
+
+    return total ? total.toFixed(2) : "0.00";
+});
+
+const cargarListas = () => {
+    cargarTramitadors();
+    cargarTipoCertificados();
+    cargarTipoPagos();
+};
+
 onMounted(() => {});
 </script>
 
@@ -285,6 +416,7 @@ onMounted(() => {});
         @close="cerrarFormulario"
         :size="'modal-xl'"
         :header-class="'bg-principal'"
+        :body-class="'pt-1'"
         :footer-class="'justify-content-end'"
     >
         <template #header>
@@ -304,7 +436,12 @@ onMounted(() => {});
                     Todos los campos con
                     <span class="text-danger">(*)</span> son obligatorios.
                 </p>
-                <div class="row">
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <h4 class="card-title text-md">
+                            <i class="fa fa-id-card"></i> Datos cliente
+                        </h4>
+                    </div>
                     <div class="col-md-4 mt-2">
                         <label class="required">Nombre(s)</label>
                         <el-input
@@ -467,6 +604,251 @@ onMounted(() => {});
                         </ul>
                     </div>
                 </div>
+                <template v-if="form.id == 0">
+                    <div class="row border-top mt-3 pt-2">
+                        <div class="col-12">
+                            <h4 class="card-title text-md">
+                                <i class="fa fa-list"></i> Información del
+                                trámite
+                            </h4>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label class="required"
+                                >Registrar Certificado(s)</label
+                            >
+                            <el-radio-group v-model="form.con_certificado">
+                                <el-radio-button label="NO" :value="false" />
+                                <el-radio-button label="SI" :value="true" />
+                            </el-radio-group>
+                            <ul
+                                v-if="form.errors?.con_certificado"
+                                class="d-block text-danger list-unstyled"
+                            >
+                                <li class="parsley-required">
+                                    {{ form.errors?.con_certificado }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4 mt-2" v-if="form.con_certificado">
+                            <label class="required">Tipo</label>
+                            <el-radio-group v-model="form.tipo">
+                                <el-radio value="NORMAL">NORMAL</el-radio>
+                                <el-radio value="TRAMITE">TRAMITE</el-radio>
+                            </el-radio-group>
+                            <ul
+                                v-if="form.errors?.tipo"
+                                class="d-block text-danger list-unstyled"
+                            >
+                                <li class="parsley-required">
+                                    {{ form.errors?.tipo }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div
+                            class="col-md-4 mt-2"
+                            v-if="
+                                form.tipo == 'TRAMITE' && form.con_certificado
+                            "
+                        >
+                            <label class="required">Tramitador</label>
+                            <el-select
+                                v-model="form.tramitador_id"
+                                placeholder="- Seleccione -"
+                                filterable
+                                no-data-text="Sin datos"
+                                no-match-text="Sin resultados"
+                            >
+                                <el-option
+                                    v-for="item in listTramitadors"
+                                    :key="item.id"
+                                    :value="item.id"
+                                    :label="item.nombre"
+                                ></el-option>
+                            </el-select>
+                            <ul
+                                v-if="form.errors?.tramitador_id"
+                                class="d-block text-danger list-unstyled"
+                            >
+                                <li class="parsley-required">
+                                    {{ form.errors?.tramitador_id }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div
+                        class="row border-top mt-3 pt-2"
+                        v-if="form.con_certificado"
+                    >
+                        <div class="col-12">
+                            <h4 class="card-title text-md">
+                                <i class="fa fa-clipboard-list"></i>
+                                Certificado(s) y Pago
+                            </h4>
+                        </div>
+                        <div class="col-md-6 mt-1">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <label>CERTIFICADO(s)</label>
+                                </div>
+                                <div
+                                    class="col-12 mt-1"
+                                    v-for="(
+                                        item, index
+                                    ) in form.certificado_detalles"
+                                >
+                                    <el-select
+                                        v-model="item.tipo_certificado_id"
+                                        placeholder="- Seleccione -"
+                                        no-data-text="Sin datos"
+                                        no-match-text="No se entrarón coincidencias"
+                                        filterable
+                                        @change="
+                                            detectarTipoCertificado(
+                                                $event,
+                                                index,
+                                            )
+                                        "
+                                    >
+                                        <el-option
+                                            v-for="item in listTipoCertificados"
+                                            :key="item.id"
+                                            :value="item.id"
+                                            :label="item.nombre"
+                                        ></el-option>
+                                    </el-select>
+                                </div>
+                                <div class="col-12 mt-1">
+                                    <button
+                                        type="button"
+                                        class="btn w-100 btn-agregar btn-xs text-sm"
+                                        @click.prevent="agregarCertificado()"
+                                    >
+                                        <i class="fa fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-1">
+                            <div class="col-12 text-center">
+                                <label>PAGO</label>
+                            </div>
+                            <div class="col-12 mt-2 text-center">
+                                <table
+                                    class="table-pago"
+                                    style="
+                                        border-collapse: collapse;
+                                        border-spacing: 0;
+                                    "
+                                >
+                                    <tbody>
+                                        <tr
+                                            v-for="item in form.certificado_detalles"
+                                        >
+                                            <td>
+                                                {{
+                                                    item.tipo_certificado
+                                                        ?.nombre
+                                                }}
+                                                Bs.
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="number"
+                                                    step="0.1"
+                                                    class="form-control"
+                                                    v-model="item.precio"
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    class="checkboxTable"
+                                                    v-model="item.con_saldo"
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr class="cancelado">
+                                            <td>Cancelado Bs.</td>
+                                            <td colspan="2">
+                                                <input
+                                                    type="number"
+                                                    v-model="form.cancelado"
+                                                    class="form-control"
+                                                    readonly=""
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr class="saldo">
+                                            <td>Saldo Bs.</td>
+                                            <td colspan="2">
+                                                <input
+                                                    type="number"
+                                                    v-model="form.saldo"
+                                                    class="form-control"
+                                                    readonly=""
+                                                />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total Bs.</td>
+                                            <td colspan="2">
+                                                <input
+                                                    type="number"
+                                                    :value="total ?? '0.00'"
+                                                    class="form-control"
+                                                    readonly=""
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <ul
+                                    v-if="form.errors?.cancelado"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.cancelado }}
+                                    </li>
+                                </ul>
+                                <ul
+                                    v-if="form.errors?.saldo"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.saldo }}
+                                    </li>
+                                </ul>
+                                <ul
+                                    v-if="form.errors?.total"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.total }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-12 text-center">
+                                <el-radio-group v-model="form.tipo_pago">
+                                    <el-radio
+                                        v-for="item in listTipoPagos"
+                                        :value="item.value"
+                                        size="large"
+                                        ><i :class="item.icon"></i>
+                                        {{ item.label }}</el-radio
+                                    >
+                                </el-radio-group>
+                                <ul
+                                    v-if="form.errors?.tipo_pago"
+                                    class="d-block text-danger list-unstyled"
+                                >
+                                    <li class="parsley-required">
+                                        {{ form.errors?.tipo_pago }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </form>
         </template>
         <template #footer>

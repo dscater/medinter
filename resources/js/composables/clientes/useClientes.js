@@ -12,6 +12,16 @@ const oCliente = ref({
     edad: "",
     cel: "",
     respuesta: "clientes",
+
+    // PAGOS
+    con_certificado: true,
+    tipo_pago: "EFECTIVO",
+    tipo: "NORMAL",
+    tramitador_id: "",
+    certificado_detalles: [],
+    total: "",
+    cancelado: "",
+    saldo: "",
     _method: "POST",
 });
 
@@ -47,6 +57,16 @@ export const useClientes = () => {
         oCliente.value.cel = "";
         oCliente.value.respuesta = "clientes";
         oCliente.value._method = "POST";
+
+        // PAGOS
+        oCliente.value.con_certificado = true;
+        oCliente.value.tipo = "NORMAL";
+        oCliente.value.tipo_pago = "EFECTIVO";
+        oCliente.value.tramitador_id = "";
+        oCliente.value.certificado_detalles = [];
+        oCliente.value.total = "";
+        oCliente.value.cancelado = "";
+        oCliente.value.saldo = "";
     };
 
     onMounted(() => {});

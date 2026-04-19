@@ -16,11 +16,16 @@ class CertificadoDetalle extends Model
         "archivo",
     ];
 
-    protected $appends = ["url_archivo", "name", "muestra_conteo"];
+    protected $appends = ["url_archivo", "name", "con_saldo"];
 
-    public function getMuestraConteoAttribute()
+    public function getConSaldoAttribute()
     {
-        return false;
+        if ($this->saldo > 0) {
+            // CHECBOX DESMARCADO
+            // EXISTE SALDO
+            return false;
+        }
+        return true;
     }
 
     public function getNameAttribute()

@@ -27,7 +27,12 @@ watch(
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form = useForm(oTipoCertificado.value);
+
+            form.id = oTipoCertificado.value.id;
+            form.nombre = oTipoCertificado.value.nombre;
+            form.precio = oTipoCertificado.value.precio;
+            form.descripcion = oTipoCertificado.value.descripcion;
+            form._method = oTipoCertificado.value._method;
         } else {
             document
                 .getElementsByTagName("body")[0]
@@ -71,7 +76,7 @@ const textBtn = computed(() => {
 const enviarFormulario = () => {
     enviando.value = true;
     let url =
-        accion_form.value == 0
+        form.id == 0
             ? route("tipo_certificados.store")
             : route("tipo_certificados.update", form.id);
 

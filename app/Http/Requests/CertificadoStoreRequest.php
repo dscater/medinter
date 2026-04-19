@@ -29,17 +29,15 @@ class CertificadoStoreRequest extends FormRequest
             "tipo_pago" => "required",
             "sucursal_id" => "required",
             "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()],
-            "tipo" => "nullable"
+            "tipo" => "nullable",
+            "estado" => "nullable"
         ];
 
-        if ($this->tipo == 'TRAMITE') {
-            $rules["cancelado"] = "required|numeric|decimal:0,2|min:0";
-            $rules["saldo"] = "required|numeric|decimal:0,2|min:0";
-        }
+        $rules["cancelado"] = "required|numeric|decimal:0,2|min:0";
+        $rules["saldo"] = "required|numeric|decimal:0,2|min:0";
 
         return $rules;
     }
-
 
     public function messages(): array
     {

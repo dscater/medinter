@@ -21,18 +21,21 @@ return new class extends Migration
             $table->unsignedBigInteger("user_id");
             $table->unsignedBigInteger("sucursal_id");
             $table->string("tipo", 255)->default('NORMAL'); //NORMAL: registrado por medicto, TRAMITE: grupo
+            $table->unsignedBigInteger("tramitador_id")->nullable();
             $table->date("fecha_inicio")->nullable();
             $table->time("hora_inicio")->nullable();
             $table->date("fecha_fin")->nullable();
             $table->time("hora_fin")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->time("hora_registro")->nullable();
+            $table->integer("estado")->default(1);
             $table->integer("status")->default(1);
             $table->timestamps();
 
             $table->foreign("cliente_id")->on("clientes")->references("id");
             $table->foreign("user_id")->on("users")->references("id");
             $table->foreign("sucursal_id")->on("sucursals")->references("id");
+            $table->foreign("tramitador_id")->on("tramitadors")->references("id");
         });
     }
 

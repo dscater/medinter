@@ -14,6 +14,7 @@ const oCertificado = ref({
     hora_inicio: "",
     fecha_fin: "",
     hora_fin: "",
+    estado: "",
     certificado_detalles: [],
     eliminados: [],
     _method: "POST",
@@ -35,6 +36,7 @@ export const useCertificados = () => {
             oCertificado.value.hora_inicio = item.hora_inicio;
             oCertificado.value.fecha_fin = item.fecha_fin;
             oCertificado.value.hora_fin = item.hora_fin;
+            oCertificado.value.estado = item.estado;
             oCertificado.value.certificado_detalles = item.certificado_detalles;
             oCertificado.value.eliminados = [];
             oCertificado.value._method = "PUT";
@@ -57,6 +59,7 @@ export const useCertificados = () => {
         oCertificado.value.hora_inicio = "";
         oCertificado.value.fecha_fin = "";
         oCertificado.value.hora_fin = "";
+        oCertificado.value.estado = "";
         oCertificado.value.certificado_detalles = [];
         oCertificado.value.eliminados = [];
         oCertificado.value._method = "POST";

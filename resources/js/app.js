@@ -48,6 +48,7 @@ import {
     ElRadio,
     ElRadioButton,
     ElRadioGroup,
+    ElCheckbox,
 } from "element-plus";
 
 // Import CSS de cada componente individual
@@ -55,6 +56,8 @@ import "element-plus/es/components/select/style/css";
 import "element-plus/es/components/option/style/css";
 import "element-plus/es/components/input/style/css";
 import "element-plus/es/components/radio/style/css";
+import "element-plus/es/components/radio-button/style/css";
+import "element-plus/es/components/checkbox/style/css";
 import "element-plus/es/components/switch/style/css";
 import "element-plus/es/components/tooltip/style/css";
 import "element-plus/es/components/carousel/style/css";
@@ -99,6 +102,7 @@ createInertiaApp({
         vueApp.component("ElRadio", ElRadio);
         vueApp.component("ElRadioButton", ElRadioButton);
         vueApp.component("ElRadioGroup", ElRadioGroup);
+        vueApp.component("ElCheckbox", ElCheckbox);
 
         vueApp.mount(el);
         return vueApp;
