@@ -35,12 +35,12 @@ class Pago extends Model
         return date("d/m/Y", strtotime($this->fecha));
     }
 
-    public function certificado()
+    public function certificado_detalle()
     {
-        return $this->belongsTo(Certificado::class, 'certificado_id');
+        return $this->belongsTo(CertificadoDetalle::class, 'registro_id');
     }
 
-    public function cliente_id()
+    public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }

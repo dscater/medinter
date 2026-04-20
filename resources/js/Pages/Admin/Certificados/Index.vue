@@ -320,10 +320,14 @@ const eliminarCertificado = (item) => {
 
                                 <template
                                     v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'certificados.destroy',
-                                        )
+                                        item.total == item.saldo &&
+                                        props_page.auth?.user.id ==
+                                            item.user_id &&
+                                        (props_page.auth?.user.permisos ==
+                                            '*' ||
+                                            props_page.auth?.user.permisos.includes(
+                                                'certificados.destroy',
+                                            ))
                                     "
                                 >
                                     <el-tooltip

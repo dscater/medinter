@@ -32,6 +32,7 @@ export const useCertificados = () => {
             oCertificado.value.cancelado = item.cancelado;
             oCertificado.value.saldo = item.saldo;
             oCertificado.value.tipo = item.tipo;
+            oCertificado.value.tramitador_id = item.tramitador_id;
             oCertificado.value.tipo_pago = item.tipo_pago;
             oCertificado.value.user_id = item.user_id;
             oCertificado.value.sucursal_id = item.sucursal_id;

@@ -85,7 +85,7 @@ class PermisoService
             "cobros.index",
             "cobros.registrarPago",
 
-            "recepcion_pagos.index",
+            // "recepcion_pagos.index",
 
             "pagos.index",
             "pagos.verificados",
@@ -180,7 +180,7 @@ class PermisoService
             "certificado_emitidos.verificaCantidad",
 
             "cobros.index",
-            // "cobros.registrarPago",
+            "cobros.registrarPago",
 
             // "recepcion_pagos.index",
 
@@ -213,7 +213,12 @@ class PermisoService
             "reportes.r_historial_accions",
         ],
         "SECRETARIA" => [
-            "tipo_usuarios.listado",
+            "sucursals.listado",
+
+            "tipo_certificados.paginado",
+            "tipo_certificados.index",
+            "tipo_certificados.listado",
+            "tipo_certificados.show",
 
             "clientes.paginado",
             "clientes.index",
@@ -227,6 +232,16 @@ class PermisoService
             "clientes.update",
             "clientes.destroy",
 
+            "tramitadors.paginado",
+            "tramitadors.index",
+            "tramitadors.listado",
+            "tramitadors.create",
+            "tramitadors.store",
+            "tramitadors.edit",
+            "tramitadors.show",
+            "tramitadors.update",
+            "tramitadors.destroy",
+
             "tipo_pagos.listado",
 
             "certificados.paginado",
@@ -237,6 +252,8 @@ class PermisoService
 
             "certificado_emitidos.verificaCantidad",
 
+            "cobros.index",
+            "cobros.registrarPago",
 
             "recepcion_pagos.index",
 
@@ -276,12 +293,7 @@ class PermisoService
             "tramitadors.paginado",
             "tramitadors.index",
             "tramitadors.listado",
-            "tramitadors.create",
-            "tramitadors.store",
-            "tramitadors.edit",
             "tramitadors.show",
-            "tramitadors.update",
-            "tramitadors.destroy",
 
             "tipo_pagos.listado",
 
@@ -301,10 +313,8 @@ class PermisoService
             "cobros.index",
             "cobros.registrarPago",
 
-            // "recepcion_pagos.index",
-
-            // "pagos.index",
-            // "pagos.verificados",
+            "pagos.index",
+            "pagos.verificados",
             // "pagos.registrarPagos",
 
             "certificadosEmitidosLinea",
@@ -312,6 +322,8 @@ class PermisoService
 
             "login_users.verificaSucursal",
             "login_users.asignaSucursal",
+
+            "reportes.exportarCaja",
         ],
     ];
 

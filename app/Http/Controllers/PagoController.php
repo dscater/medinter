@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use App\Services\LoginUserService;
 use App\Services\PagoService;
+use App\Services\TipoPagoService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,19 +24,19 @@ class PagoController extends Controller
 
     public function verificados(Request $request)
     {
-        $fecha = $request->fecha;
-        $pagos = [];
-        if ($fecha) {
-            $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])
-                ->where("fecha_verificado", $fecha);
+        $fecha_ini = $request->fecha_ini;
+        $fecha_fin = $request->fecha_fin;
+        $sucursal_id = $request->sucursal_id;
+        $medico_id = $request->medico_id;
 
-            $sucursal_id = Auth::user()->sucursal_id;
-            $pagos->where("sucursal_id", $sucursal_id);
-            $pagos = $pagos->where("verificado", 1)->where("status", 1)->get();
-        }
+        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id);
+        $pagos = $array_res[0];
+        $suma_tipos = $array_res[1];
 
-
-        return response()->JSON($pagos);
+        return response()->JSON([
+            "pagos" => $pagos,
+            "suma_tipos" => $suma_tipos,
+        ]);
     }
 
     public function registrarPagos(Request $request)

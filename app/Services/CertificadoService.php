@@ -48,10 +48,6 @@ class CertificadoService
         $certificados = Certificado::select("certificados.*")
             ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
 
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $certificados->where("user_id", Auth::user()->id);
-        }
-
         // FILTROS
         $certificados->when($cliente, function ($q) use ($cliente) {
             $q->whereHas('cliente', function ($sub) use ($cliente) {

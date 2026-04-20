@@ -20,7 +20,61 @@ class PagoService
 {
     private $modulo = "PAGOS";
 
-    public function __construct(private HistorialAccionService $historialAccionService, private LoginUserService $login_user_service) {}
+    public function __construct(private HistorialAccionService $historialAccionService, private LoginUserService $login_user_service, private TipoPagoService $tipo_pago_service) {}
+
+    public function reporteArqueo(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id
+    ) {
+        $pagos = [];
+        $suma_tipos = [];
+        if ($fecha_ini && $fecha_fin) {
+            $pagos = Pago::with([
+                "sucursal:id,nombre",
+                "user:id,nombre,paterno,materno",
+                "medico:id,nombre,paterno,materno",
+                "certificado_detalle.tipo_certificado",
+                "certificado_detalle.certificado",
+                "cliente:id,nombre,paterno,materno,ci,ci_exp,complemento",
+            ])
+                ->whereBetween("fecha_verificado", [$fecha_ini, $fecha_fin]);
+
+            $login_user = $this->login_user_service->verificaSucursal();
+
+            if (Auth::user()->tipo == 'ADMINISTRADOR' || Auth::user()->tipo == 'GERENTE') {
+                if ($sucursal_id != 'todos' || !$sucursal_id   || $sucursal_id == '') {
+                    $pagos->where("sucursal_id", $sucursal_id);
+                }
+
+                if ($medico_id) {
+                    $pagos->where("medico_id", $medico_id);
+                }
+            } else {
+                $pagos->where("sucursal_id", $login_user->sucursal_id);
+            }
+
+            if (Auth::user()->tipo == 'MÉDICO') {
+                $pagos->where("medico_id", Auth::user()->id);
+            }
+
+
+            $pagos->where("verificado", 1)->where("status", 1);
+
+            $tipo_pagos = $this->tipo_pago_service->listado();
+
+            foreach ($tipo_pagos as $item) {
+                $query = clone $pagos;
+                $suma_total = $query->where("tipo_pago", $item["value"])->sum("monto");
+                $suma_tipos[$item["value"]] = $suma_total;
+            }
+
+            $pagos = $pagos->get();
+        }
+
+        return [$pagos, $suma_tipos];
+    }
 
     public function crear($datos)
     {

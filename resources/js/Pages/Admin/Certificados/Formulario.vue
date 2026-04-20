@@ -43,6 +43,7 @@ const textBtn = computed(() => {
 });
 
 const asignaDatosFormulario = (item) => {
+    console.log("TRAMITADOR", item.tramitador_id);
     form.id = item.id;
     form.cliente_id = item.cliente_id;
     form.total = item.total;
@@ -351,12 +352,6 @@ const total = computed(() => {
         }, 0);
     }
 
-    if (!certificadoPendiente.value) {
-        form.cancelado = 0;
-        form.saldo = total;
-        form.total = total;
-    }
-
     return total ? total.toFixed(2) : "0.00";
 });
 
@@ -406,7 +401,10 @@ onBeforeMount(() => {
                         <div class="card">
                             <div class="card-body pt-0">
                                 <div class="row">
-                                    <div class="col-md-12 mt-2">
+                                    <div
+                                        class="col-md-12 mt-2"
+                                        v-if="form.id == 0"
+                                    >
                                         <label class=""
                                             >Ingresar Nro. C.I.</label
                                         >
@@ -581,8 +579,9 @@ onBeforeMount(() => {
                                                             }}
                                                         </p>
                                                         <button
+                                                            v-if="form.id == 0"
                                                             type="button"
-                                                            class="mt-2 btn btn-outline-danger btn-sm w-100 text-sm"
+                                                            class="mt-2 btn btn-outline-danger btn-xs w-100 text-sm"
                                                             @click.prevent="
                                                                 quitarSeleccionCliente
                                                             "
@@ -613,6 +612,7 @@ onBeforeMount(() => {
                             <div class="row">
                                 <div class="col-12">
                                     <p class="mb-0 text-sm">
+                                        <strong>Inicio:</strong>
                                         {{ fechaHoraTexto }}
                                     </p>
                                 </div>
@@ -620,9 +620,7 @@ onBeforeMount(() => {
                                     <label>Tipo trámite</label>
                                     <el-radio-group
                                         v-model="form.tipo"
-                                        :disabled="
-                                            certificadoPendiente ? true : false
-                                        "
+                                        :disabled="form.id != 0"
                                     >
                                         <el-radio value="NORMAL"
                                             >NORMAL</el-radio
@@ -651,9 +649,7 @@ onBeforeMount(() => {
                                         filterable
                                         no-data-text="Sin datos"
                                         no-match-text="Sin resultados"
-                                        :disabled="
-                                            certificadoPendiente ? true : false
-                                        "
+                                        :disabled="form.id != 0"
                                     >
                                         <el-option
                                             v-for="item in listTramitadors"
@@ -795,11 +791,7 @@ onBeforeMount(() => {
                                                     no-data-text="Sin datos"
                                                     no-match-text="No se entrarón coincidencias"
                                                     filterable
-                                                    :disabled="
-                                                        certificadoPendiente
-                                                            ? true
-                                                            : false
-                                                    "
+                                                    :disabled="form.id != 0"
                                                     @change="
                                                         detectarTipoCertificado(
                                                             $event,
@@ -826,9 +818,7 @@ onBeforeMount(() => {
                                                         v-model="
                                                             certificado_detalle.precio
                                                         "
-                                                        :disabled="
-                                                            certificadoPendiente
-                                                        "
+                                                        :disabled="form.id != 0"
                                                     />
                                                     <div
                                                         class="input-group-append"
@@ -843,7 +833,7 @@ onBeforeMount(() => {
                                                                     certificado_detalle.con_saldo
                                                                 "
                                                                 :disabled="
-                                                                    certificadoPendiente
+                                                                    form.id != 0
                                                                 "
                                                             />
                                                         </div>
@@ -952,11 +942,7 @@ onBeforeMount(() => {
                                     </div>
                                     <div class="col-12 text-center">
                                         <el-radio-group
-                                            :disabled="
-                                                certificadoPendiente
-                                                    ? true
-                                                    : false
-                                            "
+                                            :disabled="form.id != 0"
                                             v-model="form.tipo_pago"
                                         >
                                             <el-radio

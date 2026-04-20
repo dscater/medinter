@@ -36,7 +36,8 @@ class LoginUserService
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
 
         $login_secretaria = LoginUser::where("fecha", $fecha_actual)
-            ->whereHas("user", function ($q) use ($sucursal_id) {
+            ->where("sucursal_id", $sucursal_id)
+            ->whereHas("user", function ($q) {
                 $q->where("tipo", "SECRETARIA");
             })
             ->get()->first();

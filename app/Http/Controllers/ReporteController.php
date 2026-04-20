@@ -11,7 +11,9 @@ use App\Models\Inscripcion;
 use App\Models\Pago;
 use App\Models\TipoCertificado;
 use App\Models\User;
+use App\Services\PagoService;
 use App\Services\ReporteService;
+use App\Services\TipoPagoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -20,8 +22,11 @@ use PDF;
 use Carbon\Carbon;
 use FPDF;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 
 class ReporteController extends Controller
 {
@@ -150,7 +155,7 @@ class ReporteController extends Controller
     ];
 
     private $configuracion = null;
-    public function __construct()
+    public function __construct(private PagoService $pagoService, private TipoPagoService $tipo_pago_service)
     {
         $this->configuracion = Configuracion::first();
         if (!$this->configuracion) {
@@ -311,17 +316,20 @@ class ReporteController extends Controller
     {
         ini_set('memory_limit', '1024M');
         set_time_limit(-1);
-        $fecha =  $request->fecha;
-        $formato =  $request->formato;
-        $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])
-            ->where("fecha_verificado", $fecha);
+        $fecha_ini = $request->fecha_ini;
+        $fecha_fin = $request->fecha_fin;
+        $sucursal_id = $request->sucursal_id;
+        $medico_id = $request->medico_id;
+        $formato = $request->formato;
 
-        $sucursal_id = Auth::user()->sucursal_id;
-        $pagos->where("sucursal_id", $sucursal_id);
-        $pagos = $pagos->where("verificado", 1)->get();
+        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id);
+        $pagos = $array_res[0];
+        $suma_tipos = $array_res[1];
+
+        $tipo_pagos = $this->tipo_pago_service->listado();
 
         if ($formato == 'pdf') {
-            $pdf = PDF::loadView('reportes.exportarCaja', compact('pagos', 'fecha'))->setPaper('letter', '´portrait');
+            $pdf = PDF::loadView('reportes.exportarCaja', compact('pagos', 'suma_tipos', 'tipo_pagos', 'fecha_ini', "fecha_fin"))->setPaper('letter', '´portrait');
 
             // ENUMERAR LAS PÁGINAS USANDO CANVAS
             $pdf->output();
@@ -334,6 +342,7 @@ class ReporteController extends Controller
             return $pdf->stream('caja.pdf');
         } else {
             $spreadsheet = new Spreadsheet();
+
             $spreadsheet->getProperties()
                 ->setCreator("ADMIN")
                 ->setLastModifiedBy('Administración')
@@ -344,80 +353,196 @@ class ReporteController extends Controller
                 ->setCategory('Listado');
 
             $sheet = $spreadsheet->getActiveSheet();
-
             $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
 
             $fila = 1;
+
+            /* ===================== LOGO ===================== */
             if (file_exists(public_path() . '/imgs/' . $this->configuracion->logo)) {
-                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing = new Drawing();
                 $drawing->setName('logo');
                 $drawing->setDescription('logo');
-                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo); // put your path and image here
+                $drawing->setPath(public_path() . '/imgs/' . $this->configuracion->logo);
                 $drawing->setCoordinates('A' . $fila);
-                $drawing->setOffsetX(5);
-                $drawing->setOffsetY(0);
                 $drawing->setHeight(70);
                 $drawing->setWorksheet($sheet);
             }
 
+            /* ===================== TITULOS ===================== */
+            $totalColumnas = 6 + count($tipo_pagos);
+            $lastColumn = Coordinate::stringFromColumnIndex($totalColumnas);
+
             $fila = 2;
+
             $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
-            $sheet->mergeCells("A" . $fila . ":E" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->titulo);
-            $fila++;
-            $sheet->setCellValue('A' . $fila, "ARQUEO DE CAJA");
-            $sheet->mergeCells("A" . $fila . ":E" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->titulo);
-            $fila++;
-            $fila++;
-            $sheet->setCellValue('A' . $fila, 'Fecha:');
-            $sheet->mergeCells("A" . $fila . ":B" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':b' . $fila)->applyFromArray($this->textRight);
-            $sheet->setCellValue('C' . $fila, date("d/m/Y", strtotime($fecha)));
-            $fila++;
-            $sheet->setCellValue('A' . $fila, 'N°');
-            $sheet->setCellValue('B' . $fila, 'FECHA');
-            $sheet->setCellValue('C' . $fila, 'SUCURSAL');
-            $sheet->setCellValue('D' . $fila, 'DESCRIPCIÓN');
-            $sheet->setCellValue('E' . $fila, 'MONTO BS.');
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->headerTabla);
+            $sheet->mergeCells("A{$fila}:{$lastColumn}{$fila}");
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->getAlignment()->setHorizontal('center');
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->applyFromArray($this->titulo);
+
             $fila++;
 
+            $sheet->setCellValue('A' . $fila, "ARQUEO DE CAJA");
+            $sheet->mergeCells("A{$fila}:{$lastColumn}{$fila}");
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->getAlignment()->setHorizontal('center');
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->applyFromArray($this->titulo);
+
+            $fila += 2;
+
+            /* ===================== FECHA ===================== */
+            $sheet->setCellValue('A' . $fila, 'Fecha:');
+            $sheet->mergeCells("A{$fila}:B{$fila}");
+            $sheet->getStyle("A{$fila}:B{$fila}")->applyFromArray($this->textRight);
+
+            $sheet->setCellValue('C' . $fila, 'Del ' . date("d/m/Y", strtotime($fecha_ini)) . ' al ' . date("d/m/Y", strtotime($fecha_fin)));
+            $sheet->mergeCells("C{$fila}:{$lastColumn}{$fila}");
+
+            $fila++;
+            /* ===================== HEADERS ===================== */
+            $colIndex = 1;
+
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'N°');
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'FECHA');
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'SUCURSAL');
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'PACIENTE');
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'DESCRIPCIÓN');
+            $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, 'MÉDICO');
+
+            /* columnas dinámicas */
+            foreach ($tipo_pagos as $tipo) {
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $tipo['value'] . ' Bs.'
+                );
+            }
+
+            $totalColumnas = $colIndex - 1;
+            $lastColumn = Coordinate::stringFromColumnIndex($totalColumnas);
+
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->applyFromArray($this->headerTabla);
+
+            $fila++;
+
+            /* ===================== DATA ===================== */
             foreach ($pagos as $key => $item) {
-                $sheet->setCellValue('A' . $fila, $key + 1);
-                $sheet->setCellValue('B' . $fila, $item->fecha_verificado_t . "\n" . $item->hora_verificado);
-                $sheet->setCellValue('C' . $fila, $item->sucursal->nombre);
-                $sheet->setCellValue('D' . $fila, $item->descripcion);
-                $sheet->setCellValue('E' . $fila, number_format($item->monto, 2, ".", ""));
-                $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->bodyTabla);
+                $colIndex = 1;
+
+                $sheet->setCellValue(Coordinate::stringFromColumnIndex($colIndex++) . $fila, $key + 1);
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $item->fecha_verificado_t . "\n" . $item->hora_verificado
+                );
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $item->sucursal->nombre
+                );
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $item->cliente->nombre . ' ' .
+                        $item->cliente->paterno . ' ' .
+                        $item->cliente->materno
+                );
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $item->certificado_detalle->tipo_certificado->nombre . "\n(" .
+                        $item->certificado_detalle->certificado->tipo . ")"
+                );
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    $item->medico->nombre . ' ' . $item->medico->paterno
+                );
+
+                foreach ($tipo_pagos as $tipo) {
+                    $value = ($item->tipo_pago == $tipo['value'])
+                        ? number_format($item->monto, 2, ".", "")
+                        : '';
+
+                    $sheet->setCellValue(
+                        Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                        $value
+                    );
+                }
+
+                $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                    ->applyFromArray($this->bodyTabla);
+
                 $fila++;
             }
-            $sheet->setCellValue('A' . $fila, "TOTAL BS.");
-            $sheet->mergeCells("A" . $fila . ":D" . $fila);  //COMBINAR CELDAS
-            $sheet->setCellValue('E' . $fila, number_format($pagos->sum("monto"), 2, ".", ""));
-            $sheet->getStyle('A' . $fila . ':E' . $fila)->applyFromArray($this->headerTabla);
 
-            $sheet->getColumnDimension('A')->setWidth(6);
-            $sheet->getColumnDimension('B')->setWidth(12);
-            $sheet->getColumnDimension('C')->setWidth(15);
-            $sheet->getColumnDimension('D')->setWidth(25);
-            $sheet->getColumnDimension('E')->setWidth(15);
+            /* ===================== TOTALES ===================== */
+            $sheet->setCellValue("A{$fila}", "TOTAL BS.");
+            $sheet->mergeCells("A{$fila}:" . Coordinate::stringFromColumnIndex(6) . "{$fila}");
 
-            foreach (range('A', 'E') as $columnID) {
-                $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
+            $colIndex = 7;
+            $suma_total = 0;
+
+            foreach ($tipo_pagos as $tipo) {
+                $total = $suma_tipos[$tipo['value']] ?? 0;
+
+                $sheet->setCellValue(
+                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                    number_format($total, 2, ".", "")
+                );
+
+                $suma_total += $total;
             }
 
-            $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE);
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->applyFromArray($this->headerTabla);
+
+            $fila++;
+
+            /* ===================== TOTAL FINAL ===================== */
+            $sheet->setCellValue("A{$fila}", "TOTAL FINAL BS.");
+            $sheet->mergeCells("A{$fila}:" . Coordinate::stringFromColumnIndex(6) . "{$fila}");
+
+            $sheet->setCellValue(
+                Coordinate::stringFromColumnIndex(7) . $fila,
+                number_format($suma_total, 2, ".", "")
+            );
+
+            $sheet->getStyle("A{$fila}:{$lastColumn}{$fila}")
+                ->applyFromArray($this->headerTabla);
+
+            /* ===================== COLUMN WIDTH ===================== */
+            $sheet->getColumnDimension('A')->setWidth(6);
+            $sheet->getColumnDimension('B')->setWidth(18);
+            $sheet->getColumnDimension('C')->setWidth(18);
+            $sheet->getColumnDimension('D')->setWidth(30);
+            $sheet->getColumnDimension('E')->setWidth(30);
+
+            for ($i = 6; $i <= $totalColumnas; $i++) {
+                $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($i))->setWidth(15);
+            }
+
+            /* ===================== WRAP TEXT ===================== */
+            for ($i = 1; $i <= $totalColumnas; $i++) {
+                $sheet->getStyle(Coordinate::stringFromColumnIndex($i))
+                    ->getAlignment()
+                    ->setWrapText(true);
+            }
+
+            /* ===================== PAGE SETUP ===================== */
+            $sheet->getPageSetup()->setOrientation(PageSetup::ORIENTATION_LANDSCAPE);
             $sheet->getPageMargins()->setTop(0.5);
             $sheet->getPageMargins()->setRight(0.1);
             $sheet->getPageMargins()->setLeft(0.1);
             $sheet->getPageMargins()->setBottom(0.1);
-            $sheet->getPageSetup()->setPrintArea('A:E');
+
+            $sheet->getPageSetup()->setPrintArea("A1:{$lastColumn}{$fila}");
             $sheet->getPageSetup()->setFitToWidth(1);
             $sheet->getPageSetup()->setFitToHeight(0);
 
+            /* ===================== EXPORT ===================== */
             return response()->streamDownload(
                 function () use ($spreadsheet) {
                     $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

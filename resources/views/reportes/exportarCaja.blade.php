@@ -143,6 +143,14 @@
             font-size: 10pt;
         }
 
+        .text-lg {
+            font-size: 12pt;
+        }
+
+        .derecha {
+            text-align: right;
+        }
+
         .fecha_caja {
             margin-top: 20px;
             font-size: 10pt;
@@ -165,8 +173,8 @@
         <h4 class="fecha">Expedido: {{ date('d/m/Y') }}</h4>
     </div>
 
-    <div class="fecha_caja">
-        <span class="bold">Fecha: </span> {{ date('d/m/Y', strtotime($fecha)) }}
+    <div class="fecha_caja centreado">
+        Del {{ date('d/m/Y', strtotime($fecha_ini)) }} al {{ date('d/m/Y', strtotime($fecha_fin)) }}
     </div>
     <table border="1">
         <thead class="bg-principal">
@@ -174,9 +182,14 @@
                 <th width="5%">N°</th>
                 <th width="12%">FECHA</th>
                 <th width="14%">SUCURSAL</th>
+                <th>PACIENTE</th>
                 <th>DESCRIPCIÓN</th>
-                <th width="13%">TIPO PAGO</th>
-                <th width="15%" class="text-right">MONTO BS.</th>
+                <th>MÉDICO</th>
+                @foreach ($tipo_pagos as $item)
+                    <th>
+                        {{ $item['value'] }} Bs.
+                    </th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
@@ -186,19 +199,56 @@
             @foreach ($pagos as $item)
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
-                    <td class="">{{ $item->fecha_verifiado_t }} <br />{{ $item->hora_verificado }}</td>
+                    <td class="">{{ $item->fecha_verificado_t }} <br />{{ $item->hora_verificado }}</td>
                     <td class="">{{ $item->sucursal->nombre }}</td>
-                    <td class="">{{ $item->descripcion }}</td>
-                    <td class="">{{ $item->tipo_pago }}</td>
-                    <td class="text-right">{{ $item->monto }}</td>
+                    <td class="">{{ $item->cliente->nombre }} {{ $item->cliente->paterno }}
+                        {{ $item->cliente->materno }} <br />{{ $item->cliente->ci }}
+                        {{ $item->cliente->complemento ? ' - ' . $item->cliente->complemento : '' }}
+                        {{ $item->cliente->ci_exp }}
+                    </td>
+                    <td>
+                        {{ $item->certificado_detalle->tipo_certificado->nombre }}
+                        <br />
+                        <small>({{ $item->certificado_detalle->certificado->tipo }})</small>
+                    </td>
+                    <td>
+                        {{ $item->medico->nombre }}
+                        {{ $item->medico->paterno }}{{ $item->medico->materno }}
+                    </td>
+                    @foreach ($tipo_pagos as $tipo_pago)
+                        @if ($item->tipo_pago == $tipo_pago['value'])
+                            <td class="derecha">{{ $item->monto }}</td>
+                        @else
+                            <td class=""></td>
+                        @endif
+                    @endforeach
                 </tr>
             @endforeach
+            @php
+                $suma_total = 0;
+            @endphp
             <tr>
-                <td class="text-md text-right bold bg-principal" colspan="5">
+                <td class="text-md text-right bold bg-principal" colspan="6">
                     TOTAL BS.
                 </td>
-                <td class="text-md text-right bold bg-principal">{{ number_format($pagos->sum('monto'), 2, '.', '') }}
+                @foreach ($tipo_pagos as $tipo_pago)
+                    @php
+                        $suma_total += (float) $suma_tipos[$tipo_pago['value']];
+                    @endphp
+                    <td class="text-md text-right bold bg-principal">
+                        {{ number_format($suma_tipos[$tipo_pago['value']], 2, '.', '') }}
+                    </td>
+                @endforeach
+
+            </tr>
+            <tr>
+                <td class="text-md text-right bold bg-principal" colspan="6">
+                    TOTAL FINAL BS.
                 </td>
+                <td class="text-lg text-right bold bg-principal" colspan="2">
+                    {{ number_format($suma_total, 2, '.', '') }}
+                </td>
+
             </tr>
         </tbody>
     </table>
