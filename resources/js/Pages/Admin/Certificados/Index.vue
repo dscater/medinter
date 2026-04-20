@@ -100,6 +100,7 @@ const headers = [
         label: "USUARIO",
         key: "user",
         sortable: true,
+        keySortable: "user_id",
     },
     {
         label: "FECHA REGISTRO",
@@ -247,6 +248,7 @@ const eliminarCertificado = (item) => {
                                             {{ d.tipo_certificado.nombre }}
 
                                             <a
+                                                v-if="item.estado == 1"
                                                 :href="d.url_archivo"
                                                 target="_blank"
                                                 class="text-md"
@@ -276,11 +278,16 @@ const eliminarCertificado = (item) => {
                             </template>
 
                             <template #user="{ item }">
-                                <span
+                                <span v-if="item.estado == 1 && item.user"
                                     >{{ item.user.nombre }}
                                     {{ item.user.paterno }}
                                     {{ item.user.materno }}
                                 </span>
+                                <span
+                                    v-else
+                                    class="badge badge-warning text-md text-dark"
+                                    >PENDIENTE</span
+                                >
                             </template>
 
                             <template #accion="{ item }">

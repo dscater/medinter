@@ -30,7 +30,7 @@ class PagoController extends Controller
 
             $sucursal_id = Auth::user()->sucursal_id;
             $pagos->where("sucursal_id", $sucursal_id);
-            $pagos = $pagos->where("verificado", 1)->get();
+            $pagos = $pagos->where("verificado", 1)->where("status", 1)->get();
         }
 
 

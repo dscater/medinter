@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 14-04-2026 a las 21:15:50
+-- Tiempo de generación: 20-04-2026 a las 21:24:59
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.2.22
 
@@ -34,15 +34,17 @@ CREATE TABLE `certificados` (
   `cancelado` decimal(24,2) DEFAULT NULL,
   `saldo` decimal(24,2) DEFAULT NULL,
   `tipo_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
   `sucursal_id` bigint UNSIGNED NOT NULL,
   `tipo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NORMAL',
+  `tramitador_id` bigint UNSIGNED DEFAULT NULL,
   `fecha_inicio` date DEFAULT NULL,
   `hora_inicio` time DEFAULT NULL,
   `fecha_fin` date DEFAULT NULL,
   `hora_fin` time DEFAULT NULL,
   `fecha_registro` date DEFAULT NULL,
   `hora_registro` time DEFAULT NULL,
+  `estado` int NOT NULL DEFAULT '0',
   `status` int NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -57,7 +59,7 @@ CREATE TABLE `certificados` (
 CREATE TABLE `certificado_detalles` (
   `id` bigint UNSIGNED NOT NULL,
   `certificado_id` bigint UNSIGNED NOT NULL,
-  `categoria` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `categoria` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `precio` decimal(24,2) NOT NULL,
   `cancelado` decimal(24,2) DEFAULT NULL,
   `saldo` decimal(24,2) DEFAULT NULL,
@@ -211,17 +213,20 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 CREATE TABLE `pagos` (
   `id` bigint UNSIGNED NOT NULL,
   `registro_id` bigint UNSIGNED NOT NULL,
-  `modulo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modulo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `monto` decimal(24,2) NOT NULL,
   `tipo_pago` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `descripcion` varchar(900) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `fecha` date NOT NULL,
   `hora` time NOT NULL,
+  `cliente_id` bigint UNSIGNED DEFAULT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
+  `medico_id` bigint UNSIGNED DEFAULT NULL,
   `sucursal_id` bigint UNSIGNED NOT NULL,
   `verificado` int NOT NULL DEFAULT '0',
   `fecha_verificado` date DEFAULT NULL,
   `hora_verificado` time DEFAULT NULL,
+  `status` int NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -294,42 +299,6 @@ CREATE TABLE `tramitadors` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tramites`
---
-
-CREATE TABLE `tramites` (
-  `id` bigint UNSIGNED NOT NULL,
-  `nro` bigint NOT NULL,
-  `codigo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tramitador_id` bigint UNSIGNED NOT NULL,
-  `fecha` date NOT NULL,
-  `hora` time NOT NULL,
-  `sucursal_id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `tramite_clientes`
---
-
-CREATE TABLE `tramite_clientes` (
-  `id` bigint UNSIGNED NOT NULL,
-  `tramite_id` bigint UNSIGNED NOT NULL,
-  `cliente_id` bigint UNSIGNED NOT NULL,
-  `certificado_id` bigint UNSIGNED DEFAULT NULL,
-  `estado` int NOT NULL DEFAULT '0',
-  `existente` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `users`
 --
 
@@ -373,7 +342,8 @@ ALTER TABLE `certificados`
   ADD PRIMARY KEY (`id`),
   ADD KEY `certificados_cliente_id_foreign` (`cliente_id`),
   ADD KEY `certificados_user_id_foreign` (`user_id`),
-  ADD KEY `certificados_sucursal_id_foreign` (`sucursal_id`);
+  ADD KEY `certificados_sucursal_id_foreign` (`sucursal_id`),
+  ADD KEY `certificados_tramitador_id` (`tramitador_id`);
 
 --
 -- Indices de la tabla `certificado_detalles`
@@ -428,7 +398,9 @@ ALTER TABLE `migrations`
 ALTER TABLE `pagos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_user_pagos_id` (`user_id`),
-  ADD KEY `fk_sucursal_pagos_id` (`sucursal_id`);
+  ADD KEY `fk_sucursal_pagos_id` (`sucursal_id`),
+  ADD KEY `pagos_cliente_id` (`cliente_id`),
+  ADD KEY `pagos_medico_id` (`medico_id`);
 
 --
 -- Indices de la tabla `sucursals`
@@ -448,25 +420,6 @@ ALTER TABLE `tipo_certificados`
 --
 ALTER TABLE `tramitadors`
   ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `tramites`
---
-ALTER TABLE `tramites`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `tramites_codigo_unique` (`codigo`),
-  ADD KEY `tramites_tramitador_id_foreign` (`tramitador_id`),
-  ADD KEY `fk_user_id` (`user_id`),
-  ADD KEY `fk_sucursal_id` (`sucursal_id`);
-
---
--- Indices de la tabla `tramite_clientes`
---
-ALTER TABLE `tramite_clientes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tramite_clientes_tramite_id_foreign` (`tramite_id`),
-  ADD KEY `tramite_clientes_cliente_id_foreign` (`cliente_id`),
-  ADD KEY `tramite_clientes_certificado_id_foreign` (`certificado_id`);
 
 --
 -- Indices de la tabla `users`
@@ -551,18 +504,6 @@ ALTER TABLE `tramitadors`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `tramites`
---
-ALTER TABLE `tramites`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `tramite_clientes`
---
-ALTER TABLE `tramite_clientes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
@@ -578,6 +519,7 @@ ALTER TABLE `users`
 ALTER TABLE `certificados`
   ADD CONSTRAINT `certificados_cliente_id_foreign` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
   ADD CONSTRAINT `certificados_sucursal_id_foreign` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursals` (`id`),
+  ADD CONSTRAINT `certificados_tramitador_id` FOREIGN KEY (`tramitador_id`) REFERENCES `tramitadors` (`id`),
   ADD CONSTRAINT `certificados_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
@@ -605,23 +547,9 @@ ALTER TABLE `historial_accions`
 --
 ALTER TABLE `pagos`
   ADD CONSTRAINT `fk_sucursal_pagos_id` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursals` (`id`),
-  ADD CONSTRAINT `fk_user_pagos_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Filtros para la tabla `tramites`
---
-ALTER TABLE `tramites`
-  ADD CONSTRAINT `fk_sucursal_id` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursals` (`id`),
-  ADD CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `tramites_tramitador_id_foreign` FOREIGN KEY (`tramitador_id`) REFERENCES `tramitadors` (`id`);
-
---
--- Filtros para la tabla `tramite_clientes`
---
-ALTER TABLE `tramite_clientes`
-  ADD CONSTRAINT `tramite_clientes_certificado_id_foreign` FOREIGN KEY (`certificado_id`) REFERENCES `certificados` (`id`),
-  ADD CONSTRAINT `tramite_clientes_cliente_id_foreign` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
-  ADD CONSTRAINT `tramite_clientes_tramite_id_foreign` FOREIGN KEY (`tramite_id`) REFERENCES `tramites` (`id`);
+  ADD CONSTRAINT `fk_user_pagos_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `pagos_cliente_id` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
+  ADD CONSTRAINT `pagos_medico_id` FOREIGN KEY (`medico_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

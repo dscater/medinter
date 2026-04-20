@@ -27,11 +27,17 @@ class CertificadoStoreRequest extends FormRequest
             "cliente_id" => "required",
             "total" => "required|numeric|decimal:0,2|min:0",
             "tipo_pago" => "required",
-            "sucursal_id" => "required",
             "certificado_detalles" => ["required", "array", "min:1", new CertificadoDetalleRule()],
             "tipo" => "nullable",
+            "tramitador_id" => "nullable",
+            "fecha_inicio" => "date",
+            "hora_inicio" => "required",
             "estado" => "nullable"
         ];
+
+        if ($this->tipo == 'TRAMITE') {
+            $rules["tramitador_id"] = "required";
+        }
 
         $rules["cancelado"] = "required|numeric|decimal:0,2|min:0";
         $rules["saldo"] = "required|numeric|decimal:0,2|min:0";
@@ -43,6 +49,7 @@ class CertificadoStoreRequest extends FormRequest
     {
         return [
             "cliente_id.required" => "No se seleccionó ningún cliente",
+            "tramitador_id.required" => "No se seleccionó ningún tramitador",
             "total.required" => "Debes ingresar el costo",
             "total.numeric" => "Debes ingresar un valor númerico",
             "total.decimal" => "Debes ingresar un número con hasta 2 decimales",

@@ -54,10 +54,7 @@ onUnmounted(() => {});
                     ><i class="fas fa-bars"></i
                 ></a>
             </li>
-            <li
-                class="nav-item d-none d-sm-inline-block"
-                v-if="props.auth.user.tipo == 'MÉDICO'"
-            >
+            <li class="nav-item d-none d-sm-inline-block">
                 <span class="nav-link">
                     <i class="fa fa-building"></i>
                     {{ loginUserStore.getLoginUser?.sucursal?.nombre }}

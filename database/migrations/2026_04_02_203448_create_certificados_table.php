@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal("cancelado", 24, 2)->nullable();
             $table->decimal("saldo", 24, 2)->nullable();
             $table->string("tipo_pago");
-            $table->unsignedBigInteger("user_id");
+            $table->unsignedBigInteger("user_id")->nullable();
             $table->unsignedBigInteger("sucursal_id");
             $table->string("tipo", 255)->default('NORMAL'); //NORMAL: registrado por medicto, TRAMITE: grupo
             $table->unsignedBigInteger("tramitador_id")->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->time("hora_fin")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->time("hora_registro")->nullable();
-            $table->integer("estado")->default(1);
+            $table->integer("estado")->default(0);
             $table->integer("status")->default(1);
             $table->timestamps();
 

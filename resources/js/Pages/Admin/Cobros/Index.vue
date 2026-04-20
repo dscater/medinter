@@ -4,8 +4,10 @@ import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
+import { useCertificados } from "@/composables/certificados/useCertificados";
 import Formulario from "./Formulario.vue";
 const { props: props_page } = usePage();
+const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
 const appStore = useAppStore();
 onBeforeMount(() => {
     appStore.startLoading();
@@ -94,10 +96,9 @@ const multiSearch = ref({
     codigo: "",
     filtro: [],
 });
-
-const oCertificado = ref(null);
 const pagarSaldo = (item) => {
-    oCertificado.value = item;
+    limpiarCertificado();
+    setCertificado(item);
     muestra_form.value = true;
 };
 
@@ -149,21 +150,6 @@ onBeforeMount(() => {});
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white"
-                                    ><i class="fa fa-folder"></i
-                                ></span>
-                            </div>
-                            <input
-                                type="text"
-                                class="form-control"
-                                placeholder="Código Trámite"
-                                v-model="multiSearch.codigo"
-                            />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-white"
                                     ><i class="fa fa-user"></i
                                 ></span>
                             </div>
@@ -190,7 +176,7 @@ onBeforeMount(() => {});
                             />
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <!-- <div class="col-md-3">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-white"
@@ -204,7 +190,7 @@ onBeforeMount(() => {});
                                 v-model="multiSearch.fecha"
                             />
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="col-12 mt-1">
@@ -266,11 +252,16 @@ onBeforeMount(() => {});
                     </template>
 
                     <template #user="{ item }">
-                        <span
+                        <span v-if="item.estado == 1 && item.user"
                             >{{ item.user.nombre }}
                             {{ item.user.paterno }}
                             {{ item.user.materno }}
                         </span>
+                        <span
+                            v-else
+                            class="badge badge-warning text-md text-dark"
+                            >PENDIENTE</span
+                        >
                     </template>
 
                     <template #accion="{ item }">

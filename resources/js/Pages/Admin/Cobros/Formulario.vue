@@ -2,6 +2,7 @@
 import MiModal from "@/Components/MiModal.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { watch, ref, computed, defineEmits, onMounted, nextTick } from "vue";
+import { useCertificados } from "@/composables/certificados/useCertificados";
 // TOAST
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -19,27 +20,42 @@ const props = defineProps({
         default: null,
     },
 });
+const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
 
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
-const oCertificado = ref(props.certificado);
 const saldo_aux = ref(props.certificado?.saldo);
 const enviando = ref(false);
-const form = useForm({
-    monto: 0,
-    tipo_pago: "",
-});
+const form = useForm(oCertificado.value);
 watch(
     () => props.muestra_formulario,
     (newValue) => {
         muestra_form.value = newValue;
         if (muestra_form.value) {
-            cargarTipoPagos();
+            cargarListas();
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-            form.monto = 0;
-            form.tipo_pago = "";
+
+            form.id = oCertificado.value.id;
+            form.cliente_id = oCertificado.value.cliente_id;
+            form.cliente = oCertificado.value.cliente;
+            form.total = oCertificado.value.total;
+            form.cancelado = oCertificado.value.cancelado;
+            form.saldo = oCertificado.value.saldo;
+            form.tipo_pago = oCertificado.value.tipo_pago;
+            form.tipo = oCertificado.value.tipo;
+            form.tramitador_id = oCertificado.value.tramitador_id;
+            form.user_id = oCertificado.value.user_id;
+            form.sucursal_id = oCertificado.value.sucursal_id;
+            form.fecha_inicio = oCertificado.value.fecha_inicio;
+            form.hora_inicio = oCertificado.value.hora_inicio;
+            form.fecha_fin = oCertificado.value.fecha_fin;
+            form.hora_fin = oCertificado.value.hora_fin;
+            form.estado = oCertificado.value.estado;
+            form.certificado_detalles = oCertificado.value.certificado_detalles;
+            form.eliminados = oCertificado.value.eliminados;
+            form._method = oCertificado.value._method;
         } else {
             document
                 .getElementsByTagName("body")[0]
@@ -81,6 +97,7 @@ const textBtn = computed(() => {
 });
 const enviarFormulario = () => {
     enviando.value = true;
+    form._method = "POST";
     let url = route("cobros.registrarPago", oCertificado.value.id);
     form.post(url, {
         preserveScroll: true,
@@ -156,26 +173,49 @@ const cargarTipoPagos = () => {
 };
 
 const ocultarBoton = ref(false);
-const recalcularSaldo = () => {
-    if (parseFloat(form.monto) < 1) {
-        ocultarBoton.value = true;
-        toast.error("El monto no puede ser menor a 1");
-        return;
-    }
-    if (parseFloat(form.monto) > parseFloat(saldo_aux.value)) {
-        ocultarBoton.value = true;
-        toast.error("El monto no puede ser mayor al saldo");
-        return;
-    }
-    ocultarBoton.value = false;
+watch(
+    () => form.certificado_detalles,
+    () => {
+        calcularSaldo();
+    },
+    { deep: true },
+);
 
-    oCertificado.value.saldo =
-        parseFloat(oCertificado.value.total) -
-        (parseFloat(oCertificado.value.cancelado) +
-            parseFloat(form.monto ?? 0));
+const calcularSaldo = () => {
+    let cancelado = 0;
+
+    form.certificado_detalles.forEach((item) => {
+        // SUMAR LOS QUE ESTÁN PAGADOS
+        if (item.con_saldo === true) {
+            cancelado += parseFloat(item.precio || 0);
+        }
+    });
+    form.cancelado = cancelado.toFixed(2);
+
+    const total = parseFloat(form.total || 0);
+    form.saldo = (total - cancelado).toFixed(2);
 };
+const total = computed(() => {
+    const total = form.certificado_detalles.reduce((total, item) => {
+        const subtotal = parseFloat(
+            item.precio && item.precio != 0 ? item.precio : 0,
+        );
+        if (subtotal !== null && subtotal !== undefined && subtotal !== "") {
+            return total + Number(subtotal);
+        }
 
-const cargarListas = () => {};
+        return total;
+    }, 0);
+
+    form.cancelado = 0;
+    form.saldo = total;
+    form.total = total;
+
+    return total ? total.toFixed(2) : "0.00";
+});
+const cargarListas = () => {
+    cargarTipoPagos();
+};
 onMounted(() => {
     cargarListas();
 });
@@ -202,16 +242,16 @@ onMounted(() => {
 
         <template #body>
             <form @submit.prevent="enviarFormulario()">
-                <div class="row" v-if="oCertificado">
+                <div class="row" v-if="form.cliente">
                     <div class="col-12">
                         <div class="row">
                             <div class="col-4 text-right">
                                 <strong>Nombre: </strong>
                             </div>
                             <div class="col-8">
-                                {{ oCertificado.cliente.nombre }}
-                                {{ oCertificado.cliente.paterno }}
-                                {{ oCertificado.cliente.materno }}
+                                {{ form.cliente.nombre }}
+                                {{ form.cliente.paterno }}
+                                {{ form.cliente.materno }}
                             </div>
                         </div>
                     </div>
@@ -221,80 +261,121 @@ onMounted(() => {
                                 <strong>C.I.: </strong>
                             </div>
                             <div class="col-8">
-                                {{ oCertificado.cliente.ci }}
-                                {{ oCertificado.cliente.complemento }}
-                                {{ oCertificado.cliente.ci_exp }}
+                                {{ form.cliente.ci }}
+                                {{ form.cliente.complemento }}
+                                {{ form.cliente.ci_exp }}
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-4 text-right">
-                                <strong>Certificados: </strong>
-                            </div>
-                            <div class="col-8">
-                                <ul class="pl-3 mb-1">
-                                    <li
-                                        v-for="item in oCertificado.certificado_detalles"
-                                    >
-                                        {{ item.tipo_certificado.nombre }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-4 text-right">
-                                <strong>Total Bs.: </strong>
-                            </div>
-                            <div class="col-8">
-                                {{ oCertificado.total }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-4 text-right">
-                                <strong>Cancelado Bs.: </strong>
-                            </div>
-                            <div class="col-8">
-                                {{ oCertificado.cancelado }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-4 text-right">
-                                <strong>Saldo Bs.: </strong>
-                            </div>
-                            <div class="col-8">
-                                {{ oCertificado.saldo }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row border-top mt-2">
-                    <div class="col-md-4 mt-2 offset-md-4">
-                        <label class="text-center w-100">Monto</label>
-                        <input
-                            type="number"
-                            class="form-control"
-                            v-model="form.monto"
-                            @keyup="recalcularSaldo"
-                        />
-                        <ul
-                            v-if="form.errors?.monto"
-                            class="list-unstyled text-danger"
+
+                    <div class="col-12 mt-1 cliente-pago">
+                        <div
+                            class="row fila_cliente_cetificado"
+                            v-for="(item, index) in form.certificado_detalles"
                         >
-                            <li class="parsley-required">
-                                {{ form.errors?.monto }}
-                            </li>
-                        </ul>
+                            <div
+                                class="col-6 text-xs d-flex justify-content-start align-items-center border-left border-top border-bottom"
+                            >
+                                {{ item.tipo_certificado.nombre }}
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div
+                                            class="input-group-text border-left"
+                                        >
+                                            Bs.
+                                        </div>
+                                    </div>
+                                    <div class="form-control">
+                                        {{ item.precio }}
+                                    </div>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text bg-white">
+                                            <input
+                                                type="checkbox"
+                                                class="checkboxTable form-control"
+                                                v-model="item.con_saldo"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <ul
+                                v-if="form.errors?.certificado_detalles"
+                                class="d-block text-danger list-unstyled"
+                            >
+                                <li class="parsley-required">
+                                    {{ form.errors?.certificado_detalles }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="row cancelado">
+                            <div
+                                class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                            >
+                                Cancelado
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepned">
+                                        <div class="input-group-text">Bs.</div>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        v-model="form.cancelado"
+                                        class="form-control"
+                                        readonly=""
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row saldo">
+                            <div
+                                class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                            >
+                                Saldo
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepned">
+                                        <div class="input-group-text">Bs.</div>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        v-model="form.saldo"
+                                        class="form-control"
+                                        readonly=""
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row total">
+                            <div
+                                class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                            >
+                                Total
+                            </div>
+                            <div class="col-6">
+                                <div class="input-group">
+                                    <div class="input-group-prepned">
+                                        <div class="input-group-text">Bs.</div>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        :value="total ?? '0.00'"
+                                        class="form-control"
+                                        readonly=""
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4 offset-md-4 text-center">
+                    <div class="col-12 text-center">
                         <el-radio-group v-model="form.tipo_pago">
                             <el-radio
                                 v-for="item in listTipoPagos"

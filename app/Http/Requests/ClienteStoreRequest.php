@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\CertificadoDetalle;
+use App\Rules\CertificadoDetalleRule;
 use App\Rules\ClienteCiComplementoRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,7 +25,7 @@ class ClienteStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rule = [
             "nombre" => "required|string",
             "paterno" => "required|string",
             "materno" => "nullable|string",
@@ -37,6 +39,22 @@ class ClienteStoreRequest extends FormRequest
             "edad" => "nullable",
             "cel" => "nullable",
         ];
+
+        if ($this->con_certificado) {
+            $rule["con_certificado"] = ["required"];
+            $rule["tipo_pago"] = ["required"];
+            $rule["tipo"] = ["required"];
+            $rule["tramitador_id"] = ["nullable"];
+            if ($this->tipo != 'NORMAL') {
+                $rule["tramitador_id"] = ["required"];
+            }
+            $rule["certificado_detalles"] = ["required", "array", "min:1", new CertificadoDetalleRule(false, false)];
+            $rule["total"] = ["required"];
+            $rule["cancelado"] = ["required"];
+            $rule["saldo"] = ["required"];
+        }
+
+        return $rule;
     }
 
     public function messages(): array
@@ -51,6 +69,21 @@ class ClienteStoreRequest extends FormRequest
             "ci_exp.required" => "Debes completar este campo",
             "fecha_nac.required" => "Debes completar este campo",
             "fecha_nac.date" => "Debes ingresar una fecha valida",
+
+            "tramitador_id.required" => "Debes seleccionar una opción",
+            "total.required" => "Debes ingresar el costo",
+            "total.numeric" => "Debes ingresar un valor númerico",
+            "total.decimal" => "Debes ingresar un número con hasta 2 decimales",
+            "total.min" => "Debes ingresar un monto minimo de :min",
+            "cancelado.required" => "Debes ingresar el monto cancelado",
+            "cancelado.numeric" => "Debes ingresar un valor númerico",
+            "cancelado.decimal" => "Debes ingresar un número con hasta 2 decimales",
+            "cancelado.min" => "Debes ingresar un monto minimo de :min",
+            "saldo.required" => "No se obtuvo el saldo",
+            "saldo.numeric" => "Debes ingresar un valor númerico",
+            "saldo.decimal" => "Debes ingresar un número con hasta 2 decimales",
+            "saldo.min" => "Debes ingresar un monto minimo de :min",
+            "tipo_pago.required" => "Debes completar este campo",
         ];
     }
 }

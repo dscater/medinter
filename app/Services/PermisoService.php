@@ -78,6 +78,7 @@ class PermisoService
             "certificados.show",
             "certificados.update",
             "certificados.destroy",
+            "certificados.verificaPendienteCliente",
 
             "certificado_emitidos.verificaCantidad",
 
@@ -98,6 +99,9 @@ class PermisoService
 
             "certificadosEmitidosLinea",
             "cantidadTramitesNormal",
+
+            "login_users.verificaSucursal",
+            "login_users.asignaSucursal",
 
             "reportes.usuarios",
             "reportes.r_usuarios",
@@ -171,6 +175,7 @@ class PermisoService
             "certificados.show",
             "certificados.update",
             "certificados.destroy",
+            "certificados.verificaPendienteCliente",
 
             "certificado_emitidos.verificaCantidad",
 
@@ -191,6 +196,9 @@ class PermisoService
 
             "certificadosEmitidosLinea",
             "cantidadTramitesNormal",
+
+            "login_users.verificaSucursal",
+            "login_users.asignaSucursal",
 
             "reportes.exportarCaja",
             "reportes.clientes",
@@ -239,6 +247,9 @@ class PermisoService
             "certificadosEmitidosLinea",
             "cantidadTramitesNormal",
 
+            "login_users.verificaSucursal",
+            "login_users.asignaSucursal",
+
             "reportes.exportarCaja",
         ],
         "MÉDICO" => [
@@ -260,6 +271,7 @@ class PermisoService
             "clientes.show",
             "clientes.update",
             "clientes.destroy",
+            "certificados.verificaPendienteCliente",
 
             "tramitadors.paginado",
             "tramitadors.index",

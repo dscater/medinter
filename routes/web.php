@@ -119,6 +119,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     );
 
     // CERTIFICADOS
+    Route::get("certificados/verificaPendienteCliente/{cliente}", [CertificadoController::class, 'verificaPendienteCliente'])->name("certificados.verificaPendienteCliente");
     Route::get("certificados/paginado", [CertificadoController::class, 'paginado'])->name("certificados.paginado");
     Route::get("certificados/listado", [CertificadoController::class, 'listado'])->name("certificados.listado");
     Route::get("certificados/listadoCobros", [CertificadoController::class, 'listadoCobros'])->name("certificados.listadoCobros");

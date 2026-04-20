@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CobroCertificadoDetalleRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,7 +24,7 @@ class CobroRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "monto" => "required|numeric|decimal:0,2|min:1",
+            "certificado_detalles" => ["required", new CobroCertificadoDetalleRule()],
             "tipo_pago" => "required",
         ];
     }
@@ -31,10 +32,10 @@ class CobroRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "monto.required" => "Debes completar este campo",
-            "monto.numeric" => "Debes ingresar un valor númerico",
-            "monto.decimal" => "Debes ingresar un valor con hasta 2 decimales",
-            "monto.min" => "Debes ingresar al menos :min",
+            "certificado_detalles.required" => "Debes completar este campo",
+            "certificado_detalles.numeric" => "Debes ingresar un valor númerico",
+            "certificado_detalles.decimal" => "Debes ingresar un valor con hasta 2 decimales",
+            "certificado_detalles.min" => "Debes ingresar al menos :min",
             "tipo_pago.required" => "Debes seleccionar una opción"
         ];
     }

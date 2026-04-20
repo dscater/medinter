@@ -9,6 +9,17 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 class CertificadoDetalleRule implements ValidationRule
 {
+
+    protected $conCategoria;
+    protected $conArchivo;
+
+    public function __construct($conCategoria = true, $conArchivo = true)
+    {
+        $this->conCategoria = $conCategoria;
+        $this->conArchivo = $conArchivo;
+    }
+
+
     /**
      * Run the validation rule.
      *
@@ -22,34 +33,38 @@ class CertificadoDetalleRule implements ValidationRule
         }
 
         foreach ($value as $index => $detalle) {
-            // categoria
-            if ($detalle['categoria'] === "" || $detalle['categoria'] === null) {
-                $fail("La categoría en la fila " . ($index + 1) . " es obligatorio.");
-                continue;
+            if ($this->conCategoria) {
+                // categoria
+                if ($detalle['categoria'] === "" || $detalle['categoria'] === null) {
+                    $fail("La categoría del certificado " . ($index + 1) . " es obligatorio.");
+                    continue;
+                }
             }
 
             // precio
             if ($detalle['precio'] === "" || $detalle['precio'] === null) {
-                $fail("El precio en la fila " . ($index + 1) . " es obligatorio.");
+                $fail("El precio del certificado " . ($index + 1) . " es obligatorio.");
                 continue;
             }
 
             if (!is_numeric($detalle['precio']) || $detalle['precio'] < 0) {
-                $fail("El precio en la fila " . ($index + 1) . " debe ser mayor o igual a 0.");
+                $fail("El precio del certificado " . ($index + 1) . " debe ser mayor o igual a 0.");
             }
 
             // tipo_certificado_id
             if (empty($detalle['tipo_certificado_id'])) {
-                $fail("El tipo de certificado en la fila " . ($index + 1) . " es obligatorio.");
+                $fail("El tipo de certificado del certificado " . ($index + 1) . " es obligatorio.");
             }
 
-            // archivo
-            if (!isset($detalle['archivo']) || $detalle['archivo'] === null) {
-                $fail("El archivo en la fila " . ($index + 1) . " es obligatorio.");
-            } else if (!is_string($detalle["archivo"])) {
-                // validar tamaño (2MB = 2048 KB)
-                if ($detalle['archivo']->getSize() > 2048 * 1024) {
-                    $fail("El archivo en la fila " . ($index + 1) . " no debe superar los 2MB.");
+            if ($this->conArchivo) {
+                // archivo
+                if (!isset($detalle['archivo']) || $detalle['archivo'] === null) {
+                    $fail("El archivo del certificado " . ($index + 1) . " es obligatorio.");
+                } else if (!is_string($detalle["archivo"])) {
+                    // validar tamaño (2MB = 2048 KB)
+                    if ($detalle['archivo']->getSize() > 2048 * 1024) {
+                        $fail("El archivo del certificado " . ($index + 1) . " no debe superar los 2MB.");
+                    }
                 }
             }
         }

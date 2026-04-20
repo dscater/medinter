@@ -3,11 +3,13 @@ import { onMounted, ref } from "vue";
 const oCertificado = ref({
     id: 0,
     cliente_id: "",
+    cliente: "",
     total: "",
     cancelado: "",
     saldo: "",
     tipo_pago: "EFECTIVO",
-    tipo: "",
+    tipo: "NORMAL",
+    tramitador_id: "",
     user_id: "",
     sucursal_id: "",
     fecha_inicio: "",
@@ -25,6 +27,7 @@ export const useCertificados = () => {
         if (item) {
             oCertificado.value.id = item.id;
             oCertificado.value.cliente_id = item.cliente_id;
+            oCertificado.value.cliente = item.cliente;
             oCertificado.value.total = item.total;
             oCertificado.value.cancelado = item.cancelado;
             oCertificado.value.saldo = item.saldo;
@@ -48,11 +51,12 @@ export const useCertificados = () => {
     const limpiarCertificado = () => {
         oCertificado.value.id = 0;
         oCertificado.value.cliente_id = "";
+        oCertificado.value.cliente = "";
         oCertificado.value.total = "";
         oCertificado.value.cancelado = 0;
         oCertificado.value.saldo = 0;
         oCertificado.value.tipo_pago = "EFECTIVO";
-        oCertificado.value.tipo = "";
+        oCertificado.value.tipo = "NORMAL";
         oCertificado.value.user_id = "";
         oCertificado.value.sucursal_id = "";
         oCertificado.value.fecha_inicio = "";

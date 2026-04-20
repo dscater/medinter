@@ -58,9 +58,7 @@ const verificaSucursalUSuario = async () => {
 
 onBeforeMount(async () => {
     appStore.initUserInfo();
-    if (appStore.user.tipo == "MÉDICO") {
-        await verificaSucursalUSuario();
-    }
+    await verificaSucursalUSuario();
     // window.removeEventListener("mousemove", resetTimer);
     // window.removeEventListener("keydown", resetTimer);
     // window.removeEventListener("click", resetTimer);

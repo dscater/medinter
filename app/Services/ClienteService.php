@@ -11,13 +11,14 @@ use Exception;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ClienteService
 {
     private $modulo = "CLIENTES";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
+    public function __construct(private  CertificadoService $certificado_service, private HistorialAccionService $historialAccionService) {}
 
     public function listado(): Collection
     {
@@ -71,6 +72,21 @@ class ClienteService
             "cel" => $datos['cel'],
             "fecha_registro" => date("Y-m-d")
         ]);
+
+        if ($datos["con_certificado"]) {
+            $datos_certificado = [
+                "cliente_id" => $cliente->id,
+                "total" => $datos["total"],
+                "cancelado" => $datos["cancelado"],
+                "saldo" => $datos["saldo"],
+                "tipo_pago" => $datos["tipo_pago"],
+                "estado" => 0,
+                "tipo" => $datos["tipo"],
+                "tramitador_id" => $datos["tramitador_id"],
+                "certificado_detalles" => $datos["certificado_detalles"],
+            ];
+            $this->certificado_service->crear($datos_certificado);
+        }
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CLIENTE", $cliente);

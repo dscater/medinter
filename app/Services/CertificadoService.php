@@ -21,7 +21,7 @@ class CertificadoService
 {
     private $modulo = "CERTIFICADOS";
 
-    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service, private PagoService $pago_service) {}
+    public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService, private CertificadoEmitidoService $certificado_emitido_service, private PagoService $pago_service, private LoginUserService $login_user_service) {}
 
     public function listado(): Collection
     {
@@ -91,37 +91,22 @@ class CertificadoService
         array $orderBy = [],
         $cliente,
         $ci,
-        $fecha,
-        $codigo,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
             ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
 
         $certificados->where("saldo", ">", 0);
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $certificados->where("user_id", Auth::user()->id);
-        }
 
         // FILTROS
         $certificados
             ->when($cliente, function ($q) use ($cliente) {
                 $q->whereHas('cliente', function ($sub) use ($cliente) {
-                    $sub->buscarNombre($cliente);
+                    $sub->whereRaw("CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?", ["%$cliente%"]);
                 });
             })
             ->when($ci, function ($q) use ($ci) {
                 $q->whereHas('cliente', function ($sub) use ($ci) {
                     $sub->where("ci", $ci);
-                });
-            })
-            ->when($fecha, function ($q) use ($fecha) {
-                $q->whereDate("fecha_registro", $fecha); // ajusta el campo si es otro
-            })
-            ->when($codigo, function ($q) use ($codigo) {
-                $q->whereHas('tramite_cliente', function ($sub) use ($codigo) {
-                    $sub->wherehas('tramite', function ($sub2) use ($codigo) {
-                        $sub2->where("codigo", $codigo);
-                    });
                 });
             });
 
@@ -147,59 +132,84 @@ class CertificadoService
     {
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
-
-        // saldo
-        if ($datos["tipo"] == 'TRAMITE' && isset($datos["cancelado"]) && $datos["cancelado"]) {
-            $cancelado = (float)$datos["cancelado"];
-            $datos["saldo"] = (float)$datos["total"] - (float)$cancelado;
+        $login_user = $this->login_user_service->verificaSucursal();
+        if (!$login_user) {
+            throw new Exception("Error no se encontró la sucursal del usuario");
         }
-
+        $sucursal_id = $login_user->sucursal_id;
         $certificado = Certificado::create([
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
             "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : $datos["total"],
             "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
-            "user_id" => Auth::user()->id,
-            "sucursal_id" => $datos["sucursal_id"],
+            "tramitador_id" => $datos["tramitador_id"] ?? null,
+            "user_id" => $datos["estado"] == 1 ? Auth::user()->id : NULL,
+            "sucursal_id" => $sucursal_id,
+            "estado" => isset($datos["estado"]) ? $datos["estado"] : 1,
             "fecha_registro" => $fecha_actual,
             "hora_registro" => $hora_actual,
             "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
+        // HORA INICIO-FIN
+        // atendido
+        if ($certificado->estado == 1) {
+            $certificado->fecha_inicio = $datos["fecha_inicio"];
+            $certificado->hora_inicio = $datos["hora_inicio"];
+
+            $certificado->fecha_fin = $fecha_actual;
+            $certificado->hora_fin = $hora_actual;
+        }
+
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
+            $saldo = 0;
+            $cancelado = $item["precio"];
+            if (!$item["con_saldo"]) {
+                // CHECKBOX DESMARCADO == FALSE | 1
+                $saldo = $item["precio"];
+                $cancelado = 0;
+            }
+
             $certificado_detalle = $certificado->certificado_detalles()->create([
-                "categoria" => $item["categoria"],
+                "categoria" => $item["categoria"] ?? '',
                 "precio" => $item["precio"],
-                "cancelado" => $item["precio"],
-                "saldo" => 0,
+                "cancelado" => $cancelado,
+                "saldo" => $saldo,
                 "tipo_certificado_id" => $item["tipo_certificado_id"],
             ]);
 
-            $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $fecha_actual, Auth::user()->id);
+            if ($datos["estado"] == 1) {
+                // CERTIFICADO ATENDIDO
+                $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $fecha_actual, Auth::user()->id);
+                // cargar archivo
+                if (!is_string($item["archivo"])) {
+                    $archivo = $item["archivo"];
+                    $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                }
+            }
 
-            // cargar archivo
-            if (!is_string($item["archivo"])) {
-                $archivo = $item["archivo"];
-                $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+            // PAGO POR DETALLE
+            if ($cancelado > 0) {
+                $this->pago_service->crear([
+                    "registro_id" => $certificado_detalle->id,
+                    "modulo" => "CertificadoDetalle",
+                    "monto" => $cancelado,
+                    "tipo_pago" => $certificado->tipo_pago,
+                    "descripcion" => "PAGO POR CERTIFICADO",
+                    "cliente_id" => $datos["cliente_id"],
+                    "certificado_atendido" => $certificado->estado,
+                ]);
             }
         }
 
-        // PAGO
-        Log::debug($certificado->cancelado);
-        if ($certificado->cancelado > 0) {
-            $this->pago_service->crear([
-                "registro_id" => $certificado->id,
-                "modulo" => "Certificado",
-                "monto" => $certificado->cancelado,
-                "tipo_pago" => $certificado->tipo_pago,
-                "descripcion" => "PAGO POR CERTIFICADO",
-            ]);
-        }
-
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
+        if ($certificado->estado == 1) {
+            $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
+        } else {
+            $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "INICIO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
+        }
 
         return $certificado;
     }
@@ -215,6 +225,10 @@ class CertificadoService
     {
         $old_certificado = clone $certificado;
 
+
+        $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
+        $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
+
         $certificado->update([
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
@@ -222,29 +236,59 @@ class CertificadoService
             "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
             "user_id" => Auth::user()->id,
-            "sucursal_id" => $datos["sucursal_id"],
             "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
+        // HORA INICIO-FIN
+        // atendido
+        if ($old_certificado->estado == 0) {
+            $certificado->fecha_inicio = $datos["fecha_inicio"];
+            $certificado->hora_inicio = $datos["hora_inicio"];
+
+            $certificado->fecha_fin = $fecha_actual;
+            $certificado->hora_fin = $hora_actual;
+            $certificado->estado = 1;
+            $certificado->save();
+        }
+
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
+            $saldo = 0;
+            $cancelado = $item["precio"];
+            if (!$item["con_saldo"]) {
+                // CHECKBOX DESMARCADO == FALSE | 1
+                $saldo = $item["precio"];
+                $cancelado = 0;
+            }
             if ($item["id"] == 0) {
                 $certificado_detalle = $certificado->certificado_detalles()->create([
-                    "categoria" => $item["categoria"],
+                    "categoria" => $item["categoria"] ?? '',
                     "precio" => $item["precio"],
-                    "cancelado" => $item["cancelado"],
-                    "saldo" => 0,
+                    "cancelado" => $cancelado,
+                    "saldo" => $saldo,
                     "tipo_certificado_id" => $item["tipo_certificado_id"],
                 ]);
 
                 // cargar archivo
                 if (!is_string($item["archivo"])) {
                     $archivo = $item["archivo"];
-
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
                 }
 
                 $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
+
+                // PAGO POR DETALLE
+                if ($cancelado > 0) {
+                    $this->pago_service->crear([
+                        "registro_id" => $certificado_detalle->id,
+                        "modulo" => "CertificadoDetalle",
+                        "monto" => $cancelado,
+                        "tipo_pago" => $certificado->tipo_pago,
+                        "descripcion" => "PAGO POR CERTIFICADO",
+                        "cliente_id" => $datos["cliente_id"],
+                        "certificado_atendido" => $certificado->estado,
+                    ]);
+                }
             } else {
                 $certificado_detalle = CertificadoDetalle::find($item["id"]);
                 // cargar archivo
@@ -254,12 +298,21 @@ class CertificadoService
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
                 }
 
-                $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id, $certificado_detalle->tipo_certificado_id);
+
+                if ($old_certificado->estado == 1) {
+                    // previamente atendido
+                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id, $certificado_detalle->tipo_certificado_id);
+                } else {
+                    $this->pago_service->asignarMedicoPago($certificado_detalle);
+
+                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
+                }
 
                 $certificado_detalle->update([
+                    "categoria" => $item["categoria"],
                     "precio" => $item["precio"],
-                    "cancelado" => $item["precio"],
-                    "saldo" => 0,
+                    "cancelado" => $cancelado,
+                    "saldo" => $saldo,
                     "tipo_certificado_id" => $item["tipo_certificado_id"],
                 ]);
             }
@@ -275,7 +328,12 @@ class CertificadoService
         }
 
         // registrar accion
-        $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CERTIFICADO", $old_certificado, $certificado, ["certificado_detalles"]);
+        if ($old_certificado->estado == 0) {
+            // registrar accion
+            $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
+        } else {
+            $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CERTIFICADO", $old_certificado, $certificado, ["certificado_detalles"]);
+        }
 
         return $certificado;
     }

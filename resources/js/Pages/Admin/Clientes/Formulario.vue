@@ -32,10 +32,13 @@ watch(
     (newValue) => {
         muestra_form.value = newValue;
         if (muestra_form.value) {
+            form.clearErrors();
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
-
+            if (form.id == 0) {
+                limpiarCliente();
+            }
             form.id = oCliente.value.id;
             form.nombre = oCliente.value.nombre;
             form.paterno = oCliente.value.paterno;
@@ -135,6 +138,9 @@ const enviarFormulario = () => {
                 });
                 form.reset();
                 limpiarCliente();
+                document
+                    .getElementsByTagName("body")[0]
+                    .classList.remove("modal-open");
                 emits("envio-formulario");
             },
             onError: (err, code) => {
@@ -508,6 +514,7 @@ onMounted(() => {});
                             }"
                             v-model="form.ci"
                             autosize
+                            :disabled="metodo == 'axios'"
                         ></el-input>
                         <ul
                             v-if="form.errors?.ci"
@@ -684,124 +691,168 @@ onMounted(() => {});
                                 <i class="fa fa-clipboard-list"></i>
                                 Certificado(s) y Pago
                             </h4>
+                            <button
+                                type="button"
+                                class="btn w-100 btn-agregar btn-xs text-xs"
+                                @click.prevent="agregarCertificado()"
+                            >
+                                <i class="fa fa-plus"></i> Agregar
+                            </button>
                         </div>
-                        <div class="col-md-6 mt-1">
-                            <div class="row">
-                                <div class="col-12 text-center">
-                                    <label>CERTIFICADO(s)</label>
+                        <div class="col-12 mt-1 cliente-pago">
+                            <div
+                                class="row fila_cliente_cetificado"
+                                v-for="(
+                                    item, index
+                                ) in form.certificado_detalles"
+                            >
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <div class="input-group-append">
+                                            <button
+                                                type="button"
+                                                class="btn btn-danger"
+                                                v-if="index > 0"
+                                                @click="
+                                                    quitarCertificado(index)
+                                                "
+                                            >
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            <span
+                                                class="input-group-text"
+                                                v-else
+                                            >
+                                                <i
+                                                    class="fa fa-times text-muted"
+                                                ></i
+                                            ></span>
+                                        </div>
+                                        <div class="form-control border-0 p-0">
+                                            <el-select
+                                                v-model="
+                                                    item.tipo_certificado_id
+                                                "
+                                                class="el-select-input-group-right"
+                                                placeholder="- Seleccione -"
+                                                no-data-text="Sin datos"
+                                                no-match-text="No se entrarón coincidencias"
+                                                size="small"
+                                                filterable
+                                                @change="
+                                                    detectarTipoCertificado(
+                                                        $event,
+                                                        index,
+                                                    )
+                                                "
+                                            >
+                                                <el-option
+                                                    v-for="item in listTipoCertificados"
+                                                    :key="item.id"
+                                                    :value="item.id"
+                                                    :label="item.nombre"
+                                                ></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div
-                                    class="col-12 mt-1"
-                                    v-for="(
-                                        item, index
-                                    ) in form.certificado_detalles"
-                                >
-                                    <el-select
-                                        v-model="item.tipo_certificado_id"
-                                        placeholder="- Seleccione -"
-                                        no-data-text="Sin datos"
-                                        no-match-text="No se entrarón coincidencias"
-                                        filterable
-                                        @change="
-                                            detectarTipoCertificado(
-                                                $event,
-                                                index,
-                                            )
-                                        "
-                                    >
-                                        <el-option
-                                            v-for="item in listTipoCertificados"
-                                            :key="item.id"
-                                            :value="item.id"
-                                            :label="item.nombre"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                                <div class="col-12 mt-1">
-                                    <button
-                                        type="button"
-                                        class="btn w-100 btn-agregar btn-xs text-sm"
-                                        @click.prevent="agregarCertificado()"
-                                    >
-                                        <i class="fa fa-plus"></i> Agregar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mt-1">
-                            <div class="col-12 text-center">
-                                <label>PAGO</label>
-                            </div>
-                            <div class="col-12 mt-2 text-center">
-                                <table
-                                    class="table-pago"
-                                    style="
-                                        border-collapse: collapse;
-                                        border-spacing: 0;
-                                    "
-                                >
-                                    <tbody>
-                                        <tr
-                                            v-for="item in form.certificado_detalles"
-                                        >
-                                            <td>
-                                                {{
-                                                    item.tipo_certificado
-                                                        ?.nombre
-                                                }}
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
                                                 Bs.
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    step="0.1"
-                                                    class="form-control"
-                                                    v-model="item.precio"
-                                                />
-                                            </td>
-                                            <td>
+                                            </div>
+                                        </div>
+                                        <input
+                                            type="number"
+                                            step="0.1"
+                                            :id="`item${index}`"
+                                            class="form-control"
+                                            v-model="item.precio"
+                                        />
+                                        <div class="input-group-append">
+                                            <div
+                                                class="input-group-text bg-white"
+                                            >
                                                 <input
                                                     type="checkbox"
-                                                    class="checkboxTable"
+                                                    class="checkboxTable form-control"
                                                     v-model="item.con_saldo"
                                                 />
-                                            </td>
-                                        </tr>
-                                        <tr class="cancelado">
-                                            <td>Cancelado Bs.</td>
-                                            <td colspan="2">
-                                                <input
-                                                    type="number"
-                                                    v-model="form.cancelado"
-                                                    class="form-control"
-                                                    readonly=""
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr class="saldo">
-                                            <td>Saldo Bs.</td>
-                                            <td colspan="2">
-                                                <input
-                                                    type="number"
-                                                    v-model="form.saldo"
-                                                    class="form-control"
-                                                    readonly=""
-                                                />
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total Bs.</td>
-                                            <td colspan="2">
-                                                <input
-                                                    type="number"
-                                                    :value="total ?? '0.00'"
-                                                    class="form-control"
-                                                    readonly=""
-                                                />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-2 text-center">
+                                <div class="row cancelado">
+                                    <div
+                                        class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                                    >
+                                        Cancelado
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepned">
+                                                <div class="input-group-text">
+                                                    Bs.
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                v-model="form.cancelado"
+                                                class="form-control"
+                                                readonly=""
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row saldo">
+                                    <div
+                                        class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                                    >
+                                        Saldo
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepned">
+                                                <div class="input-group-text">
+                                                    Bs.
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                v-model="form.saldo"
+                                                class="form-control"
+                                                readonly=""
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row total">
+                                    <div
+                                        class="col-6 text-right font-weight-bold d-flex justify-content-end align-items-center"
+                                    >
+                                        Total
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="input-group">
+                                            <div class="input-group-prepned">
+                                                <div class="input-group-text">
+                                                    Bs.
+                                                </div>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                :value="total ?? '0.00'"
+                                                class="form-control"
+                                                readonly=""
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <ul
                                     v-if="form.errors?.cancelado"
                                     class="d-block text-danger list-unstyled"

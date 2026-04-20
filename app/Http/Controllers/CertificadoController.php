@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CertificadoStoreRequest;
 use App\Http\Requests\CertificadoUpdateRequest;
 use App\Models\Certificado;
+use App\Models\Cliente;
 use App\Models\User;
 use App\Services\CertificadoService;
 use Exception;
@@ -86,8 +87,8 @@ class CertificadoController extends Controller
         $page = (int)($request->input("page", 1));
         $cliente = (string)$request->input("cliente", "");
         $ci = $request->input("ci", "");
-        $fecha = (string)$request->input("fecha", "");
-        $codigo = (string)$request->input("codigo", "");
+        // $fecha = (string)$request->input("fecha", "");
+        // $codigo = (string)$request->input("codigo", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
@@ -104,8 +105,6 @@ class CertificadoController extends Controller
             $arrayOrderBy,
             $cliente,
             $ci,
-            $fecha,
-            $codigo,
         );
         return response()->JSON([
             "data" => $certificados->items(),
@@ -130,7 +129,9 @@ class CertificadoController extends Controller
         DB::beginTransaction();
         try {
             // crear el Certificado
-            $this->certificadoService->crear($request->validated());
+            $datos = $request->validated();
+            $datos["estado"] = 1;
+            $this->certificadoService->crear($datos);
             DB::commit();
             return redirect()->route("certificados.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
@@ -150,7 +151,6 @@ class CertificadoController extends Controller
      */
     public function edit(Certificado $certificado): ResponseInertia
     {
-
         $cliente = $certificado->cliente;
         $certificado = $certificado->load(["certificado_detalles"]);
         return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
@@ -166,6 +166,25 @@ class CertificadoController extends Controller
     public function show(Certificado $certificado): JsonResponse
     {
         return response()->JSON($certificado);
+    }
+
+    public function verificaPendienteCliente(Cliente $cliente)
+    {
+        $certificado = Certificado::where("cliente_id", $cliente->id)
+            ->where("estado", 0)
+            ->where("status", 1)
+            ->get()->last();
+
+        if ($certificado) {
+            $certificado = $certificado->load(["certificado_detalles"]);
+        }
+
+        return response()->JSON(
+            [
+                "existe" => $certificado ? true : false,
+                "certificado" => $certificado
+            ]
+        );
     }
 
     public function update(Certificado $certificado, CertificadoUpdateRequest $request)

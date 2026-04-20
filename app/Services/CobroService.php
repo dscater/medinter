@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Certificado;
+use App\Models\CertificadoDetalle;
 use App\Services\HistorialAccionService;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -21,14 +22,38 @@ class CobroService
 
     public function crear(Certificado $certificado, $datos)
     {
-        $datos["registro_id"] = $certificado->id;
-        $datos["modulo"] = "Certificado";
-        $certificado_pago = $this->pago_service->crear($datos);
-
-        // actualizar Saldo
-        $certificado->saldo = $certificado->total - ((float)$certificado->cancelado + (float)$datos["monto"]);
+        $certificado->tipo_pago = $datos["tipo_pago"];
         $certificado->save();
 
-        return $certificado_pago;
+        // detalles
+        foreach ($datos["certificado_detalles"] as $key => $item) {
+            $saldo = 0;
+            $cancelado = $item["precio"];
+            $certificado_detalle = CertificadoDetalle::findOrFail($item["id"]);
+            $certificado_detalle->update([
+                "saldo" => $saldo,
+                "cancelado" => $cancelado,
+            ]);
+
+            // PAGO POR DETALLE
+            if (!$cancelado) {
+                throw new Exception("No se encontro el monto cancelado");
+            }
+
+            $this->pago_service->crear([
+                "registro_id" => $certificado_detalle->id,
+                "modulo" => "CertificadoDetalle",
+                "monto" => $cancelado,
+                "tipo_pago" => $datos["tipo_pago"],
+                "descripcion" => "PAGO POR CERTIFICADO",
+                "cliente_id" => $certificado->cliente_id,
+                "medico_id" => $certificado->user_id
+            ]);
+        }
+        // actualizar Saldo
+        $certificado->cancelado = $certificado->total;
+        $certificado->saldo = 0;
+        $certificado->save();
+        return $certificado;
     }
 }

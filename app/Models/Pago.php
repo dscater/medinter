@@ -14,8 +14,10 @@ class Pago extends Model
         "descripcion",
         "fecha",
         "hora",
+        "cliente_id",
         "user_id",
         "sucursal_id",
+        "medico_id",
         "verificado",
         "fecha_verificado",
         "hora_verificado"
@@ -38,9 +40,19 @@ class Pago extends Model
         return $this->belongsTo(Certificado::class, 'certificado_id');
     }
 
+    public function cliente_id()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function medico()
+    {
+        return $this->belongsTo(User::class, 'medico_id');
     }
 
     public function sucursal()
