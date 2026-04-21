@@ -341,7 +341,7 @@ onBeforeMount(() => {
                                     }}<span
                                         v-if="
                                             item.certificado_detalle.certificado
-                                                .tipo == 'TRAMITE'
+                                                .tramitador
                                         "
                                     >
                                         -
@@ -353,8 +353,13 @@ onBeforeMount(() => {
                                 >
                             </td>
                             <td>
-                                {{ item.medico.nombre }}
-                                {{ item.medico.paterno }} {{ item.materno }}
+                                <span v-if="item.medico">
+                                    {{ item.medico.nombre }}
+                                    {{ item.medico.paterno }} {{ item.materno }}
+                                </span>
+                                <span v-else>
+                                    <small>Pendiente</small>
+                                </span>
                             </td>
                             <template v-for="tipo_pago in listTipoPagos">
                                 <td
