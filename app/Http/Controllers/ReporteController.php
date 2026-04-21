@@ -773,14 +773,14 @@ class ReporteController extends Controller
 
             $fila = 2;
             $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
-            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":I" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':I' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':I' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $sheet->setCellValue('A' . $fila, "CERTIFICADOS EMITIDOS");
-            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":I" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':I' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':I' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $fila++;
             $sheet->setCellValue('A' . $fila, 'N°');
@@ -789,9 +789,10 @@ class ReporteController extends Controller
             $sheet->setCellValue('D' . $fila, 'EDAD');
             $sheet->setCellValue('E' . $fila, 'CATEGORÍA');
             $sheet->setCellValue('F' . $fila, 'TELÉFONO');
-            $sheet->setCellValue('G' . $fila, 'FECHA Y HORA INICIO');
-            $sheet->setCellValue('H' . $fila, 'FECHA Y HORA FIN');
-            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->headerTabla);
+            $sheet->setCellValue('G' . $fila, 'MÉDICO');
+            $sheet->setCellValue('H' . $fila, 'FECHA Y HORA INICIO');
+            $sheet->setCellValue('I' . $fila, 'FECHA Y HORA FIN');
+            $sheet->getStyle('A' . $fila . ':I' . $fila)->applyFromArray($this->headerTabla);
             $fila++;
 
             foreach ($certificado_detalles as $key => $item) {
@@ -801,9 +802,10 @@ class ReporteController extends Controller
                 $sheet->setCellValue('D' . $fila, $item->certificado->cliente->edad);
                 $sheet->setCellValue('E' . $fila, $item->categoria);
                 $sheet->setCellValue('F' . $fila, $item->certificado->cliente->cel);
-                $sheet->setCellValue('G' . $fila, $item->certificado->fecha_inicio_t . ' ' . $item->certificado->hora_inicio);
-                $sheet->setCellValue('H' . $fila, $item->certificado->fecha_fin_t . ' ' . $item->certificado->hora_fin);
-                $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->bodyTabla);
+                $sheet->setCellValue('G' . $fila, $item->certificado->user->full_name);
+                $sheet->setCellValue('H' . $fila, $item->certificado->fecha_inicio_t . ' ' . $item->certificado->hora_inicio);
+                $sheet->setCellValue('I' . $fila, $item->certificado->fecha_fin_t . ' ' . $item->certificado->hora_fin);
+                $sheet->getStyle('A' . $fila . ':I' . $fila)->applyFromArray($this->bodyTabla);
                 $fila++;
             }
 
@@ -815,8 +817,9 @@ class ReporteController extends Controller
             $sheet->getColumnDimension('F')->setWidth(20);
             $sheet->getColumnDimension('G')->setWidth(20);
             $sheet->getColumnDimension('H')->setWidth(20);
+            $sheet->getColumnDimension('I')->setWidth(20);
 
-            foreach (range('A', 'H') as $columnID) {
+            foreach (range('A', 'I') as $columnID) {
                 $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
             }
 
@@ -825,7 +828,7 @@ class ReporteController extends Controller
             $sheet->getPageMargins()->setRight(0.1);
             $sheet->getPageMargins()->setLeft(0.1);
             $sheet->getPageMargins()->setBottom(0.1);
-            $sheet->getPageSetup()->setPrintArea('A:H');
+            $sheet->getPageSetup()->setPrintArea('A:I');
             $sheet->getPageSetup()->setFitToWidth(1);
             $sheet->getPageSetup()->setFitToHeight(0);
 

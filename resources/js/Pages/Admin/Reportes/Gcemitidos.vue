@@ -24,12 +24,14 @@ Highcharts.setOptions({
         exitFullscreen: "Salir de pantalla completa",
     },
 });
-const cargarListas = () => {
-    cargarClientes();
-    cargarSucursals();
-    cargarUsers();
-    cargarTipoPagos();
-    cargarTipoCertificados();
+const cargarListas = async () => {
+    await Promise.all([
+        cargarClientes(),
+        cargarSucursals(),
+        cargarUsers(),
+        cargarTipoPagos(),
+        cargarTipoCertificados(),
+    ]);
 };
 
 const listClientes = ref([]);
@@ -38,62 +40,54 @@ const listUsers = ref([]);
 const listTipoPagos = ref([]);
 const listTipoCertificados = ref([]);
 
-const cargarClientes = () => {
-    axios.get(route("clientes.listado")).then((response) => {
-        listClientes.value = response.data.clientes;
-        listClientes.value.unshift({
-            id: "todos",
-            full_name: "TODOS",
-            full_ci: "",
-        });
+const cargarClientes = async () => {
+    const response = await axios.get(route("clientes.listado"));
+    listClientes.value = response.data.clientes;
+    listClientes.value.unshift({
+        id: "todos",
+        full_name: "TODOS",
+        full_ci: "",
     });
 };
 
-const cargarSucursals = () => {
-    axios.get(route("sucursals.listado")).then((response) => {
-        listSucursals.value = response.data.sucursals;
-        listSucursals.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
+const cargarSucursals = async () => {
+    const response = await axios.get(route("sucursals.listado"));
+    listSucursals.value = response.data.sucursals;
+    listSucursals.value.unshift({
+        id: "todos",
+        nombre: "TODOS",
     });
 };
-const cargarUsers = () => {
-    axios
-        .get(route("usuarios.byTipo"), {
-            params: {
-                tipo: "MÉDICO",
-            },
-        })
-        .then((response) => {
-            listUsers.value = response.data.usuarios;
-            listUsers.value.unshift({
-                id: "todos",
-                full_name: "TODOS",
-            });
-        });
-};
-const cargarTipoPagos = () => {
-    axios.get(route("tipo_pagos.listado")).then((response) => {
-        listTipoPagos.value = response.data;
-        listTipoPagos.value.unshift({
-            value: "todos",
-            label: "TODOS",
-        });
+const cargarUsers = async () => {
+    const response = await axios.get(route("usuarios.byTipo"), {
+        params: {
+            tipo: "MÉDICO",
+        },
+    });
+    listUsers.value = response.data.usuarios;
+    listUsers.value.unshift({
+        id: "todos",
+        full_name: "TODOS",
     });
 };
-const cargarTipoCertificados = () => {
-    axios.get(route("tipo_certificados.listado")).then((response) => {
-        listTipoCertificados.value = response.data.tipo_certificados;
-        listTipoCertificados.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
+const cargarTipoPagos = async () => {
+    const response = await axios.get(route("tipo_pagos.listado"));
+    listTipoPagos.value = response.data;
+    listTipoPagos.value.unshift({
+        value: "todos",
+        label: "TODOS",
     });
 };
-
-onMounted(() => {
-    cargarListas();
+const cargarTipoCertificados = async () => {
+    const response = await axios.get(route("tipo_certificados.listado"));
+    listTipoCertificados.value = response.data.tipo_certificados;
+    listTipoCertificados.value.unshift({
+        id: "todos",
+        nombre: "TODOS",
+    });
+};
+onMounted(async () => {
+    await cargarListas();
     appStore.stopLoading();
 });
 

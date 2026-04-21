@@ -149,6 +149,7 @@
                 <th width="6%">EDAD</th>
                 <th width="6%">CATEGORÍA</th>
                 <th>TELÉFONO</th>
+                <th>MÉDICO</th>
                 <th>FECHA Y HORA INICIO</th>
                 <th>FECHA Y HORA FIN</th>
             </tr>
@@ -165,6 +166,7 @@
                     <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
                     <td class="centreado">{{ $item->categoria }}</td>
                     <td>{{ $item->certificado->cliente->cel }}</td>
+                    <td>{{ $item->certificado->user->full_name }}</td>
                     <td>{{ $item->certificado->fecha_inicio_t }} {{ $item->certificado->hora_inicio }}</td>
                     <td>{{ $item->certificado->fecha_fin_t }} {{ $item->certificado->hora_fin }}</td>
                 </tr>
