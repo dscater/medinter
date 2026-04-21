@@ -258,7 +258,22 @@ const eliminarCertificado = (item) => {
                                     </ul>
                                 </div>
                             </template>
-
+                            <template #total="{ item }">
+                                <span
+                                    :class="{
+                                        'badge badge-danger text-sm':
+                                            item.saldo > 0,
+                                    }"
+                                >
+                                    {{ item.total }}
+                                </span>
+                            </template>
+                            <template #tipo="{ item }">
+                                <span>{{ item.tipo }} </span>
+                                <span v-if="item.tramitador">
+                                    - {{ item.tramitador.nombre }}
+                                </span>
+                            </template>
                             <template #cliente="{ item }">
                                 <span
                                     >{{ item.cliente.nombre }}

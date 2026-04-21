@@ -46,7 +46,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
 
         // FILTROS
         $certificados->when($cliente, function ($q) use ($cliente) {
@@ -89,7 +89,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
 
         $certificados->where("saldo", ">", 0);
 

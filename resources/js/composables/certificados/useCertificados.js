@@ -10,6 +10,7 @@ const oCertificado = ref({
     tipo_pago: "EFECTIVO",
     tipo: "NORMAL",
     tramitador_id: "",
+    tramitador: null,
     user_id: "",
     sucursal_id: "",
     fecha_inicio: "",
@@ -33,6 +34,10 @@ export const useCertificados = () => {
             oCertificado.value.saldo = item.saldo;
             oCertificado.value.tipo = item.tipo;
             oCertificado.value.tramitador_id = item.tramitador_id;
+            console.log(item);
+            if (item.tramitador) {
+                oCertificado.value.tramitador = item.tramitador;
+            }
             oCertificado.value.tipo_pago = item.tipo_pago;
             oCertificado.value.user_id = item.user_id;
             oCertificado.value.sucursal_id = item.sucursal_id;
@@ -58,6 +63,8 @@ export const useCertificados = () => {
         oCertificado.value.saldo = 0;
         oCertificado.value.tipo_pago = "EFECTIVO";
         oCertificado.value.tipo = "NORMAL";
+        oCertificado.value.tramitador_id = "";
+        oCertificado.value.tramitador = null;
         oCertificado.value.user_id = "";
         oCertificado.value.sucursal_id = "";
         oCertificado.value.fecha_inicio = "";

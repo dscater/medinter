@@ -223,6 +223,7 @@ onBeforeMount(() => {});
                                     {{ d.tipo_certificado.nombre }}
 
                                     <a
+                                        v-if="item.estado == 1"
                                         :href="d.url_archivo"
                                         target="_blank"
                                         class="text-md"
@@ -231,6 +232,23 @@ onBeforeMount(() => {});
                                 </li>
                             </ul>
                         </div>
+                    </template>
+
+                    <template #tipo="{ item }">
+                        <span>{{ item.tipo }} </span>
+                        <span v-if="item.tramitador">
+                            - {{ item.tramitador.nombre }}
+                        </span>
+                    </template>
+
+                    <template #saldo="{ item }">
+                        <span
+                            :class="{
+                                'badge badge-danger text-sm': item.saldo > 0,
+                            }"
+                        >
+                            {{ item.saldo }}
+                        </span>
                     </template>
 
                     <template #cliente="{ item }">

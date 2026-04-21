@@ -450,10 +450,15 @@ class ReporteController extends Controller
                         $item->cliente->materno
                 );
 
+                $tramitador_txt = "";
+                if ($item->certificado_detalle->certificado->tramitador) {
+                    $tramitador_txt = " - " . $item->certificado_detalle->certificado->tramitador->nombre;
+                }
+
                 $sheet->setCellValue(
                     Coordinate::stringFromColumnIndex($colIndex++) . $fila,
                     $item->certificado_detalle->tipo_certificado->nombre . "\n(" .
-                        $item->certificado_detalle->certificado->tipo . ")"
+                        $item->certificado_detalle->certificado->tipo . $tramitador_txt . ")"
                 );
 
                 $sheet->setCellValue(

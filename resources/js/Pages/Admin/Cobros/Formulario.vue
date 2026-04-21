@@ -46,6 +46,7 @@ watch(
             form.tipo_pago = oCertificado.value.tipo_pago;
             form.tipo = oCertificado.value.tipo;
             form.tramitador_id = oCertificado.value.tramitador_id;
+            form.tramitador = oCertificado.value.tramitador;
             form.user_id = oCertificado.value.user_id;
             form.sucursal_id = oCertificado.value.sucursal_id;
             form.fecha_inicio = oCertificado.value.fecha_inicio;
@@ -82,8 +83,8 @@ watch(
 
 const tituloDialog = computed(() => {
     return accion_form.value == 0
-        ? `<i class="fa fa-holding-usd"></i> Nuevo Pago`
-        : `<i class="fa fa-holding-usd"></i> Nuevo Pago`;
+        ? `<i class="fa fa-hand-holding-usd"></i> Registrar Cobro`
+        : `<i class="fa fa-hand-holding-usd"></i> Registrar Cobro`;
 });
 
 const textBtn = computed(() => {
@@ -246,7 +247,7 @@ onMounted(() => {
                     <div class="col-12">
                         <div class="row">
                             <div class="col-4 text-right">
-                                <strong>Nombre: </strong>
+                                <strong>Paciente: </strong>
                             </div>
                             <div class="col-8">
                                 {{ form.cliente.nombre }}
@@ -264,6 +265,26 @@ onMounted(() => {
                                 {{ form.cliente.ci }}
                                 {{ form.cliente.complemento }}
                                 {{ form.cliente.ci_exp }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-4 text-right">
+                                <strong>Tipo Trámite: </strong>
+                            </div>
+                            <div class="col-8">
+                                {{ form.tipo }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12" v-if="form.tipo == 'TRAMITE'">
+                        <div class="row">
+                            <div class="col-4 text-right">
+                                <strong>Tramitador: </strong>
+                            </div>
+                            <div class="col-8">
+                                {{ form.tramitador.nombre }}
                             </div>
                         </div>
                     </div>

@@ -36,7 +36,7 @@ class PagoService
                 "user:id,nombre,paterno,materno",
                 "medico:id,nombre,paterno,materno",
                 "certificado_detalle.tipo_certificado",
-                "certificado_detalle.certificado",
+                "certificado_detalle.certificado.tramitador",
                 "cliente:id,nombre,paterno,materno,ci,ci_exp,complemento",
             ])
                 ->whereBetween("fecha_verificado", [$fecha_ini, $fecha_fin]);

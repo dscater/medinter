@@ -209,7 +209,14 @@
                     <td>
                         {{ $item->certificado_detalle->tipo_certificado->nombre }}
                         <br />
-                        <small>({{ $item->certificado_detalle->certificado->tipo }})</small>
+                        <small>({{ $item->certificado_detalle->certificado->tipo }}
+                            @if ($item->certificado_detalle->certificado->tramitador)
+                                - {{ $item->certificado_detalle->certificado->tramitador->nombre }}
+
+                                <span></span>
+                            @endif
+                            )
+                        </small>
                     </td>
                     <td>
                         {{ $item->medico->nombre }}

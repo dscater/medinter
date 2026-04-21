@@ -338,7 +338,18 @@ onBeforeMount(() => {
                                     >({{
                                         item.certificado_detalle.certificado
                                             .tipo
-                                    }})</small
+                                    }}<span
+                                        v-if="
+                                            item.certificado_detalle.certificado
+                                                .tipo == 'TRAMITE'
+                                        "
+                                    >
+                                        -
+                                        {{
+                                            item.certificado_detalle.certificado
+                                                .tramitador.nombre
+                                        }} </span
+                                    >)</small
                                 >
                             </td>
                             <td>
