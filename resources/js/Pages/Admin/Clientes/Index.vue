@@ -9,6 +9,7 @@ import { useAppStore } from "@/stores/aplicacion/appStore";
 // import { useMenu } from "@/composables/useMenu";
 import Formulario from "./Formulario.vue";
 import { buttonProps } from "element-plus";
+import Certificado from "./Certificado.vue";
 // const { mobile, identificaDispositivo } = useMenu();
 const { props: props_page } = usePage();
 const appStore = useAppStore();
@@ -86,6 +87,9 @@ const multiSearch = ref({
 
 const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
+
+const accion_form_certificado = ref(0);
+const muestra_form_certificado = ref(false);
 
 const agregarRegistro = () => {
     limpiarCliente();
@@ -211,6 +215,33 @@ const eliminarCliente = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
+                                            'certificados.registroCliente',
+                                        )
+                                    "
+                                >
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        content="Certificado"
+                                        placement="left-start"
+                                    >
+                                        <button
+                                            class="btn btn-primary"
+                                            @click="
+                                                setCliente(item);
+                                                accion_form_certificado = 1;
+                                                muestra_form_certificado = true;
+                                            "
+                                        >
+                                            <i
+                                                class="fa fa-clipboard-list"
+                                            ></i></button
+                                    ></el-tooltip>
+                                </template>
+                                <template
+                                    v-if="
+                                        props_page.auth?.user.permisos == '*' ||
+                                        props_page.auth?.user.permisos.includes(
                                             'clientes.edit',
                                         )
                                     "
@@ -268,5 +299,11 @@ const eliminarCliente = (item) => {
             @envio-formulario="updateDatatable"
             @cerrar-formulario="muestra_formulario = false"
         ></Formulario>
+        <Certificado
+            :muestra_formulario="muestra_form_certificado"
+            :accion_formulario="accion_form_certificado"
+            @envio-formulario="muestra_form_certificado = false"
+            @cerrar-formulario="muestra_form_certificado = false"
+        ></Certificado>
     </Content>
 </template>

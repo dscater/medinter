@@ -701,30 +701,38 @@ class ReporteController extends Controller
         $user_id =  $request->user_id;
         $tipo_certificado_id =  $request->tipo_certificado_id;
         $formato =  $request->formato;
-        $certificados = Certificado::select("certificados.*");
+        $certificado_detalles = CertificadoDetalle::select("certificado_detalles.*");
 
         if ($cliente_id != 'todos') {
-            $certificados->where('cliente_id', $cliente_id);
-        }
-
-        if ($sucursal_id != 'todos') {
-            $certificados->where('sucursal_id', $sucursal_id);
-        }
-
-        if ($user_id != 'todos') {
-            $certificados->where('user_id', $user_id);
-        }
-
-        if ($tipo_certificado_id != 'todos') {
-            $certificados->whereHas('certificado_detalles', function ($q) use ($tipo_certificado_id) {
-                $q->where("tipo_certificado_id", $tipo_certificado_id);
+            $certificado_detalles->whereHas('certificado', function ($q) use ($cliente_id) {
+                $q->where("cliente_id", $cliente_id);
             });
         }
 
-        $certificados = $certificados->get();
+        if ($sucursal_id != 'todos') {
+            $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
+                $q->where("sucursal_id", $sucursal_id);
+            });
+        }
+
+        if ($user_id != 'todos') {
+            $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
+                $q->where("user_id", $user_id);
+            });
+        }
+
+        if ($tipo_certificado_id != 'todos') {
+            $certificado_detalles->where("tipo_certificado_id", $tipo_certificado_id);
+        }
+        $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
+            $q->where("estado", 1);
+            $q->where("status", 1);
+        });
+
+        $certificado_detalles = $certificado_detalles->get();
 
         if ($formato == 'pdf') {
-            $pdf = PDF::loadView('reportes.certificados', compact('certificados'))->setPaper('letter', 'portrait');
+            $pdf = PDF::loadView('reportes.certificados', compact('certificado_detalles'))->setPaper('letter', 'portrait');
 
             // ENUMERAR LAS PÁGINAS USANDO CANVAS
             $pdf->output();
@@ -765,37 +773,37 @@ class ReporteController extends Controller
 
             $fila = 2;
             $sheet->setCellValue('A' . $fila, $this->configuracion->nombre_sistema);
-            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $sheet->setCellValue('A' . $fila, "CERTIFICADOS EMITIDOS");
-            $sheet->mergeCells("A" . $fila . ":F" . $fila);  //COMBINAR CELDAS
-            $sheet->getStyle('A' . $fila . ':F' . $fila)->getAlignment()->setHorizontal('center');
-            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->titulo);
+            $sheet->mergeCells("A" . $fila . ":H" . $fila);  //COMBINAR CELDAS
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setHorizontal('center');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->titulo);
             $fila++;
             $fila++;
             $sheet->setCellValue('A' . $fila, 'N°');
             $sheet->setCellValue('B' . $fila, 'PACIENTE');
-            $sheet->setCellValue('C' . $fila, 'CERTIFICADO(S)');
-            $sheet->setCellValue('D' . $fila, 'USUARIO');
-            $sheet->setCellValue('E' . $fila, 'TOTAL BS.');
-            $sheet->setCellValue('F' . $fila, 'FECHA DE REGISTRO');
-            $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->headerTabla);
+            $sheet->setCellValue('C' . $fila, 'C.I.');
+            $sheet->setCellValue('D' . $fila, 'EDAD');
+            $sheet->setCellValue('E' . $fila, 'CATEGORÍA');
+            $sheet->setCellValue('F' . $fila, 'TELÉFONO');
+            $sheet->setCellValue('G' . $fila, 'FECHA Y HORA INICIO');
+            $sheet->setCellValue('H' . $fila, 'FECHA Y HORA FIN');
+            $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->headerTabla);
             $fila++;
 
-            foreach ($certificados as $key => $item) {
+            foreach ($certificado_detalles as $key => $item) {
                 $sheet->setCellValue('A' . $fila, $key + 1);
-                $sheet->setCellValue('B' . $fila, $item->cliente->full_name . "\n" . $item->cliente->full_ci);
-                $lista = "";
-                foreach ($item->certificado_detalles as $d) {
-                    $lista .= "- " . $d->tipo_certificado->nombre . "\n";
-                }
-                $sheet->setCellValue('C' . $fila, $lista);
-                $sheet->setCellValue('D' . $fila, $item->user->full_name);
-                $sheet->setCellValue('E' . $fila, $item->total);
-                $sheet->setCellValue('F' . $fila, $item->fecha_registro_t . ' ' . $item->hora_registro);
-                $sheet->getStyle('A' . $fila . ':F' . $fila)->applyFromArray($this->bodyTabla);
+                $sheet->setCellValue('B' . $fila, $item->certificado->cliente->full_name);
+                $sheet->setCellValue('C' . $fila, $item->certificado->cliente->full_ci);
+                $sheet->setCellValue('D' . $fila, $item->certificado->cliente->edad);
+                $sheet->setCellValue('E' . $fila, $item->categoria);
+                $sheet->setCellValue('F' . $fila, $item->certificado->cliente->cel);
+                $sheet->setCellValue('G' . $fila, $item->certificado->fecha_inicio_t . ' ' . $item->certificado->hora_inicio);
+                $sheet->setCellValue('H' . $fila, $item->certificado->fecha_fin_t . ' ' . $item->certificado->hora_fin);
+                $sheet->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($this->bodyTabla);
                 $fila++;
             }
 
@@ -803,10 +811,12 @@ class ReporteController extends Controller
             $sheet->getColumnDimension('B')->setWidth(20);
             $sheet->getColumnDimension('C')->setWidth(15);
             $sheet->getColumnDimension('D')->setWidth(10);
-            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(10);
             $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(20);
+            $sheet->getColumnDimension('H')->setWidth(20);
 
-            foreach (range('A', 'F') as $columnID) {
+            foreach (range('A', 'H') as $columnID) {
                 $sheet->getStyle($columnID)->getAlignment()->setWrapText(true);
             }
 
@@ -815,7 +825,7 @@ class ReporteController extends Controller
             $sheet->getPageMargins()->setRight(0.1);
             $sheet->getPageMargins()->setLeft(0.1);
             $sheet->getPageMargins()->setBottom(0.1);
-            $sheet->getPageSetup()->setPrintArea('A:F');
+            $sheet->getPageSetup()->setPrintArea('A:H');
             $sheet->getPageSetup()->setFitToWidth(1);
             $sheet->getPageSetup()->setFitToHeight(0);
 

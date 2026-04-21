@@ -262,7 +262,11 @@ const detectarTipoCertificado = (value, index) => {
         (item) => item.id == value,
     )[0];
     if (!item) return;
+    form.certificado_detalles[index].tipo_certificado = item;
     form.certificado_detalles[index].precio = item.precio;
+    form.certificado_detalles[index].saldo = item.precio;
+    form.certificado_detalles[index].cancelado = 0;
+    form.certificado_detalles[index].con_saldo = false;
     // if (item.id) {
     //     axios
     //         .get(route("certificado_emitidos.verificaCantidad"), {
@@ -308,51 +312,26 @@ const quitarCertificado = (index) => {
     form.certificado_detalles.splice(index, 1);
 };
 
-watch(
-    () => form.certificado_detalles,
-    () => {
-        calcularSaldo();
-    },
-    { deep: true },
-);
-
-const calcularSaldo = () => {
-    let cancelado = 0;
-
-    if (form.certificado_detalles) {
-        form.certificado_detalles.forEach((item) => {
-            // SUMAR LOS QUE ESTÁN PAGADOS
-            if (item.con_saldo === true) {
-                cancelado += parseFloat(item.precio || 0);
-            }
-        });
-    }
-
-    form.cancelado = cancelado.toFixed(2);
-    const total = parseFloat(form.total || 0);
-    form.saldo = (total - cancelado).toFixed(2);
-};
-
 const total = computed(() => {
-    let total = 0;
-    if (form.certificado_detalles) {
-        total = form.certificado_detalles.reduce((total, item) => {
-            const subtotal = parseFloat(
-                item.precio && item.precio != 0 ? item.precio : 0,
-            );
-            if (
-                subtotal !== null &&
-                subtotal !== undefined &&
-                subtotal !== ""
-            ) {
-                return total + Number(subtotal);
-            }
+    return form.certificado_detalles.reduce((acc, item) => {
+        return acc + parseFloat(item.precio || 0);
+    }, 0);
+});
 
-            return total;
-        }, 0);
-    }
+const cancelado = computed(() => {
+    return form.certificado_detalles.reduce((acc, item) => {
+        return item.con_saldo ? acc + parseFloat(item.precio || 0) : acc;
+    }, 0);
+});
 
-    return total ? total.toFixed(2) : "0.00";
+const saldo = computed(() => {
+    return total.value - cancelado.value;
+});
+
+watch([total, cancelado, saldo], () => {
+    form.total = total.value.toFixed(2);
+    form.cancelado = cancelado.value.toFixed(2);
+    form.saldo = saldo.value.toFixed(2);
 });
 
 const fechaHoraTexto = ref("");

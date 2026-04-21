@@ -26,8 +26,15 @@ class Certificado extends Model
         "status",
     ];
 
-    protected $appends = ["fecha_registro_t"];
-
+    protected $appends = ["fecha_registro_t", "fecha_inicio_t", "fecha_fin_t"];
+    public function getFechaInicioTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha_inicio));
+    }
+    public function getFechaFinTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha_fin));
+    }
 
     public function getFechaRegistroTAttribute()
     {

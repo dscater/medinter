@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CertificadoClienteRequest;
 use App\Http\Requests\CertificadoStoreRequest;
 use App\Http\Requests\CertificadoUpdateRequest;
 use App\Models\Certificado;
@@ -134,6 +135,26 @@ class CertificadoController extends Controller
             $this->certificadoService->crear($datos);
             DB::commit();
             return redirect()->route("certificados.index")->with("bien", "Registro realizado");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function registroCliente(CertificadoClienteRequest $request, Cliente $cliente)
+    {
+
+        DB::beginTransaction();
+        try {
+            // crear el Certificado
+            $datos = $request->validated();
+            $datos["cliente_id"] = $cliente->id;
+            $datos["estado"] = 0;
+            $this->certificadoService->crear($datos);
+            DB::commit();
+            return redirect()->route("clientes.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
             DB::rollBack();
             throw ValidationException::withMessages([

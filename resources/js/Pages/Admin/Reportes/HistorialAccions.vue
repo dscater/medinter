@@ -52,10 +52,6 @@ const listModulos = ref([
         label: "PAGOS",
     },
     {
-        value: "TRAMITES",
-        label: "TRAMITES",
-    },
-    {
         value: "TRAMITADORES",
         label: "TRAMITADORES",
     },

@@ -145,30 +145,28 @@
             <tr>
                 <th width="5%">N°</th>
                 <th>PACIENTE</th>
-                <th>CERTIFICADO(S)</th>
-                <th>USUARIO</th>
-                <th width="12%">TOTAL BS.</th>
-                <th width="9%">FECHA REGISTRO</th>
+                <th>C.I.</th>
+                <th width="6%">EDAD</th>
+                <th width="6%">CATEGORÍA</th>
+                <th>TELÉFONO</th>
+                <th>FECHA Y HORA INICIO</th>
+                <th>FECHA Y HORA FIN</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $cont = 1;
             @endphp
-            @foreach ($certificados as $certificado)
+            @foreach ($certificado_detalles as $item)
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
-                    <td>{{ $certificado->cliente->full_name }}<br />{{ $certificado->cliente->full_ci }}</td>
-                    <td>
-                        <ul clas="lista">
-                            @foreach ($certificado->certificado_detalles as $d)
-                                <li>{{ $d->tipo_certificado->nombre }}</li>
-                            @endforeach
-                        </ul>
-                    </td>
-                    <td>{{ $certificado->user->full_name }}</td>
-                    <td class="derecha">{{ $certificado->total }}</td>
-                    <td>{{ $certificado->fecha_registro_t }}<br /> {{ $certificado->hora_registro }}</td>
+                    <td>{{ $item->certificado->cliente->full_name }}</td>
+                    <td>{{ $item->certificado->cliente->full_ci }}</td>
+                    <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
+                    <td class="centreado">{{ $item->categoria }}</td>
+                    <td>{{ $item->certificado->cliente->cel }}</td>
+                    <td>{{ $item->certificado->fecha_inicio_t }} {{ $item->certificado->hora_inicio }}</td>
+                    <td>{{ $item->certificado->fecha_fin_t }} {{ $item->certificado->hora_fin }}</td>
                 </tr>
             @endforeach
         </tbody>

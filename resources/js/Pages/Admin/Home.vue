@@ -207,12 +207,12 @@ const renderChart2 = (containerId, categories, total_final, data) => {
                     },
                     {
                         enabled: true,
-                        distance: -40,
+                        distance: -25,
                         format: "{point.percentage:.1f}%",
                         style: {
-                            fontSize: "1.2em",
+                            fontSize: "0.75em",
                             textOutline: "none",
-                            opacity: 0.7,
+                            opacity: 1,
                         },
                         filter: {
                             operator: ">",

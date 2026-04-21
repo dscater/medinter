@@ -249,6 +249,7 @@ class PermisoService
             "certificados.index",
             "certificados.listado",
             "certificados.show",
+            "certificados.registroCliente",
 
             "certificado_emitidos.verificaCantidad",
 
