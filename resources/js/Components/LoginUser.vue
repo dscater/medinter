@@ -73,6 +73,31 @@ const textBtn = computed(() => {
     return `<i class="fa fa-edit"></i> Actualizar`;
 });
 
+const salir = () => {
+    Swal.fire({
+        icon: "question",
+        title: "Cerrar sesión",
+        html: `¿Esta seguro(a) de cerrar sesión?`,
+        showCancelButton: true,
+        confirmButtonText: "Si, salir",
+        cancelButtonText: "Cancelar",
+        denyButtonText: `Cancelar`,
+        customClass: {
+            confirmButton: "btn-success",
+        },
+    }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            axios
+                .post(route("logout"))
+                .then((response) => {})
+                .finally(() => {
+                    window.location.href = "/";
+                });
+        }
+    });
+};
+
 const loginUserStore = useLoginUserStore();
 const enviarFormulario = () => {
     if (sucursal_id.value != "") {
@@ -189,6 +214,14 @@ onMounted(() => {
             </form>
         </template>
         <template #footer>
+            <button
+                type="button"
+                class="btn btn-default"
+                :disabled="enviando"
+                @click.prevent="salir"
+            >
+                <i class="fa fa-power-off"></i> Salir
+            </button>
             <button
                 type="button"
                 class="btn btn-success"
