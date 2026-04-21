@@ -461,10 +461,17 @@ class ReporteController extends Controller
                         $item->certificado_detalle->certificado->tipo . $tramitador_txt . ")"
                 );
 
-                $sheet->setCellValue(
-                    Coordinate::stringFromColumnIndex($colIndex++) . $fila,
-                    $item->medico->nombre . ' ' . $item->medico->paterno
-                );
+                if ($item->medico) {
+                    $sheet->setCellValue(
+                        Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                        $item->medico->nombre . ' ' . $item->medico->paterno
+                    );
+                } else {
+                    $sheet->setCellValue(
+                        Coordinate::stringFromColumnIndex($colIndex++) . $fila,
+                        ''
+                    );
+                }
 
                 foreach ($tipo_pagos as $tipo) {
                     $value = ($item->tipo_pago == $tipo['value'])

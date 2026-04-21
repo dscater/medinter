@@ -219,8 +219,10 @@
                         </small>
                     </td>
                     <td>
-                        {{ $item->medico->nombre }}
-                        {{ $item->medico->paterno }}{{ $item->medico->materno }}
+                        @if ($item->medico)
+                            {{ $item->medico->nombre }}
+                            {{ $item->medico->paterno }}{{ $item->medico->materno }}
+                        @endif
                     </td>
                     @foreach ($tipo_pagos as $tipo_pago)
                         @if ($item->tipo_pago == $tipo_pago['value'])
