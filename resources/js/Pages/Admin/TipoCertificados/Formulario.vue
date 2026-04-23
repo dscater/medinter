@@ -18,7 +18,7 @@ const { oTipoCertificado, limpiarTipoCertificado } = useTipoCertificados();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-let form = useForm(oTipoCertificado.value);
+const form = useForm(oTipoCertificado.value);
 watch(
     () => props.muestra_formulario,
     (newValue) => {
@@ -49,13 +49,6 @@ watch(
         }
     },
 );
-
-const { flash } = usePage().props;
-
-function cargaArchivo(e, key) {
-    form[key] = null;
-    form[key] = e.target.files[0];
-}
 
 const tituloDialog = computed(() => {
     return accion_form.value == 0
@@ -143,15 +136,6 @@ watch(muestra_form, (newVal) => {
         emits("cerrar-formulario");
     }
 });
-
-const archivo = ref(null);
-const cargarArchivo = (e, key) => {
-    form[key] = null;
-    const file = e.target.files[0];
-    if (file) {
-        form[key] = e.target.files[0];
-    }
-};
 
 const cerrarFormulario = () => {
     muestra_form.value = false;

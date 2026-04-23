@@ -22,6 +22,7 @@ const { oUsuario, limpiarUsuario } = useUsuarios();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
+const loginUserStore = useLoginUserStore();
 const sucursal_id = ref("");
 const errors = ref(null);
 watch(
@@ -30,6 +31,7 @@ watch(
         muestra_form.value = newValue;
         if (muestra_form.value) {
             cargarSucursals();
+            sucursal_id.value = loginUserStore.getLoginUser?.sucursal_id || "";
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
@@ -44,9 +46,6 @@ watch(
     () => props.accion_formulario,
     (newValue) => {
         accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
     },
 );
 
@@ -70,7 +69,7 @@ const textBtn = computed(() => {
     if (accion_form.value == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
-    return `<i class="fa fa-edit"></i> Actualizar`;
+    return `<i class="fa fa-edit"></i> Guardar Cambios`;
 });
 
 const salir = () => {
@@ -98,7 +97,6 @@ const salir = () => {
     });
 };
 
-const loginUserStore = useLoginUserStore();
 const enviarFormulario = () => {
     if (sucursal_id.value != "") {
         const sucursalSeleccionada = listSucursals.value.filter(
@@ -186,7 +184,7 @@ onMounted(() => {
         <template #body>
             <form @submit.prevent="enviarFormulario()">
                 <div class="row">
-                    <div class="col-md-4 mt-2 offset-md-4">
+                    <div class="col-lg-4 mt-2 offset-lg-4 col-md-6 offset-md-3">
                         <label class="required">Seleccionar Sucursal</label>
                         <select class="form-control" v-model="sucursal_id">
                             <option value="">- Seleccione -</option>
@@ -199,7 +197,7 @@ onMounted(() => {
                         </select>
                         <span class="text-muted text-xs mb-0 w-100 text-center">
                             La sucursal seleccionada será asignada a todos los
-                            registros que realice en el día
+                            registros que realice
                         </span>
                         <ul
                             v-if="errors?.sucursal_id"
@@ -215,12 +213,21 @@ onMounted(() => {
         </template>
         <template #footer>
             <button
+                v-if="!loginUserStore.getLoginUser?.sucursal_id"
                 type="button"
                 class="btn btn-default"
                 :disabled="enviando"
                 @click.prevent="salir"
             >
                 <i class="fa fa-power-off"></i> Salir
+            </button>
+            <button
+                v-else
+                type="button"
+                class="btn btn-default"
+                @click.prevent="cerrarFormulario"
+            >
+                <i class="fa fa-times"></i> Cancelar
             </button>
             <button
                 type="button"

@@ -38,10 +38,10 @@ class ClienteStoreRequest extends FormRequest
             "fecha_nac" => "required|date",
             "edad" => "nullable",
             "cel" => "nullable",
+            "con_certificado" => "required",
         ];
 
         if ($this->con_certificado) {
-            $rule["con_certificado"] = ["required"];
             $rule["tipo_pago"] = ["required"];
             $rule["tipo"] = ["required"];
             $rule["tramitador_id"] = ["nullable"];

@@ -32,10 +32,16 @@ class PagoController extends Controller
         $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id);
         $pagos = $array_res[0];
         $suma_tipos = $array_res[1];
+        $pagos_sin_verificar = $array_res[2];
+        $suma_tipos_sin_verificar = $array_res[3];
+        $suma_total_tipos = $array_res[4];
 
         return response()->JSON([
             "pagos" => $pagos,
             "suma_tipos" => $suma_tipos,
+            "pagos_sin_verificar" => $pagos_sin_verificar,
+            "suma_tipos_sin_verificar" => $suma_tipos_sin_verificar,
+            "suma_total_tipos" => $suma_total_tipos,
         ]);
     }
 

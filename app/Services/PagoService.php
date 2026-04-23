@@ -30,6 +30,8 @@ class PagoService
     ) {
         $pagos = [];
         $suma_tipos = [];
+        $suma_tipos_sin_verificar = [];
+        $suma_total_tipos = [];
         if ($fecha_ini && $fecha_fin) {
             $pagos = Pago::with([
                 "sucursal:id,nombre",
@@ -41,17 +43,18 @@ class PagoService
             ])
                 ->whereBetween("fecha_verificado", [$fecha_ini, $fecha_fin]);
 
+            if ($sucursal_id != 'todos' || !$sucursal_id   || $sucursal_id == '') {
+                $pagos->where("sucursal_id", $sucursal_id);
+            }
+
             $login_user = $this->login_user_service->verificaSucursal();
 
             if (Auth::user()->tipo == 'ADMINISTRADOR' || Auth::user()->tipo == 'GERENTE') {
-                if ($sucursal_id != 'todos' || !$sucursal_id   || $sucursal_id == '') {
-                    $pagos->where("sucursal_id", $sucursal_id);
-                }
-
                 if ($medico_id) {
                     $pagos->where("medico_id", $medico_id);
                 }
-            } else {
+            }
+            if (Auth::user()->tipo == 'SECRETARIA') {
                 $pagos->where("sucursal_id", $login_user->sucursal_id);
             }
 
@@ -59,21 +62,37 @@ class PagoService
                 $pagos->where("medico_id", Auth::user()->id);
             }
 
+            $pagos->where("status", 1);
 
-            $pagos->where("verificado", 1)->where("status", 1);
+            $pagos_sin_verificar = clone $pagos;
+            $pagos_sin_verificar->where("verificado", 0);
+
+            $pagos->where("verificado", 1);
 
             $tipo_pagos = $this->tipo_pago_service->listado();
 
             foreach ($tipo_pagos as $item) {
+                // Inicializar si no existe
+                if (!isset($suma_total_tipos[$item["value"]])) {
+                    $suma_total_tipos[$item["value"]] = 0;
+                }
+
                 $query = clone $pagos;
                 $suma_total = $query->where("tipo_pago", $item["value"])->sum("monto");
                 $suma_tipos[$item["value"]] = $suma_total;
+                $suma_total_tipos[$item["value"]] += (float)$suma_total;
+                // sin verificar
+                $query2 = clone $pagos_sin_verificar;
+                $suma_total = $query2->where("tipo_pago", $item["value"])->sum("monto");
+                $suma_tipos_sin_verificar[$item["value"]] = $suma_total;
+                $suma_total_tipos[$item["value"]] += (float)$suma_total;
             }
 
+            $pagos_sin_verificar = $pagos_sin_verificar->get();
             $pagos = $pagos->get();
         }
 
-        return [$pagos, $suma_tipos];
+        return [$pagos, $suma_tipos, $pagos_sin_verificar, $suma_tipos_sin_verificar, $suma_total_tipos];
     }
 
     public function crear($datos)
@@ -87,15 +106,13 @@ class PagoService
         }
         $sucursal_id = $login_user->sucursal_id;
         $verificado = 0;
-        $fecha_verificado = null;
-        $hora_verificado = null;
+        $fecha_verificado = $fecha_actual;
+        $hora_verificado = $hora_actual;
         $tipo_usuario = $this->login_user_service->getTipoUsuarioLogin();
         if ($tipo_usuario == 'SECRETARIA' || !$this->login_user_service->verificaSecretariaSucursal($sucursal_id)) {
             // si es secretaria
             // o no hay secretaria en sucursal
             $verificado = 1;
-            $fecha_verificado = $fecha_actual;
-            $hora_verificado = $hora_actual;
         }
 
         $pago = Pago::create([
@@ -154,5 +171,24 @@ class PagoService
         ]);
 
         return true;
+    }
+
+    public function listadoRecepcionPagos()
+    {
+        $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])->where("verificado", 0);
+
+        $login_user = $this->login_user_service->verificaSucursal();
+        if (!$login_user) {
+            throw new Exception("Error no se encontró la sucursal del usuario");
+        }
+        $sucursal_id = $login_user->sucursal_id;
+
+        if (Auth::user()->tipo != 'ADMINISTRADOR' && Auth::user()->tipo != 'GERENTE') {
+            $pagos->where("sucursal_id", $sucursal_id);
+        }
+
+        $pagos = $pagos->get();
+
+        return $pagos;
     }
 }

@@ -576,7 +576,7 @@ onMounted(() => {});
                                             </div>
                                             <input
                                                 type="number"
-                                                :value="total ?? '0.00'"
+                                                v-model="form.total"
                                                 class="form-control"
                                                 readonly=""
                                             />

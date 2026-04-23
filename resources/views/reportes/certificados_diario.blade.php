@@ -125,6 +125,12 @@
             padding-left: 4px;
             margin-left: 0px;
         }
+
+        table.total {
+            width: 60%;
+            margin: auto;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -137,20 +143,20 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">CERTIFICADOS EMITIDOS</h4>
+        <h4 class="texto">DIARIO DE CERTIFICADOS EMITIDOS</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
     <table border="1">
         <thead class="bg-principal">
             <tr>
                 <th width="5%">N°</th>
-                <th>NRO. C.I.</th>
-                <th>NOMBRE</th>
-                <th>AP. PATERNO</th>
-                <th>AP. MATERNO</th>
-                <th width="6%">EDAD</th>
+                <th>PACIENTE</th>
+                <th>C.I.</th>
                 <th width="6%">CATEGORÍA</th>
+                <th>TIPO</th>
+                <th>TIPO CERTIFICADO</th>
                 <th>MÉDICO</th>
+                <th>SUCURSAL</th>
                 <th>FECHA Y HORA INICIO</th>
                 <th>FECHA Y HORA FIN</th>
             </tr>
@@ -162,15 +168,32 @@
             @foreach ($certificado_detalles as $item)
                 <tr>
                     <td class="centreado">{{ $cont++ }}</td>
+                    <td>{{ $item->certificado->cliente->full_name }}</td>
                     <td>{{ $item->certificado->cliente->full_ci }}</td>
-                    <td>{{ $item->certificado->cliente->nombre }}</td>
-                    <td>{{ $item->certificado->cliente->paterno }}</td>
-                    <td>{{ $item->certificado->cliente->materno }}</td>
-                    <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
                     <td class="centreado">{{ $item->categoria }}</td>
+                    <td>{{ $item->certificado->tipo }}</td>
+                    <td>{{ $item->tipo_certificado->nombre }}</td>
                     <td>{{ $item->certificado->user->full_name }}</td>
+                    <td>{{ $item->certificado->sucursal->nombre }}</td>
                     <td>{{ $item->certificado->fecha_inicio_t }} {{ $item->certificado->hora_inicio }}</td>
                     <td>{{ $item->certificado->fecha_fin_t }} {{ $item->certificado->hora_fin }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <table border="1" class="total">
+        <thead class="bg-principal">
+            <tr>
+                <th>Tipo de Certificado</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($tipo_certificados as $tipo)
+                <tr>
+                    <td>{{ $tipo->nombre }}</td>
+                    <td>{{ $suma_cantidad[$tipo->id] }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -4,14 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\LoginUser;
 use App\Models\User;
+use App\Services\LoginUserService;
 use App\Services\PermisoService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+
+
+    public function __construct(private LoginUserService $login_user_service) {}
 
     public function permisosUsuario(Request $request)
     {
@@ -49,7 +55,14 @@ class UserController extends Controller
                 $certificados->where("status", 1);
                 $certificados->where("saldo", ">", 0);
                 if (Auth::user()->tipo == 'MÉDICO') {
-                    $certificados->where("user_id", Auth::user()->id);
+                    $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
+                    $user = Auth::user();
+                    $login_user = LoginUser::where("user_id", $user->id)
+                        ->where("fecha", $fecha_actual)
+                        ->orderBy("id", "desc")
+                        ->get()
+                        ->first();
+                    $certificados->where("sucursal_id", $login_user->sucursal_id ?? '');
                 }
                 $certificados = $certificados->count();
                 $array_infos[] = [

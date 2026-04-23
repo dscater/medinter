@@ -22,6 +22,14 @@ body {
     color: var(--bg1);
 }
 
+.text-precargado {
+    color: var(--bgPrecargado);
+}
+
+.text-nuevo {
+    color: var(--bgNuevo);
+}
+
 table.table thead,
 table.table tbody {
     /* font-size: 0.87em; */

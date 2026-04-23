@@ -121,7 +121,7 @@ const txtBtn = computed(() => {
 
 const generarReporte = () => {
     generando.value = true;
-    const url = route("reportes.r_certificados", form.value);
+    const url = route("reportes.r_certificados_interno", form.value);
     window.open(url, "_blank");
     setTimeout(() => {
         generando.value = false;
@@ -129,12 +129,12 @@ const generarReporte = () => {
 };
 </script>
 <template>
-    <Head title="Reporte Certificados Emitidos Externo"></Head>
+    <Head title="Reporte Certificados Emitidos Interno"></Head>
     <Content>
         <template #header>
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Certificados Emitidos Externo</h1>
+                    <h1 class="m-0">Certificados Emitidos Interno</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -143,7 +143,7 @@ const generarReporte = () => {
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
                         <li class="breadcrumb-item active">
-                            Reportes - Certificados Emitidos Externo
+                            Reportes - Certificados Emitidos Interno
                         </li>
                     </ol>
                 </div>

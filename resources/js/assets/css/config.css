@@ -170,6 +170,27 @@ body .main-sidebar {
     overflow: hidden;
 }
 
+.user-panel .info {
+    width: 100%;
+}
+.user-panel .image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.user-panel .info .nombre {
+    font-size: 0.93em;
+}
+.user-panel .info .tipo {
+    font-size: 0.87em;
+    font-weight: 400;
+    color: var(--bgGray);
+}
+
+.user-panel {
+    margin-bottom: 0px;
+}
+
 @media (max-width: 965px) {
     body .main-sidebar .sidebar {
         max-height: calc(100vh - 150px) !important;

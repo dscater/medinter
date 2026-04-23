@@ -18,6 +18,7 @@ class LoginUserService
         $user = Auth::user();
         $login_user = LoginUser::where("user_id", $user->id)
             ->where("fecha", $fecha_actual)
+            ->orderBy("id", "desc")
             ->get()
             ->first();
 
@@ -40,6 +41,7 @@ class LoginUserService
             ->whereHas("user", function ($q) {
                 $q->where("tipo", "SECRETARIA");
             })
+            ->orderBy("id", "desc")
             ->get()->first();
 
         return $login_secretaria;
@@ -50,6 +52,7 @@ class LoginUserService
         $user = Auth::user();
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
+
         $login_user = LoginUser::create([
             "user_id" => $user->id,
             "sucursal_id" => $sucursal_id,

@@ -158,6 +158,11 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get('reportes/certificados', [ReporteController::class, 'certificados'])->name("reportes.certificados");
     Route::get('reportes/r_certificados', [ReporteController::class, 'r_certificados'])->name("reportes.r_certificados");
 
+    Route::get('reportes/certificados_interno', [ReporteController::class, 'certificados_interno'])->name("reportes.certificados_interno");
+    Route::get('reportes/r_certificados_interno', [ReporteController::class, 'r_certificados_interno'])->name("reportes.r_certificados_interno");
+
+    Route::get('reportes/r_certificados_diario', [ReporteController::class, 'r_certificados_diario'])->name("reportes.r_certificados_diario");
+
     Route::get('reportes/gcemitidos', [ReporteController::class, 'gcemitidos'])->name("reportes.gcemitidos");
     Route::get('reportes/r_gcemitidos', [ReporteController::class, 'r_gcemitidos'])->name("reportes.r_gcemitidos");
 

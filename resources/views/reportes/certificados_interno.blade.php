@@ -137,7 +137,7 @@
         <h2 class="titulo">
             {{ $configuracion->first()->razon_social }}
         </h2>
-        <h4 class="texto">CERTIFICADOS EMITIDOS</h4>
+        <h4 class="texto">CERTIFICADOS EMITIDOS INTERNO</h4>
         <h4 class="fecha">Expedido: {{ date('d-m-Y') }}</h4>
     </div>
     <table border="1">
@@ -148,11 +148,10 @@
                 <th>NOMBRE</th>
                 <th>AP. PATERNO</th>
                 <th>AP. MATERNO</th>
+                <th>TELÉFONO</th>
                 <th width="6%">EDAD</th>
                 <th width="6%">CATEGORÍA</th>
                 <th>MÉDICO</th>
-                <th>FECHA Y HORA INICIO</th>
-                <th>FECHA Y HORA FIN</th>
             </tr>
         </thead>
         <tbody>
@@ -166,11 +165,10 @@
                     <td>{{ $item->certificado->cliente->nombre }}</td>
                     <td>{{ $item->certificado->cliente->paterno }}</td>
                     <td>{{ $item->certificado->cliente->materno }}</td>
+                    <td>{{ $item->certificado->cliente->cel }}</td=>
                     <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
                     <td class="centreado">{{ $item->categoria }}</td>
                     <td>{{ $item->certificado->user->full_name }}</td>
-                    <td>{{ $item->certificado->fecha_inicio_t }} {{ $item->certificado->hora_inicio }}</td>
-                    <td>{{ $item->certificado->fecha_fin_t }} {{ $item->certificado->hora_fin }}</td>
                 </tr>
             @endforeach
         </tbody>

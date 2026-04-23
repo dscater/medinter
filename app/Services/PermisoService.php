@@ -110,6 +110,9 @@ class PermisoService
             "reportes.r_clientes",
             "reportes.certificados",
             "reportes.r_certificados",
+            "reportes.certificados_interno",
+            "reportes.r_certificados_interno",
+            "reportes.r_certificados_diario",
             "reportes.gcemitidos",
             "reportes.r_gcemitidos",
             "reportes.gmemitidos",
@@ -205,6 +208,9 @@ class PermisoService
             "reportes.r_clientes",
             "reportes.certificados",
             "reportes.r_certificados",
+            "reportes.certificados_interno",
+            "reportes.r_certificados_interno",
+            "reportes.r_certificados_diario",
             "reportes.gcemitidos",
             "reportes.r_gcemitidos",
             "reportes.gmemitidos",
@@ -325,6 +331,7 @@ class PermisoService
             "login_users.asignaSucursal",
 
             "reportes.exportarCaja",
+            "reportes.r_certificados_diario",
         ],
     ];
 

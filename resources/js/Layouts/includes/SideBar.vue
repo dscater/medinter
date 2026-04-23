@@ -90,7 +90,7 @@ onUnmounted(() => {});
         <!-- Sidebar -->
         <div class="sidebar p-0">
             <!-- Sidebar user panel (optional) -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="user-panel mt-3 pb-2 d-flex">
                 <div class="image">
                     <img
                         :src="usuario?.url_foto"
@@ -100,8 +100,11 @@ onUnmounted(() => {});
                 </div>
                 <div class="info">
                     <Link :href="route('profile.edit')" class="d-block">
-                        {{ usuario?.nombre }} {{ usuario?.paterno }}
-                        {{ usuario?.materno }}<br />
+                        <div class="nombre">
+                            {{ usuario?.nombre }} {{ usuario?.paterno }}
+                            {{ usuario?.materno }}
+                        </div>
+                        <div class="tipo">{{ usuario?.tipo }}</div>
                     </Link>
                 </div>
             </div>
@@ -223,6 +226,9 @@ onUnmounted(() => {});
                             permisos.includes('reportes.usuarios') ||
                             permisos.includes('reportes.clientes') ||
                             permisos.includes('reportes.certificados') ||
+                            permisos.includes(
+                                'reportes.certificados_interno',
+                            ) ||
                             permisos.includes('reportes.historial_accions') ||
                             permisos.includes('reportes.gcemitidos') ||
                             permisos.includes('reportes.gmemitidos')
@@ -251,9 +257,18 @@ onUnmounted(() => {});
                     <ItemMenu
                         v-if="
                             permisos == '*' ||
+                            permisos.includes('reportes.certificados_interno')
+                        "
+                        :label="'Certificados Emitidos Interno'"
+                        :ruta="'reportes.certificados_interno'"
+                        :icon="'fa fa-file-pdf'"
+                    ></ItemMenu>
+                    <ItemMenu
+                        v-if="
+                            permisos == '*' ||
                             permisos.includes('reportes.certificados')
                         "
-                        :label="'Certificados Emitidos'"
+                        :label="'Certificados Emitidos Externo'"
                         :ruta="'reportes.certificados'"
                         :icon="'fa fa-file-pdf'"
                     ></ItemMenu>

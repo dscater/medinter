@@ -62,7 +62,7 @@
             text-align: center;
             margin: auto;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 12pt;
         }
 
         .fecha {
@@ -127,6 +127,11 @@
             color: white;
         }
 
+        .bg-red {
+            background: #f02222;
+            color: white;
+        }
+
         .img_celda img {
             width: 45px;
         }
@@ -156,6 +161,11 @@
             font-size: 10pt;
             text-align: left;
             margin-bottom: 2px;
+        }
+
+        table.resumen {
+            width: 300px;
+            margin: auto;
         }
     </style>
 </head>
@@ -261,6 +271,115 @@
             </tr>
         </tbody>
     </table>
+
+    @if (count($pagos_sin_verificar) > 0)
+        <div class="texto" style="margin-top: 20px;">
+            PAGOS SIN RECEPCIÓN
+        </div>
+        <table border="1">
+            <thead class="bg-red">
+                <tr>
+                    <th width="5%">N°</th>
+                    <th width="12%">FECHA</th>
+                    <th width="14%">SUCURSAL</th>
+                    <th>PACIENTE</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th>MÉDICO</th>
+                    @foreach ($tipo_pagos as $item)
+                        <th>
+                            {{ $item['value'] }} Bs.
+                        </th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $cont = 1;
+                    $suma_total = 0;
+                @endphp
+                @foreach ($pagos_sin_verificar as $item)
+                    <tr>
+                        <td class="centreado">{{ $cont++ }}</td>
+                        <td class="">{{ $item->fecha_registro_t }} <br />{{ $item->hora_registro }}</td>
+                        <td class="">{{ $item->sucursal->nombre }}</td>
+                        <td class="">{{ $item->cliente->nombre }} {{ $item->cliente->paterno }}
+                            {{ $item->cliente->materno }} <br />{{ $item->cliente->ci }}
+                            {{ $item->cliente->complemento ? ' - ' . $item->cliente->complemento : '' }}
+                            {{ $item->cliente->ci_exp }}
+                        </td>
+                        <td class="">{{ $item->descripcion }}</td>
+                        <td class="">{{ $item->medico ? $item->medico->nombre : '' }}</td>
+                        @foreach ($tipo_pagos as $tipo_pago)
+                            @if ($item->tipo_pago == $tipo_pago['value'])
+                                <td class="derecha">{{ $item->monto }}</td>
+                            @else
+                                <td class=""></td>
+                            @endif
+                        @endforeach
+                    </tr>
+                @endforeach
+                <tr>
+                    <td class="text-md text-right bold bg-red" colspan="6">
+                        TOTAL BS.
+                    </td>
+                    @foreach ($tipo_pagos as $tipo_pago)
+                        @php
+                            $suma_total += (float) $suma_tipos_sin_verificar[$tipo_pago['value']];
+                        @endphp
+                        <td class="text-md text-right bold bg-red">
+                            {{ number_format($suma_tipos_sin_verificar[$tipo_pago['value']], 2, '.', '') }}
+                        </td>
+                    @endforeach
+
+                </tr>
+                <tr>
+                    <td class="text-md text-right bold bg-red" colspan="6">
+                        TOTAL FINAL BS.
+                    </td>
+                    <td class="text-lg text-right bold bg-red" colspan="2">
+                        {{ number_format($suma_total, 2, '.', '') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="texto" style="margin-top: 20px;">
+            RESUMEN GENERAL
+        </div>
+        <table class="resumen" border="1">
+            <thead class="bg-principal">
+                <tr>
+                    <th>TIPO DE PAGO</th>
+                    <th>MONTO BS.</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $total_final = 0;
+                @endphp
+                @foreach ($tipo_pagos as $tipo_pago)
+                    <tr>
+                        <td class="bold bg-principal">
+                            {{ $tipo_pago['value'] }}
+                        </td>
+                        <td class="text-lg text-right">
+                            {{ number_format($suma_total_tipos[$tipo_pago['value']], 2, '.', '') }}
+                        </td>
+                    </tr>
+                    @php
+                        $total_final += (float) $suma_total_tipos[$tipo_pago['value']];
+                    @endphp
+                @endforeach
+                <tr>
+                    <td class="bold bg-principal">
+                        TOTAL GENERAL</td>
+                    <td class="text-lg text-right">
+                        {{ number_format($total_final, 2, '.', '') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    @endif
 </body>
 
 </html>

@@ -43,7 +43,6 @@ const textBtn = computed(() => {
 });
 
 const asignaDatosFormulario = (item) => {
-    console.log("TRAMITADOR", item.tramitador_id);
     form.id = item.id;
     form.cliente_id = item.cliente_id;
     form.total = item.total;
@@ -223,6 +222,12 @@ const seleccionaCliente = (cliente) => {
 };
 
 const verificaPendiente = (cliente_id) => {
+    limpiarCertificado();
+    asignaDatosFormulario(oCertificado.value);
+    form.id = 0;
+    if (!cliente_id || cliente_id == 0) {
+        return;
+    }
     axios
         .get(route("certificados.verificaPendienteCliente", cliente_id))
         .then((response) => {
@@ -234,6 +239,10 @@ const verificaPendiente = (cliente_id) => {
             }
             form.cliente_id = cliente_id;
             clienteSeleccionado.value = true;
+
+            if (form.certificado_detalles.length == 0) {
+                agregarCertificado();
+            }
 
             // una vez seleccionado asignar la fecha y hora
             iniciarFechaHoraInicio();
@@ -378,7 +387,7 @@ onBeforeMount(() => {
                     </div>
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-body pt-0">
+                            <div class="card-body pt-3">
                                 <div class="row">
                                     <div
                                         class="col-md-12 mt-2"
@@ -498,7 +507,7 @@ onBeforeMount(() => {
                                                 <div
                                                     class="card mb-0 border-success"
                                                 >
-                                                    <div class="card-body">
+                                                    <div class="card-body pb-3">
                                                         <h5 class="text-md">
                                                             {{
                                                                 oCliente.nombre
@@ -558,7 +567,10 @@ onBeforeMount(() => {
                                                             }}
                                                         </p>
                                                         <button
-                                                            v-if="form.id == 0"
+                                                            v-if="
+                                                                route().current() ==
+                                                                'certificados.create'
+                                                            "
                                                             type="button"
                                                             class="mt-2 btn btn-outline-danger btn-xs w-100 text-sm"
                                                             @click.prevent="
@@ -656,6 +668,21 @@ onBeforeMount(() => {
                     <div class="col-12 my-2">
                         <h4 class="card-title w-100 text-center">
                             <i class="fa fa-clipboard-list"></i> Certificado(s)
+                            <span
+                                v-if="oCliente"
+                                class="text-sm float-right"
+                                :class="{
+                                    'text-precargado': certificadoPendiente,
+                                    'text-nuevo': !certificadoPendiente,
+                                }"
+                            >
+                                <i class="fa fa-circle"></i>
+                                {{
+                                    certificadoPendiente
+                                        ? "Precargado"
+                                        : "Nuevo"
+                                }}
+                            </span>
                         </h4>
                     </div>
                     <div class="col-12">
@@ -850,7 +877,7 @@ onBeforeMount(() => {
                             </div>
                         </div>
                         <button
-                            v-if="form.id == 0 && certificadoPendiente"
+                            v-if="form.id == 0 && !certificadoPendiente"
                             type="button"
                             class="btn w-100 btn-agregar btn-sm text-sm mb-2"
                             @click.prevent="agregarCertificado()"
@@ -860,7 +887,9 @@ onBeforeMount(() => {
                         <div class="card">
                             <div class="card-body pb-0">
                                 <div class="row">
-                                    <div class="col-12 text-center">
+                                    <div
+                                        class="col-12 text-center cliente-pago"
+                                    >
                                         <div class="row cancelado">
                                             <div
                                                 class="col-5 text-right border-0 font-weight-bold"
@@ -905,7 +934,7 @@ onBeforeMount(() => {
                                                 <input
                                                     type="number"
                                                     class="form-control text-center"
-                                                    :value="total ?? '0.00'"
+                                                    v-model="form.total"
                                                     readonly=""
                                                 />
                                             </div>

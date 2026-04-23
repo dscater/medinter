@@ -57,6 +57,10 @@ button.quitar {
     z-index: 10;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* Contenedor relativo para que el label se posicione dentro */
 .form-floating {
     position: relative;

@@ -37,27 +37,7 @@ watch(
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
 
-            form.id = oCliente.value.id;
-            form.nombre = oCliente.value.nombre;
-            form.paterno = oCliente.value.paterno;
-            form.materno = oCliente.value.materno;
-            form.ci = oCliente.value.ci;
-            form.ci_exp = oCliente.value.ci_exp;
-            form.complemento = oCliente.value.complemento;
-            form.fecha_nac = oCliente.value.fecha_nac;
-            form.edad = oCliente.value.edad;
-            form.cel = oCliente.value.cel;
-            form.respuesta = oCliente.value.respuesta;
-            form._method = oCliente.value._method;
-
-            // PAGO
-            form.con_certificado = oCliente.value.con_certificado;
-            form.tipo = oCliente.value.tipo;
-            form.tramitador_id = oCliente.value.tramitador_id;
-            form.certificado_detalles = oCliente.value.certificado_detalles;
-            form.total = oCliente.value.total;
-            form.cancelado = oCliente.value.cancelado;
-            form.saldo = oCliente.value.saldo;
+            asignarDatosCliente(oCliente.value);
             if (form.id == 0) {
                 cargarListas();
                 agregarCertificado();
@@ -87,12 +67,29 @@ watch(
     },
 );
 
-const { flash } = usePage().props;
+const asignarDatosCliente = (item) => {
+    form.id = item.id;
+    form.nombre = item.nombre;
+    form.paterno = item.paterno;
+    form.materno = item.materno;
+    form.ci = item.ci;
+    form.ci_exp = item.ci_exp;
+    form.complemento = item.complemento;
+    form.fecha_nac = item.fecha_nac;
+    form.edad = item.edad;
+    form.cel = item.cel;
+    form.respuesta = item.respuesta;
+    form._method = item._method;
 
-function cargaArchivo(e, key) {
-    form[key] = null;
-    form[key] = e.target.files[0];
-}
+    // PAGO
+    form.con_certificado = item.con_certificado;
+    form.tipo = item.tipo;
+    form.tramitador_id = item.tramitador_id;
+    form.certificado_detalles = item.certificado_detalles;
+    form.total = item.total;
+    form.cancelado = item.cancelado;
+    form.saldo = item.saldo;
+};
 
 const tituloDialog = computed(() => {
     return accion_form.value == 0
@@ -280,6 +277,8 @@ const cargarArchivo = (e, key) => {
 const cerrarFormulario = () => {
     muestra_form.value = false;
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
+    limpiarCliente();
+    asignarDatosCliente(oCliente.value);
 };
 
 const calcularEdad = () => {
@@ -823,7 +822,7 @@ onMounted(() => {});
                                             </div>
                                             <input
                                                 type="number"
-                                                :value="total ?? '0.00'"
+                                                v-model="form.total"
                                                 class="form-control"
                                                 readonly=""
                                             />

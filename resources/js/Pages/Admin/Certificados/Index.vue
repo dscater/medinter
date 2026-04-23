@@ -6,10 +6,7 @@ import { useCertificados } from "@/composables/certificados/useCertificados";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
-// import { useMenu } from "@/composables/useMenu";
-import Formulario from "./Formulario.vue";
-import { buttonProps } from "element-plus";
-// const { mobile, identificaDispositivo } = useMenu();
+import Reporte from "./Reporte.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
@@ -155,6 +152,8 @@ const eliminarCertificado = (item) => {
         }
     });
 };
+
+const muestra_reporte = ref(false);
 </script>
 <template>
     <Head title="Certificados"></Head>
@@ -195,6 +194,22 @@ const eliminarCertificado = (item) => {
                         >
                             <i class="fa fa-plus"></i> Nuevo Certificado
                         </Link>
+                        <button
+                            v-if="
+                                props_page.auth?.user.permisos == '*' ||
+                                props_page.auth?.user.permisos.includes(
+                                    'reportes.r_certificados_diario',
+                                )
+                            "
+                            class="btn btn-success text-sm mx-1"
+                            @click="muestra_reporte = true"
+                        >
+                            <i class="fa fa-file-alt"></i> Reporte
+                        </button>
+                        <Reporte
+                            :muestra_formulario="muestra_reporte"
+                            @cerrar-formulario="muestra_reporte = false"
+                        ></Reporte>
                     </div>
                     <div class="col-md-12 my-1">
                         <div class="row">
