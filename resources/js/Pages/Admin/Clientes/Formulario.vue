@@ -255,6 +255,7 @@ const listExpedido = [
     { value: "TJ", label: "Tarija" },
     { value: "PD", label: "Pando" },
     { value: "BN", label: "Beni" },
+    { value: "E", label: "Extranjero" },
 ];
 
 const emits = defineEmits(["cerrar-formulario", "envio-formulario"]);
