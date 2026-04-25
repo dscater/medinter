@@ -197,6 +197,8 @@ const muestra_form_cliente = ref(false);
 
 const agregarCliente = () => {
     muestra_form_cliente.value = true;
+    form.certificado_detalles = [];
+    agregarCertificado();
 };
 
 const cierraFormularioCliente = () => {
@@ -222,7 +224,6 @@ const seleccionaCliente = (cliente) => {
 };
 
 const verificaPendiente = (cliente_id) => {
-    limpiarCertificado();
     asignaDatosFormulario(oCertificado.value);
     form.id = 0;
     if (!cliente_id || cliente_id == 0) {
@@ -239,10 +240,6 @@ const verificaPendiente = (cliente_id) => {
             }
             form.cliente_id = cliente_id;
             clienteSeleccionado.value = true;
-
-            if (form.certificado_detalles.length == 0) {
-                agregarCertificado();
-            }
 
             // una vez seleccionado asignar la fecha y hora
             iniciarFechaHoraInicio();
