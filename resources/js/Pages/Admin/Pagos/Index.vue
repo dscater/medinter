@@ -1,6 +1,7 @@
 <script setup>
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
+import MiTable from "@/Components/MiTable.vue";
 import { ref, onMounted, onBeforeMount, computed, nextTick, watch } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
@@ -23,15 +24,48 @@ const goBack = () => {
     }
 };
 
+const miTable1 = ref(null);
+const miTable2 = ref(null);
+const headers1 = ref([
+    {
+        label: "Nro.",
+        width: "2%",
+        isIndex: true,
+        key: "id",
+        fixed: true,
+    },
+    {
+        label: "Fecha",
+        key: "fecha_verificado",
+    },
+    {
+        label: "Sucursal",
+        key: "sucursal.nombre",
+    },
+    {
+        label: "Paciente",
+        key: "cliente",
+    },
+    {
+        label: "Descripción",
+        key: "descripcion",
+    },
+    {
+        label: "Médico",
+        key: "medico",
+    },
+]);
+
 const listPagosVerificados = ref([]);
 const listPagosSinVerificar = ref([]);
 const sumaPorTipos = ref([]);
 const sumaPorTiposSinVerificar = ref([]);
 const suma_total_tipos = ref([]);
-const cargarPagosVerificados = () => {
+const cargarPagosVerificados = async () => {
     if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
         return;
     }
+    await nextTick();
     axios
         .get(route("pagos.verificados"), {
             params: {
@@ -41,13 +75,43 @@ const cargarPagosVerificados = () => {
                 medico_id: filtros.value.medico_id,
             },
         })
-        .then((response) => {
+        .then(async (response) => {
             listPagosVerificados.value = response.data.pagos;
             sumaPorTipos.value = response.data.suma_tipos;
             listPagosSinVerificar.value = response.data.pagos_sin_verificar;
             sumaPorTiposSinVerificar.value =
                 response.data.suma_tipos_sin_verificar;
             suma_total_tipos.value = response.data.suma_total_tipos;
+            if (listTipoPagos.value.length > 0) {
+                console.log(listTipoPagos.value);
+                // crear columnas dinamicas
+                listTipoPagos.value.forEach((elem) => {
+                    headers1.value.push({
+                        label: elem.value,
+                        key: "monto",
+                        fixed: "right",
+                        sortable: true,
+                        classTd: (item) => {
+                            return "justify-content-end";
+                        },
+                        render: (item, index) => {
+                            if (item.tipo_pago != elem.value) return "-";
+                            // if (item.tipo !== elem.value) return "";
+                            return item.monto || "";
+                        },
+                    });
+                });
+
+                await nextTick();
+                if (miTable1.value) {
+                    miTable1.value.cargarDatos();
+                }
+
+                if (miTable2.value) {
+                    miTable2.value.cargarDatos();
+                }
+                appStore.stopLoading();
+            }
         });
 };
 
@@ -155,9 +219,7 @@ watch(
     { immediate: true },
 );
 
-onMounted(() => {
-    appStore.stopLoading();
-});
+onMounted(() => {});
 
 onBeforeMount(() => {
     cargarSucursals();
@@ -279,8 +341,21 @@ onBeforeMount(() => {
                         </el-select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-3 offset-md-9">
+                <div class="row mb-1">
+                    <div class="col-md-9 d-flex align-items-end">
+                        <span class="text-primary">
+                            {{ listPagosVerificados.length }}
+                            Registros</span
+                        >
+                        <span
+                            v-if="listPagosSinVerificar.length > 0"
+                            class="text-danger font-weight-600"
+                        >
+                            | {{ listPagosSinVerificar.length }} sin
+                            verificar</span
+                        >
+                    </div>
+                    <div class="col-md-3">
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <button
@@ -304,130 +379,97 @@ onBeforeMount(() => {
                     </div>
                 </div>
             </div>
-            <div
-                class="col-12 overflow-auto"
+
+            <MiTable
                 v-if="listPagosVerificados.length > 0"
+                ref="miTable1"
+                :tableClass="'bg-white mitabla'"
+                :header-class="'bg__primary'"
+                :cols="headers1"
+                :data="listPagosVerificados"
+                :con-paginacion="false"
+                fix-cols
+                fixed-header
+                table-height="40vh"
             >
-                <table class="table table-bordered table-striped bg-white">
-                    <thead>
-                        <tr class="bg-principal">
-                            <th width="5%">Nro.</th>
-                            <th width="5%">Fecha</th>
-                            <th>Sucursal</th>
-                            <th>Paciente</th>
-                            <th>Descripción</th>
-                            <th>Médico</th>
-                            <th v-for="item in listTipoPagos">
-                                {{ item.value }} Bs.
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in listPagosVerificados">
-                            <td>{{ index + 1 }}</td>
-                            <td>
-                                {{ item.fecha_verificado_t }}<br />{{
-                                    item.hora
-                                }}
-                            </td>
-                            <td>{{ item.sucursal?.nombre }}</td>
-                            <td class="">
-                                {{ item.cliente.nombre }}
-                                {{ item.cliente.paterno }}
-                                {{ item.cliente.materno }}
-                                <br />
-                                <small>
-                                    {{ item.cliente.ci }}
-                                    {{
-                                        item.cliente.complemento
-                                            ? " - " + item.cliente.complemento
-                                            : ""
-                                    }}
-                                    {{ item.cliente.ci_exp }}</small
-                                >
-                            </td>
-                            <td>
-                                {{
-                                    item.certificado_detalle.tipo_certificado
-                                        .nombre
-                                }}
-                                <br />
-                                <small
-                                    >({{
-                                        item.certificado_detalle.certificado
-                                            .tipo
-                                    }}<span
-                                        v-if="
-                                            item.certificado_detalle.certificado
-                                                .tramitador
-                                        "
-                                    >
-                                        -
-                                        {{
-                                            item.certificado_detalle.certificado
-                                                .tramitador.nombre
-                                        }} </span
-                                    >)</small
-                                >
-                            </td>
-                            <td>
-                                <span v-if="item.medico">
-                                    {{ item.medico.nombre }}
-                                    {{ item.medico.paterno }} {{ item.materno }}
-                                </span>
-                                <span v-else>
-                                    <small>Pendiente</small>
-                                </span>
-                            </td>
-                            <template v-for="tipo_pago in listTipoPagos">
-                                <td
-                                    v-if="item.tipo_pago == tipo_pago.value"
-                                    class="text-right"
-                                >
-                                    {{ item.monto }}
-                                </td>
-                                <td v-else></td>
-                            </template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="bg-principal">
+                <template #fecha_verificado="{ item }">
+                    <span>{{ item.fecha_verificado_t }} {{ item.hora }}</span>
+                </template>
+                <template #cliente="{ item }">
+                    <span>{{ item.cliente.full_name }}</span>
+                    <br />
+                    <span>{{ item.cliente.full_ci }}</span>
+                </template>
+
+                <template #descripcion="{ item }">
+                    {{ item.certificado_detalle.tipo_certificado.nombre }}
+                    <br />
+                    <small
+                        >({{ item.certificado_detalle.certificado.tipo
+                        }}<span
+                            v-if="
+                                item.certificado_detalle.certificado.tramitador
+                            "
+                        >
+                            -
+                            {{
+                                item.certificado_detalle.certificado.tramitador
+                                    .nombre
+                            }} </span
+                        >)</small
+                    >
+                </template>
+                <template #medico="{ item }">
+                    <span v-if="item.medico">
+                        {{ item.medico.nombre }}
+                        {{ item.medico.paterno }} {{ item.materno }}
+                    </span>
+                    <span v-else class="text-muted"> Pendiente </span>
+                </template>
+                <template #tableFooter>
+                    <tr class="">
+                        <td
+                            class="bg-principal p-3 text-right text-md font-weight-bold"
+                            colspan="6"
+                        >
+                            TOTALES
+                        </td>
+                        <template v-for="(tipo_pago, index) in listTipoPagos">
                             <td
-                                class="text-lg font-weight-bold text-right"
-                                colspan="6"
+                                class="bg-principal p-3 text-right text-md font-weight-bold"
+                                style="
+                                    min-width: 400px !important;
+                                    width: inherit;
+                                "
                             >
-                                TOTAL Bs.
+                                {{ sumaPorTipos[tipo_pago.value] }}
                             </td>
-                            <template v-for="tipo_pago in listTipoPagos">
-                                <td class="text-lg font-weight-bold text-right">
-                                    {{ sumaPorTipos[tipo_pago.value] }}
-                                </td>
-                            </template>
-                        </tr>
-                        <tr class="bg-principal">
-                            <td
-                                class="text-lg font-weight-bold text-right"
-                                colspan="6"
-                            >
-                                TOTAL FINAL Bs.
-                            </td>
-                            <td
-                                class="text-lg font-weight-bold text-right"
-                                colspan="2"
-                            >
-                                {{ total }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                        </template>
+                    </tr>
+                    <tr class="">
+                        <td
+                            class="bg-principal p-3 text-right text-lg font-weight-bold"
+                            colspan="6"
+                        >
+                            TOTAL FINAL
+                        </td>
+                        <td
+                            class="bg-principal p-3 text-center text-lg font-weight-bold"
+                            style="min-width: 400px !important; width: inherit"
+                            colspan="2"
+                        >
+                            {{ total }}
+                        </td>
+                    </tr>
+                </template>
+            </MiTable>
             <div class="col-12 mt-2" v-else>
                 <h4 class="text-muted">
                     No se encontrarón pagos sin verificar
                 </h4>
             </div>
             <div
-                class="col-12 overflow-auto"
+                class="col-12 overflow-auto mt-5"
                 v-if="listPagosSinVerificar.length > 0"
             >
                 <h4 class="h5 font-weight-bold text-center w-100">
@@ -437,98 +479,73 @@ onBeforeMount(() => {
                             : "PAGOS SIN RECEPCIÓN"
                     }}
                 </h4>
-                <table class="table table-bordered table-striped bg-white">
-                    <thead>
-                        <tr class="bg-danger">
-                            <th width="5%">Nro.</th>
-                            <th width="5%">Fecha</th>
-                            <th>Sucursal</th>
-                            <th>Paciente</th>
-                            <th>Descripción</th>
-                            <th>Médico</th>
-                            <th v-for="item in listTipoPagos">
-                                {{ item.value }} Bs.
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(item, index) in listPagosSinVerificar">
-                            <td>{{ index + 1 }}</td>
-                            <td>
-                                {{ item.fecha_verificado_t }}<br />{{
-                                    item.hora
-                                }}
-                            </td>
-                            <td>{{ item.sucursal?.nombre }}</td>
-                            <td class="">
-                                {{ item.cliente.nombre }}
-                                {{ item.cliente.paterno }}
-                                {{ item.cliente.materno }}
-                                <br />
-                                <small>
-                                    {{ item.cliente.ci }}
-                                    {{
-                                        item.cliente.complemento
-                                            ? " - " + item.cliente.complemento
-                                            : ""
-                                    }}
-                                    {{ item.cliente.ci_exp }}</small
-                                >
-                            </td>
-                            <td>
+                <MiTable
+                    v-if="listPagosSinVerificar.length > 0"
+                    ref="miTable2"
+                    :tableClass="'bg-white mitabla'"
+                    :header-class="'bg__danger'"
+                    :cols="headers1"
+                    :data="listPagosSinVerificar"
+                    :con-paginacion="false"
+                    fix-cols
+                    fixed-header
+                    table-height="40vh"
+                >
+                    <template #fecha_verificado="{ item }">
+                        <span
+                            >{{ item.fecha_verificado_t }} {{ item.hora }}</span
+                        >
+                    </template>
+                    <template #cliente="{ item }">
+                        <span>{{ item.cliente.full_name }}</span>
+                        <br />
+                        <span>{{ item.cliente.full_ci }}</span>
+                    </template>
+
+                    <template #descripcion="{ item }">
+                        {{ item.certificado_detalle.tipo_certificado.nombre }}
+                        <br />
+                        <small
+                            >({{ item.certificado_detalle.certificado.tipo
+                            }}<span
+                                v-if="
+                                    item.certificado_detalle.certificado
+                                        .tramitador
+                                "
+                            >
+                                -
                                 {{
-                                    item.certificado_detalle.tipo_certificado
-                                        .nombre
-                                }}
-                                <br />
-                                <small
-                                    >({{
-                                        item.certificado_detalle.certificado
-                                            .tipo
-                                    }}<span
-                                        v-if="
-                                            item.certificado_detalle.certificado
-                                                .tramitador
-                                        "
-                                    >
-                                        -
-                                        {{
-                                            item.certificado_detalle.certificado
-                                                .tramitador.nombre
-                                        }} </span
-                                    >)</small
-                                >
-                            </td>
-                            <td>
-                                <span v-if="item.medico">
-                                    {{ item.medico.nombre }}
-                                    {{ item.medico.paterno }} {{ item.materno }}
-                                </span>
-                                <span v-else>
-                                    <small>Pendiente</small>
-                                </span>
-                            </td>
-                            <template v-for="tipo_pago in listTipoPagos">
-                                <td
-                                    v-if="item.tipo_pago == tipo_pago.value"
-                                    class="text-right"
-                                >
-                                    {{ item.monto }}
-                                </td>
-                                <td v-else></td>
-                            </template>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr class="bg-danger">
+                                    item.certificado_detalle.certificado
+                                        .tramitador.nombre
+                                }} </span
+                            >)</small
+                        >
+                    </template>
+                    <template #medico="{ item }">
+                        <span v-if="item.medico">
+                            {{ item.medico.nombre }}
+                            {{ item.medico.paterno }} {{ item.materno }}
+                        </span>
+                        <span v-else class="text-muted"> Pendiente </span>
+                    </template>
+                    <template #tableFooter>
+                        <tr class="">
                             <td
-                                class="text-lg font-weight-bold text-right"
+                                class="bg-danger p-3 text-right text-md font-weight-bold"
                                 colspan="6"
                             >
-                                TOTAL Bs.
+                                TOTALES
                             </td>
-                            <template v-for="tipo_pago in listTipoPagos">
-                                <td class="text-lg font-weight-bold text-right">
+                            <template
+                                v-for="(tipo_pago, index) in listTipoPagos"
+                            >
+                                <td
+                                    class="bg-danger p-3 text-right text-md font-weight-bold"
+                                    style="
+                                        min-width: 400px !important;
+                                        width: inherit;
+                                    "
+                                >
                                     {{
                                         sumaPorTiposSinVerificar[
                                             tipo_pago.value
@@ -537,23 +554,27 @@ onBeforeMount(() => {
                                 </td>
                             </template>
                         </tr>
-                        <tr class="bg-danger">
+                        <tr class="">
                             <td
-                                class="text-lg font-weight-bold text-right"
+                                class="bg-danger p-3 text-right text-lg font-weight-bold"
                                 colspan="6"
                             >
-                                TOTAL FINAL Bs.
+                                TOTAL FINAL
                             </td>
                             <td
-                                class="text-lg font-weight-bold text-right"
+                                class="bg-danger p-3 text-center text-lg font-weight-bold"
+                                style="
+                                    min-width: 400px !important;
+                                    width: inherit;
+                                "
                                 colspan="2"
                             >
                                 {{ totalSinVerificar }}
                             </td>
                         </tr>
-                    </tfoot>
-                </table>
-                <div class="row">
+                    </template>
+                </MiTable>
+                <div class="row mt-3">
                     <div class="col-md-4 offset-md-4">
                         <h4 class="h5 font-weight-bold text-center w-100">
                             RESUMEN GENERAL

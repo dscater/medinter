@@ -105,15 +105,10 @@ class PagoService
             throw new Exception("Error no se encontró la sucursal del usuario");
         }
         $sucursal_id = $login_user->sucursal_id;
-        $verificado = 0;
+        $verificado = $this->obtieneEstadoVerificado($sucursal_id);
         $fecha_verificado = $fecha_actual;
         $hora_verificado = $hora_actual;
-        $tipo_usuario = $this->login_user_service->getTipoUsuarioLogin();
-        if ($tipo_usuario == 'SECRETARIA' || !$this->login_user_service->verificaSecretariaSucursal($sucursal_id)) {
-            // si es secretaria
-            // o no hay secretaria en sucursal
-            $verificado = 1;
-        }
+
 
         $pago = Pago::create([
             "registro_id" => $datos["registro_id"],
@@ -146,6 +141,18 @@ class PagoService
         return $pago;
     }
 
+    public function obtieneEstadoVerificado($sucursal_id)
+    {
+        $verificado = 0;
+        $tipo_usuario = $this->login_user_service->getTipoUsuarioLogin();
+        if ($tipo_usuario == 'SECRETARIA' || !$this->login_user_service->verificaSecretariaSucursal($sucursal_id)) {
+            // si es secretaria
+            // o no hay secretaria en sucursal
+            $verificado = 1;
+        }
+        return $verificado;
+    }
+
     public function asignarMedicoPago(CertificadoDetalle $certificado_detalle)
     {
         $pago = Pago::where("modulo", "CertificadoDetalle")
@@ -176,7 +183,7 @@ class PagoService
 
     public function actualizarPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle, $old_cancelado, $nuevo_saldo)
     {
-        $pago = $this->verificaPagoCertificadoDetalle($certificado_detalle);
+        $pago = $this->obtienePagoAnuladoExistente($certificado_detalle);
         if ($pago) {
             // si el monto del pago es diferente al cancelado del detalle, actualizar el monto del pago
             if ($pago->monto != $certificado_detalle->cancelado && $certificado_detalle->cancelado > 0) {
@@ -185,11 +192,33 @@ class PagoService
                 // registrar accion
                 $this->historialAccionService->registrarAccion($this->modulo, "ACTUALIZACIÓN", "ACTUALIZÓ EL MONTO DEL PAGO DE UN CERTIFICADO DETALLE DE $old_cancelado A " . $certificado_detalle->cancelado, $pago, null);
             } else {
+                $pago->tipo_pago = $certificado_detalle->certificado->tipo_pago;
                 $certificado_detalle->saldo = $nuevo_saldo;
-                $certificado_detalle->cancelado = 0;
+                if ($nuevo_saldo > 0) {
+                    // ELIMINAR PAGO
+                    $certificado_detalle->cancelado = 0;
+                    $pago->status = 0;
+                } else {
+                    // REESTABLECER PAGO
+                    if ($pago->status == 0) {
+                        $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
+                        $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
+                        $login_user = $this->login_user_service->verificaSucursal();
+                        if (!$login_user) {
+                            throw new Exception("Error no se encontró la sucursal del usuario");
+                        }
+                        $sucursal_id = $login_user->sucursal_id;
+                        $verificado = $this->obtieneEstadoVerificado($sucursal_id);
+                        $pago->fecha_verificado = $fecha_actual;
+                        $pago->hora_verificado = $hora_actual;
+                        $pago->verificado = $verificado;
+                    }
+                    $certificado_detalle->cancelado = $certificado_detalle->precio;
+                    $pago->monto = $certificado_detalle->precio;
+                    $pago->status = 1;
+                }
                 $certificado_detalle->save();
                 // el monto es 0 o no se ha cancelado, eliminar el pago
-                $pago->status = 0;
                 $pago->save();
             }
         }
@@ -200,6 +229,19 @@ class PagoService
         $pago = Pago::where("modulo", "CertificadoDetalle")
             ->where("registro_id", $certificado_detalle->id)
             ->where("status", 1)
+            ->get()->first();
+        if ($pago) {
+            return $pago;
+        }
+        return null;
+    }
+
+
+
+    public function obtienePagoAnuladoExistente(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = Pago::where("modulo", "CertificadoDetalle")
+            ->where("registro_id", $certificado_detalle->id)
             ->get()->first();
         if ($pago) {
             return $pago;

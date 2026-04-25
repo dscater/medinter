@@ -255,6 +255,12 @@
 
 .mi-table .footer-fixed {
     z-index: 3;
+    height: 45px !important;
+}
+
+.mi-table .footer-fixed:nth-child(1) td {
+    bottom: 45px !important;
+    z-index: 3;
 }
 
 .mi-table .mi-content-header .fixed-column.fixed-shadow-left,

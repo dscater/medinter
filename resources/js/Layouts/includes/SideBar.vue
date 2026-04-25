@@ -75,14 +75,18 @@ onUnmounted(() => {});
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-light-primary elevation-1">
         <!-- Brand Logo -->
-        <a :href="route('inicio')" class="brand-link">
+        <a
+            :href="route('inicio')"
+            class="brand-link d-flex justify-content-center align-items-center py-0"
+            style="height: 57px"
+        >
             <img
                 :src="configuracionStore.oConfiguracion.url_logo"
                 alt="Logo"
-                class="brand-image img-circle elevation-2"
-                style="opacity: 0.8"
+                class=""
+                style="opacity: 1; height: 80%"
             />
-            <span class="brand-text font-weight-600">{{
+            <span class="brand-text font-weight-600 ml-1">{{
                 configuracionStore.oConfiguracion.nombre_sistema
             }}</span>
         </a>

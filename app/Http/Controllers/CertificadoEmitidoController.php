@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Certificado;
 use App\Models\CertificadoEmitido;
+use App\Models\HistorialAccion;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CertificadoEmitidoController extends Controller
 {
@@ -36,5 +39,30 @@ class CertificadoEmitidoController extends Controller
             "conteo" => $certificado_emitido->conteo,
             "conteo_siguiente" => (int)$certificado_emitido->conteo + 1
         ]);
+    }
+
+    public function sincronizarInicio()
+    {
+        $certificados = Certificado::all();
+
+        foreach ($certificados as $certificado) {
+            $accion = HistorialAccion::where('datos_original->id', $certificado->id)
+                ->where("accion", "CREACIÓN")
+                ->where("modulo", "CERTIFICADOS")
+                ->first();
+
+            if ($accion) {
+                $certificado = Certificado::find($accion->datos_original["id"]);
+                if ($certificado) {
+                    $certificado->inicio_id = $accion->user_id;
+                    $certificado->save();
+                }
+                // Log::debug($accion->user_id);
+                // Log::debug($accion->datos_original["id"]);
+                // Log::debug("--------------");
+            }
+        }
+
+        return 'Sincronización Correcta<br/><a href="' . route('inicio') . '">Volver al inicio</a>';
     }
 }

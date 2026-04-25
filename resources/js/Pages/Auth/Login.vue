@@ -102,8 +102,8 @@ onMounted(() => {
                         <img
                             :src="oConfiguracion.url_logo"
                             alt="Logo"
-                            class="logo_login"
-                            width="100px"
+                            class="logo_login mb-2"
+                            width="180px"
                             lazy
                         />
                         <br />

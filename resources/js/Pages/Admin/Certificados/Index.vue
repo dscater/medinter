@@ -93,8 +93,15 @@ const headers = [
         key: "tipo",
         sortable: true,
     },
+
     {
-        label: "USUARIO",
+        label: "INICIADO",
+        key: "inicio",
+        sortable: true,
+        keySortable: "inicio_id",
+    },
+    {
+        label: "ATENDIDO",
         key: "user",
         sortable: true,
         keySortable: "user_id",
@@ -307,6 +314,14 @@ const muestra_reporte = ref(false);
                                 >
                             </template>
 
+                            <template #inicio="{ item }">
+                                <span
+                                    >{{ item.inicio.nombre }}
+                                    {{ item.inicio.paterno }}
+                                    {{ item.inicio.materno }}
+                                </span>
+                            </template>
+
                             <template #user="{ item }">
                                 <span v-if="item.estado == 1 && item.user"
                                     >{{ item.user.nombre }}
@@ -350,9 +365,12 @@ const muestra_reporte = ref(false);
 
                                 <template
                                     v-if="
-                                        item.total == item.saldo &&
-                                        props_page.auth?.user.id ==
-                                            item.user_id &&
+                                        (props_page.auth?.user.id ==
+                                            item.user_id ||
+                                            props_page.auth?.user.tipo ==
+                                                'ADMINISTRADOR' ||
+                                            props_page.auth?.user.tipo ==
+                                                'GERENTE') &&
                                         (props_page.auth?.user.permisos ==
                                             '*' ||
                                             props_page.auth?.user.permisos.includes(

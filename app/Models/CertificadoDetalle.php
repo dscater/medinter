@@ -47,4 +47,9 @@ class CertificadoDetalle extends Model
     {
         return $this->belongsTo(TipoCertificado::class, 'tipo_certificado_id');
     }
+
+    public function pago()
+    {
+        return $this->hasOne(Pago::class, 'registro_id')->where("modulo", "CertificadoDetalle");
+    }
 }

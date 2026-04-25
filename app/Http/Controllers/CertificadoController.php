@@ -173,7 +173,7 @@ class CertificadoController extends Controller
     public function edit(Certificado $certificado): ResponseInertia
     {
         $cliente = $certificado->cliente;
-        $certificado = $certificado->load(["certificado_detalles"]);
+        $certificado = $certificado->load(["certificado_detalles.pago"]);
         return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
     }
 

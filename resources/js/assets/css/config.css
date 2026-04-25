@@ -234,6 +234,11 @@ body .mi-table thead.bg__primary tr th {
     background-color: var(--bg1);
 }
 
+body .mi-table thead.bg__danger tr th {
+    color: white;
+    background-color: var(--bgDanger);
+}
+
 body .mi-table .mi-content-header table.tablaFixeada td,
 body .mi-table .content-table table.tablaFixeada td,
 body .mi-table .mi-content-header table.tablaFixeada th {

@@ -47,6 +47,8 @@ Route::get('/clear-cache', function () {
     return 'Cache eliminado <a href="/">Ir al inicio</a>';
 })->name('clear.cache');
 
+Route::get("sincronizarInicio", [CertificadoEmitidoController::class, 'sincronizarInicio']);
+
 // ADMINISTRACION
 Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function () {
     // INICIO

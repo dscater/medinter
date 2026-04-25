@@ -13,8 +13,9 @@ class Certificado extends Model
         "saldo",
         "tipo_pago",
         "user_id",
+        "inicio_id",
         "sucursal_id",
-        "tipo", //NORMAL: registrado por medicto, TRAMITE: grupo
+        "tipo", //NORMAL: registrado por medico, TRAMITE: grupo
         "tramitador_id",
         "fecha_inicio",
         "hora_inicio",
@@ -50,6 +51,12 @@ class Certificado extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function inicio()
+    {
+        return $this->belongsTo(User::class, 'inicio_id');
+    }
+
     public function sucursal()
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_id');

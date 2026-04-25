@@ -39,16 +39,22 @@ class CobroService
             if (!$cancelado) {
                 throw new Exception("No se encontro el monto cancelado");
             }
-
-            $this->pago_service->crear([
-                "registro_id" => $certificado_detalle->id,
-                "modulo" => "CertificadoDetalle",
-                "monto" => $cancelado,
-                "tipo_pago" => $datos["tipo_pago"],
-                "descripcion" => "PAGO POR CERTIFICADO",
-                "cliente_id" => $certificado->cliente_id,
-                "medico_id" => $certificado->user_id
-            ]);
+            $existe_pago = $this->pago_service->obtienePagoAnuladoExistente($certificado_detalle);
+            if (!$existe_pago) {
+                // si no hay pago registrado crear el pago
+                $this->pago_service->crear([
+                    "registro_id" => $certificado_detalle->id,
+                    "modulo" => "CertificadoDetalle",
+                    "monto" => $cancelado,
+                    "tipo_pago" => $datos["tipo_pago"],
+                    "descripcion" => "PAGO POR CERTIFICADO",
+                    "cliente_id" => $certificado->cliente_id,
+                    "medico_id" => $certificado->user_id
+                ]);
+            } else {
+                // si hay pago registrado, reestablecer
+                $this->pago_service->actualizarPagoCertificadoDetalle($certificado_detalle, $certificado_detalle->cancelado, $saldo);
+            }
         }
         // actualizar Saldo
         $certificado->cancelado = $certificado->total;

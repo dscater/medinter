@@ -46,7 +46,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
 
         // FILTROS
         $certificados->when($cliente, function ($q) use ($cliente) {
@@ -89,7 +89,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
 
         $certificados->where("saldo", ">", 0);
 
@@ -145,6 +145,8 @@ class CertificadoService
             "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
             "tramitador_id" => $datos["tramitador_id"] ?? null,
+            // "inicio_id" => Auth::user()->id,
+            "inicio_id" => 0,
             "user_id" => $datos["estado"] == 1 ? Auth::user()->id : NULL,
             "sucursal_id" => $sucursal_id,
             "estado" => isset($datos["estado"]) ? $datos["estado"] : 1,
@@ -161,6 +163,7 @@ class CertificadoService
 
             $certificado->fecha_fin = $fecha_actual;
             $certificado->hora_fin = $hora_actual;
+            $certificado->save();
         }
 
         // detalles
@@ -236,7 +239,7 @@ class CertificadoService
             "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : 0,
             "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
             "tipo_pago" => $datos["tipo_pago"],
-            "user_id" => Auth::user()->id,
+            // "user_id" => Auth::user()->id,
             "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
@@ -245,7 +248,7 @@ class CertificadoService
         if ($old_certificado->estado == 0) {
             $certificado->fecha_inicio = $datos["fecha_inicio"];
             $certificado->hora_inicio = $datos["hora_inicio"];
-
+            $certificado->user_id = Auth::user()->id;
             $certificado->fecha_fin = $fecha_actual;
             $certificado->hora_fin = $hora_actual;
             $certificado->estado = 1;
@@ -301,10 +304,9 @@ class CertificadoService
 
                 if ($old_certificado->estado == 1) {
                     // previamente atendido
-                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id, $certificado_detalle->tipo_certificado_id);
+                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, $certificado->user_id, $certificado_detalle->tipo_certificado_id);
                 } else {
                     $this->pago_service->asignarMedicoPago($certificado_detalle);
-
                     $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
                 }
 
@@ -319,7 +321,8 @@ class CertificadoService
                 ]);
 
                 // PAGO POR DETALLE
-                if ((!$this->pago_service->verificaPagoCertificadoDetalle($certificado_detalle) || $certificado->estado == 0) && $cancelado > 0) {
+                $existe_pago = $this->pago_service->obtienePagoAnuladoExistente($certificado_detalle);
+                if (!$existe_pago  && $cancelado > 0) {
                     // si no hay pago registrado y el cancelado es mayor a 0, crear el pago
                     $this->pago_service->crear([
                         "registro_id" => $certificado_detalle->id,
@@ -369,13 +372,13 @@ class CertificadoService
         $old_certificado = clone $certificado;
 
         foreach ($certificado->certificado_detalles as $item) {
-            // if ($item->tipo == 'NORMAL') {
             $this->certificado_emitido_service->descontarCertificadoEmitido($item->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
-            // } else {
-            $tramite_cliente = TramiteCliente::where("certificado_id", $item->id);
-            $tramite_cliente->certificado_id = null;
-            $tramite_cliente->save();
-            // }
+
+            // ELIMINAR ARCHIVO
+            \File::delete(public_path("files/certificados/" . $item->archivo));
+
+            // PAGOS
+            $this->pago_service->eliminarPagoPorCertificadoDetalle($item);
         }
 
         $certificado->status = 0;

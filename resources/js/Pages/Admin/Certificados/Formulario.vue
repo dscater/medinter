@@ -208,6 +208,8 @@ const buscaPendienteCliente = async (cliente) => {
 
     if (pendiente || form.id == 0) {
         iniciarFechaHoraInicio();
+    } else {
+        fechaHoraTexto.value = form.fecha_inicio_t + " " + form.hora_inicio;
     }
     form.cliente_id = cliente.id;
     clienteSeleccionado.value = true;
@@ -767,15 +769,18 @@ onBeforeMount(() => {
                                                     no-data-text="Sin datos"
                                                     no-match-text="No se entrarón coincidencias"
                                                     filterable
-                                                    :disabled="
-                                                        certificado_detalle.id !=
-                                                        0
-                                                    "
                                                     @change="
                                                         detectarTipoCertificado(
                                                             $event,
                                                             index,
                                                         )
+                                                    "
+                                                    :disabled="
+                                                        certificado_detalle.pago &&
+                                                        certificado_detalle.pago
+                                                            .verificado == 1 &&
+                                                        propsPage.auth?.user
+                                                            .tipo == 'MÉDICO'
                                                     "
                                                 >
                                                     <el-option
@@ -798,8 +803,14 @@ onBeforeMount(() => {
                                                             certificado_detalle.precio
                                                         "
                                                         :disabled="
-                                                            certificado_detalle.id !=
-                                                            0
+                                                            certificado_detalle.pago &&
+                                                            certificado_detalle
+                                                                .pago
+                                                                .verificado ==
+                                                                1 &&
+                                                            propsPage.auth?.user
+                                                                .tipo ==
+                                                                'MÉDICO'
                                                         "
                                                     />
                                                     <div
@@ -815,8 +826,16 @@ onBeforeMount(() => {
                                                                     certificado_detalle.con_saldo
                                                                 "
                                                                 :disabled="
-                                                                    certificado_detalle.id !=
-                                                                    0
+                                                                    certificado_detalle.pago &&
+                                                                    certificado_detalle
+                                                                        .pago
+                                                                        .verificado ==
+                                                                        1 &&
+                                                                    propsPage
+                                                                        .auth
+                                                                        ?.user
+                                                                        .tipo ==
+                                                                        'MÉDICO'
                                                                 "
                                                             />
                                                         </div>
@@ -927,8 +946,11 @@ onBeforeMount(() => {
                                     </div>
                                     <div class="col-12 text-center">
                                         <el-radio-group
-                                            :disabled="form.id != 0"
                                             v-model="form.tipo_pago"
+                                            :disabled="
+                                                propsPage.auth?.user.tipo ==
+                                                'MÉDICO'
+                                            "
                                         >
                                             <el-radio
                                                 v-for="item in listTipoPagos"

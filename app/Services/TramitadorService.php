@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Certificado;
 use App\Services\HistorialAccionService;
 use App\Models\Tramitador;
 use App\Models\Tramite;
@@ -107,7 +108,7 @@ class TramitadorService
     {
         $old_tramitador = clone $tramitador;
 
-        $usos = Tramite::where("tramitador_id", $tramitador->id)->count();
+        $usos = Certificado::where("tramitador_id", $tramitador->id)->count();
         if ($usos > 0) {
             throw new Exception("No se puede eliminar el registro porque esta siendo utilizado");
         }

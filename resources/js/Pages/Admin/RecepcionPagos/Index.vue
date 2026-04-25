@@ -141,7 +141,7 @@ onBeforeMount(() => {});
                 </div>
             </div> -->
             <div class="col-12 overflow-auto" v-if="pagos.length > 0">
-                <h4>{{ pagos.length }} Pagos sin verificar</h4>
+                <h4 class="text-lg">{{ pagos.length }} Pagos sin verificar</h4>
                 <table class="table table-bordered table-hover bg-white">
                     <thead>
                         <tr class="bg-principal">
@@ -162,7 +162,7 @@ onBeforeMount(() => {});
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in pagos">
+                        <tr v-for="item in pagos" class="text-xs">
                             <td>{{ item.fecha_t }}<br />{{ item.hora }}</td>
                             <td>{{ item.sucursal?.nombre }}</td>
                             <td>{{ item.descripcion }}</td>
