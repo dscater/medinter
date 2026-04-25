@@ -948,8 +948,9 @@ onBeforeMount(() => {
                                         <el-radio-group
                                             v-model="form.tipo_pago"
                                             :disabled="
+                                                form.id != 0 &&
                                                 propsPage.auth?.user.tipo ==
-                                                'MÉDICO'
+                                                    'MÉDICO'
                                             "
                                         >
                                             <el-radio
