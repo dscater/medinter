@@ -27,6 +27,7 @@ watch(
     (newValue) => {
         asignaDatosFormulario(newValue);
     },
+    { deep: true },
 );
 
 const textBtn = computed(() => {
@@ -64,6 +65,10 @@ const asignaDatosFormulario = (item) => {
         form._method = item._method;
     } else {
         form._method = form.id == 0 ? "POST" : "PUT";
+    }
+
+    if (form.certificado_detalles.length == 0) {
+        agregarCertificado();
     }
 };
 
@@ -355,10 +360,10 @@ const iniciarFechaHoraInicio = () => {
 };
 onMounted(() => {
     if (form.id == 0) {
+        limpiarCertificado();
+        asignaDatosFormulario(oCertificado.value);
         agregarCertificado();
-    }
-
-    if (form.id && form.id != 0) {
+    } else {
         txtCi.value = props.cliente.ci;
         buscarClienteByCi();
         seleccionaCliente(props.cliente);
@@ -665,21 +670,30 @@ onBeforeMount(() => {
                     <div class="col-12 my-2">
                         <h4 class="card-title w-100 text-center">
                             <i class="fa fa-clipboard-list"></i> Certificado(s)
-                            <span
-                                v-if="oCliente"
-                                class="text-sm float-right"
-                                :class="{
-                                    'text-precargado': certificadoPendiente,
-                                    'text-nuevo': !certificadoPendiente,
-                                }"
-                            >
-                                <i class="fa fa-circle"></i>
-                                {{
-                                    certificadoPendiente
-                                        ? "Precargado"
-                                        : "Nuevo"
-                                }}
-                            </span>
+                            <template v-if="oCliente">
+                                <span
+                                    v-if="form.estado == 0"
+                                    class="text-sm float-right"
+                                    :class="{
+                                        'text-precargado': certificadoPendiente,
+                                        'text-primary': !certificadoPendiente,
+                                    }"
+                                >
+                                    <i class="fa fa-circle"></i>
+                                    {{
+                                        certificadoPendiente
+                                            ? "Pendiente"
+                                            : "Nuevo"
+                                    }}
+                                </span>
+                                <span
+                                    v-if="form.estado == 1"
+                                    class="text-sm float-right text-nuevo"
+                                >
+                                    <i class="fa fa-circle"></i>
+                                    Registrado
+                                </span>
+                            </template>
                         </h4>
                     </div>
                     <div class="col-12">

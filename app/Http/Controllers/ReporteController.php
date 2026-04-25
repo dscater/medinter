@@ -1635,7 +1635,8 @@ class ReporteController extends Controller
         // Si no vienen fechas
         if (!$request->fecha_ini || !$request->fecha_fin) {
 
-            $primerPago = Pago::orderBy('fecha_verificado', 'asc')->first();
+            $primerPago = Pago::orderBy('fecha_verificado', 'asc')
+                ->where("status", 1)->first();
 
             $fecha_ini = $primerPago
                 ? Carbon::parse($primerPago->fecha_verificado)->startOfDay()
@@ -1661,6 +1662,7 @@ class ReporteController extends Controller
             $total_fecha->when($user_id != 'todos', fn($q) => $q->where("user_id", $user_id));
             $total_fecha->when($tipo_pago != 'todos', fn($q) => $q->where("tipo_pago", $tipo_pago));
             $total_fecha->where("verificado", 1);
+            $total_fecha->where("status", 1);
             $total_fecha->where("fecha_verificado", $fecha);
             $total_fecha = $total_fecha->sum("monto");
             $data[] = (float)$total_fecha;

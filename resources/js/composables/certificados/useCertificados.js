@@ -34,7 +34,6 @@ export const useCertificados = () => {
             oCertificado.value.saldo = item.saldo;
             oCertificado.value.tipo = item.tipo;
             oCertificado.value.tramitador_id = item.tramitador_id;
-            console.log(item);
             if (item.tramitador) {
                 oCertificado.value.tramitador = item.tramitador;
             }

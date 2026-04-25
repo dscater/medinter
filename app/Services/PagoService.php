@@ -150,6 +150,7 @@ class PagoService
     {
         $pago = Pago::where("modulo", "CertificadoDetalle")
             ->where("registro_id", $certificado_detalle->id)
+            ->where("status", 1)
             ->get()->first();
         if ($pago) {
             // SI NO HAY PAGO EXISTE UN COBRO PENDIENTE
@@ -175,7 +176,9 @@ class PagoService
 
     public function listadoRecepcionPagos()
     {
-        $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])->where("verificado", 0);
+        $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])
+            ->where("status", 1)
+            ->where("verificado", 0);
 
         $login_user = $this->login_user_service->verificaSucursal();
         if (!$login_user) {

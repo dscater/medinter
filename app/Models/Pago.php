@@ -16,11 +16,12 @@ class Pago extends Model
         "hora",
         "cliente_id",
         "user_id",
-        "sucursal_id",
         "medico_id",
+        "sucursal_id",
         "verificado",
         "fecha_verificado",
-        "hora_verificado"
+        "hora_verificado",
+        "status"
     ];
 
     protected $appends = ["fecha_t", "fecha_verificado_t"];
