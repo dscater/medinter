@@ -318,11 +318,9 @@ class CertificadoService
                     "tipo_certificado_id" => $item["tipo_certificado_id"],
                 ]);
 
-                Log::debug("AAAAAAA");
                 // PAGO POR DETALLE
                 if ((!$this->pago_service->verificaPagoCertificadoDetalle($certificado_detalle) || $certificado->estado == 0) && $cancelado > 0) {
                     // si no hay pago registrado y el cancelado es mayor a 0, crear el pago
-                    Log::debug("BBBBB");
                     $this->pago_service->crear([
                         "registro_id" => $certificado_detalle->id,
                         "modulo" => "CertificadoDetalle",
@@ -333,7 +331,6 @@ class CertificadoService
                         "certificado_atendido" => $certificado->estado,
                     ]);
                 } else {
-                    Log::debug("CCCCCCCCCCCCC");
                     // si hay pago registrado, verificar si el monto del pago es diferente al cancelado del detalle, si es diferente actualizar el monto del pago
                     $this->pago_service->actualizarPagoCertificadoDetalle($certificado_detalle, $old_cancelado, $saldo);
                 }

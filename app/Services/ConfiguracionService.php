@@ -23,6 +23,8 @@ class ConfiguracionService
         $old_area = clone $configuracion;
 
         $configuracion = Configuracion::first();
+        Log::debug("AAA");
+
         if (!$configuracion) {
             $configuracion = Configuracion::create([
                 "nombre_sistema" => $datos["nombre_sistema"],
@@ -47,10 +49,12 @@ class ConfiguracionService
             ]);
         }
 
+        Log::debug("BBB");
         // cargar logo
         if ($datos["logo"] && !is_string($datos["logo"])) {
             $this->cargarLogo($configuracion, $datos["logo"]);
         }
+        Log::debug("BBB");
 
         return $configuracion;
     }
@@ -58,7 +62,7 @@ class ConfiguracionService
     public function cargarLogo(Configuracion $configuracion, UploadedFile $logo): void
     {
         if ($configuracion->logo) {
-            \File::delete(public_path("imgs/" . $this->configuracion->logo));
+            \File::delete(public_path("imgs/" . $configuracion->logo));
         }
         $nombre = $configuracion->id . time();
         $configuracion->logo = $this->cargarArchivoService->cargarArchivo($logo, public_path("imgs"), $nombre);
