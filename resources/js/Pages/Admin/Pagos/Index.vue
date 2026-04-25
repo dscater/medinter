@@ -61,6 +61,7 @@ const listPagosSinVerificar = ref([]);
 const sumaPorTipos = ref([]);
 const sumaPorTiposSinVerificar = ref([]);
 const suma_total_tipos = ref([]);
+const colsIniciado = ref(false);
 const cargarPagosVerificados = async () => {
     if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
         return;
@@ -83,24 +84,24 @@ const cargarPagosVerificados = async () => {
                 response.data.suma_tipos_sin_verificar;
             suma_total_tipos.value = response.data.suma_total_tipos;
             if (listTipoPagos.value.length > 0) {
-                console.log(listTipoPagos.value);
                 // crear columnas dinamicas
-                listTipoPagos.value.forEach((elem) => {
-                    headers1.value.push({
-                        label: elem.value,
-                        key: "monto",
-                        fixed: "right",
-                        sortable: true,
-                        classTd: (item) => {
-                            return "justify-content-end";
-                        },
-                        render: (item, index) => {
-                            if (item.tipo_pago != elem.value) return "-";
-                            // if (item.tipo !== elem.value) return "";
-                            return item.monto || "";
-                        },
+                if (!colsIniciado.value)
+                    listTipoPagos.value.forEach((elem) => {
+                        headers1.value.push({
+                            label: elem.value,
+                            key: "monto",
+                            fixed: "right",
+                            sortable: true,
+                            classTd: (item) => {
+                                return "justify-content-end";
+                            },
+                            render: (item, index) => {
+                                if (item.tipo_pago != elem.value) return "-";
+                                // if (item.tipo !== elem.value) return "";
+                                return item.monto || "";
+                            },
+                        });
                     });
-                });
 
                 await nextTick();
                 if (miTable1.value) {
@@ -111,6 +112,7 @@ const cargarPagosVerificados = async () => {
                     miTable2.value.cargarDatos();
                 }
                 appStore.stopLoading();
+                colsIniciado.value = true;
             }
         });
 };
