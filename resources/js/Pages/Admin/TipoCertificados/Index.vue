@@ -20,7 +20,8 @@ onMounted(() => {
     appStore.stopLoading();
 });
 
-const { setTipoCertificado, limpiarTipoCertificado } = useTipoCertificados();
+const { setTipoCertificado, limpiarTipoCertificado, form } =
+    useTipoCertificados();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
@@ -64,18 +65,17 @@ const multiSearch = ref({
     filtro: [],
 });
 
-const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
 
 const agregarRegistro = () => {
     limpiarTipoCertificado();
-    accion_formulario.value = 0;
     muestra_formulario.value = true;
 };
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
+        limpiarTipoCertificado();
         muestra_formulario.value = false;
     }
 };
@@ -250,8 +250,9 @@ const eliminarTipoCertificado = (item) => {
             </div>
         </div>
         <Formulario
+            v-if="muestra_formulario"
             :muestra_formulario="muestra_formulario"
-            :accion_formulario="accion_formulario"
+            :form="form"
             @envio-formulario="updateDatatable"
             @cerrar-formulario="muestra_formulario = false"
         ></Formulario>

@@ -1,16 +1,14 @@
 <script setup>
 import MiModal from "@/Components/MiModal.vue";
 import { Form, useForm, usePage } from "@inertiajs/vue3";
-import { useClientes } from "@/composables/clientes/useClientes";
 import { watch, ref, computed, onMounted, nextTick } from "vue";
 const props = defineProps({
+    form: {
+        type: Object,
+    },
     muestra_formulario: {
         type: Boolean,
         default: false,
-    },
-    accion_formulario: {
-        type: Number,
-        default: 0,
     },
     metodo: {
         type: String,
@@ -22,77 +20,12 @@ const props = defineProps({
     },
 });
 
-const { oCliente, limpiarCliente } = useClientes();
-const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-const form = useForm(oCliente.value);
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        muestra_form.value = newValue;
-        if (muestra_form.value) {
-            form.clearErrors();
-            document
-                .getElementsByTagName("body")[0]
-                .classList.add("modal-open");
-
-            asignarDatosCliente(oCliente.value);
-            if (form.id == 0) {
-                cargarListas();
-                agregarCertificado();
-                form.ci = props.ci ?? "";
-            }
-        } else {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
-        }
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
-    },
-);
-
-watch(
-    () => props.ci,
-    (newValue) => {
-        form["ci"] = newValue;
-    },
-);
-
-const asignarDatosCliente = (item) => {
-    form.id = item.id;
-    form.nombre = item.nombre;
-    form.paterno = item.paterno;
-    form.materno = item.materno;
-    form.ci = item.ci;
-    form.ci_exp = item.ci_exp;
-    form.complemento = item.complemento;
-    form.fecha_nac = item.fecha_nac;
-    form.edad = item.edad;
-    form.cel = item.cel;
-    form.respuesta = item.respuesta;
-    form._method = item._method;
-
-    // PAGO
-    form.con_certificado = item.con_certificado;
-    form.tipo = item.tipo;
-    form.tramitador_id = item.tramitador_id;
-    form.certificado_detalles = item.certificado_detalles;
-    form.total = item.total;
-    form.cancelado = item.cancelado;
-    form.saldo = item.saldo;
-};
+const form = props.form;
 
 const tituloDialog = computed(() => {
-    return accion_form.value == 0
+    return form.id == 0
         ? `<i class="fa fa-plus"></i> Nuevo Cliente`
         : `<i class="fa fa-edit"></i> Editar Cliente`;
 });
@@ -101,7 +34,7 @@ const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
     }
-    if (accion_form.value == 0) {
+    if (form.id == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
     return `<i class="fa fa-edit"></i> Actualizar`;
@@ -131,8 +64,7 @@ const enviarFormulario = () => {
                         confirmButton: "btn-alert-success",
                     },
                 });
-                form.reset();
-                limpiarCliente();
+
                 document
                     .getElementsByTagName("body")[0]
                     .classList.remove("modal-open");
@@ -209,7 +141,7 @@ const manejarExito = (response) => {
     });
 
     form.reset();
-    limpiarCliente();
+    document.getElementsByTagName("body")[0].classList.remove("modal-open");
     emits("envio-formulario", response.data.cliente);
 };
 const manejarError = (error) => {
@@ -266,20 +198,9 @@ watch(muestra_form, (newVal) => {
     }
 });
 
-const archivo = ref(null);
-const cargarArchivo = (e, key) => {
-    form[key] = null;
-    const file = e.target.files[0];
-    if (file) {
-        form[key] = e.target.files[0];
-    }
-};
-
 const cerrarFormulario = () => {
     muestra_form.value = false;
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
-    limpiarCliente();
-    asignarDatosCliente(oCliente.value);
 };
 
 const calcularEdad = () => {
@@ -340,19 +261,20 @@ const detectarTipoCertificado = (value, index) => {
     form.certificado_detalles[index].con_saldo = false;
 };
 
+const detalleBase = {
+    id: 0,
+    certificado_id: "",
+    categoria: "",
+    precio: 0,
+    cancelado: 0,
+    saldo: 0,
+    tipo_certificado_id: "",
+    archivo: null,
+    con_saldo: false,
+};
+
 const agregarCertificado = () => {
-    form.certificado_detalles.push({
-        id: 0,
-        certificado_id: "",
-        categoria: "",
-        precio: "",
-        cancelado: "",
-        saldo: "",
-        tipo_certificado_id: "",
-        archivo: null,
-        con_saldo: false,
-        tipo_certificado: null,
-    });
+    form.certificado_detalles.push({ ...detalleBase });
 };
 
 const quitarCertificado = (index) => {
@@ -364,12 +286,14 @@ const quitarCertificado = (index) => {
 };
 
 const total = computed(() => {
+    if (!form?.certificado_detalles) return 0;
     return form.certificado_detalles.reduce((acc, item) => {
         return acc + parseFloat(item.precio || 0);
     }, 0);
 });
 
 const cancelado = computed(() => {
+    if (!form?.certificado_detalles) return 0;
     return form.certificado_detalles.reduce((acc, item) => {
         return item.con_saldo ? acc + parseFloat(item.precio || 0) : acc;
     }, 0);
@@ -391,7 +315,13 @@ const cargarListas = () => {
     cargarTipoPagos();
 };
 
-onMounted(() => {});
+onMounted(() => {
+    if (form.id == 0) {
+        cargarListas();
+        agregarCertificado();
+        form.ci = props.ci ?? "";
+    }
+});
 </script>
 
 <template>

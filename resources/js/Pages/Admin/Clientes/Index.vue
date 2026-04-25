@@ -6,11 +6,8 @@ import { useClientes } from "@/composables/clientes/useClientes";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
-// import { useMenu } from "@/composables/useMenu";
 import Formulario from "./Formulario.vue";
-import { buttonProps } from "element-plus";
 import Certificado from "./Certificado.vue";
-// const { mobile, identificaDispositivo } = useMenu();
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
@@ -21,7 +18,7 @@ onMounted(() => {
     appStore.stopLoading();
 });
 
-const { setCliente, limpiarCliente } = useClientes();
+const { setCliente, limpiarCliente, form } = useClientes();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
@@ -85,15 +82,11 @@ const multiSearch = ref({
     filtro: [],
 });
 
-const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
-
-const accion_form_certificado = ref(0);
 const muestra_form_certificado = ref(false);
 
 const agregarRegistro = () => {
     limpiarCliente();
-    accion_formulario.value = 0;
     muestra_formulario.value = true;
 };
 
@@ -229,7 +222,6 @@ const eliminarCliente = (item) => {
                                             class="btn btn-primary"
                                             @click="
                                                 setCliente(item);
-                                                accion_form_certificado = 1;
                                                 muestra_form_certificado = true;
                                             "
                                         >
@@ -256,7 +248,6 @@ const eliminarCliente = (item) => {
                                             class="btn btn-warning"
                                             @click="
                                                 setCliente(item);
-                                                accion_formulario = 1;
                                                 muestra_formulario = true;
                                             "
                                         >
@@ -294,14 +285,16 @@ const eliminarCliente = (item) => {
             </div>
         </div>
         <Formulario
+            v-if="muestra_formulario"
+            :form="form"
             :muestra_formulario="muestra_formulario"
-            :accion_formulario="accion_formulario"
             @envio-formulario="updateDatatable"
             @cerrar-formulario="muestra_formulario = false"
         ></Formulario>
         <Certificado
+            v-if="muestra_form_certificado"
+            :form="form"
             :muestra_formulario="muestra_form_certificado"
-            :accion_formulario="accion_form_certificado"
             @envio-formulario="muestra_form_certificado = false"
             @cerrar-formulario="muestra_form_certificado = false"
         ></Certificado>

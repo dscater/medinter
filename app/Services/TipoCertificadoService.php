@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Certificado;
+use App\Models\CertificadoDetalle;
 use App\Models\CertificadoEmitido;
 use App\Services\HistorialAccionService;
 use App\Models\TipoCertificado;
@@ -127,7 +128,7 @@ class TipoCertificadoService
     public function eliminar(TipoCertificado $tipo_certificado): bool|Exception
     {
         // verificar usos
-        $usos = Certificado::where("tipo_certificado_id", $tipo_certificado->id)->get();
+        $usos = CertificadoDetalle::where("tipo_certificado_id", $tipo_certificado->id)->get();
         if (count($usos) > 0) {
             throw ValidationException::withMessages([
                 'error' =>  "No es posible eliminar este registro porque esta siendo utilizado por otros registros",

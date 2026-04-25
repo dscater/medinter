@@ -16,7 +16,7 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setUsuario, limpiarUsuario } = useUsuarios();
+const { setUsuario, limpiarUsuario, form } = useUsuarios();
 
 const miTable = ref(null);
 const headers = [
@@ -99,20 +99,18 @@ const multiSearch = ref({
     filtro: [],
 });
 
-const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
-const accion_formulario_pass = ref(0);
 const muestra_formulario_pass = ref(false);
 
 const agregarRegistro = () => {
     limpiarUsuario();
-    accion_formulario.value = 0;
     muestra_formulario.value = true;
 };
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
+        limpiarUsuario();
         muestra_formulario.value = false;
     }
 };
@@ -270,7 +268,6 @@ onMounted(async () => {
                                             class="btn btn-info"
                                             @click="
                                                 setUsuario(item);
-                                                accion_formulario_pass = 1;
                                                 muestra_formulario_pass = true;
                                             "
                                         >
@@ -295,7 +292,6 @@ onMounted(async () => {
                                             class="btn btn-warning"
                                             @click="
                                                 setUsuario(item);
-                                                accion_formulario = 1;
                                                 muestra_formulario = true;
                                             "
                                         >
@@ -334,14 +330,16 @@ onMounted(async () => {
     </Content>
 
     <Formulario
+        v-if="muestra_formulario"
         :muestra_formulario="muestra_formulario"
-        :accion_formulario="accion_formulario"
+        :form="form"
         @envio-formulario="updateDatatable"
         @cerrar-formulario="muestra_formulario = false"
     ></Formulario>
     <FormPassword
+        v-if="muestra_formulario_pass"
         :muestra_formulario="muestra_formulario_pass"
-        :accion_formulario="accion_formulario_pass"
+        :formUser="form"
         @envio-formulario="muestra_formulario_pass = false"
         @cerrar-formulario="muestra_formulario_pass = false"
     ></FormPassword>

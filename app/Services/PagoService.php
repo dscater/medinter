@@ -174,6 +174,39 @@ class PagoService
         return true;
     }
 
+    public function actualizarPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle, $old_cancelado, $nuevo_saldo)
+    {
+        $pago = $this->verificaPagoCertificadoDetalle($certificado_detalle);
+        if ($pago) {
+            // si el monto del pago es diferente al cancelado del detalle, actualizar el monto del pago
+            if ($pago->monto != $certificado_detalle->cancelado && $certificado_detalle->cancelado > 0) {
+                $pago->monto = $certificado_detalle->cancelado;
+                $pago->save();
+                // registrar accion
+                $this->historialAccionService->registrarAccion($this->modulo, "ACTUALIZACIÓN", "ACTUALIZÓ EL MONTO DEL PAGO DE UN CERTIFICADO DETALLE DE $old_cancelado A " . $certificado_detalle->cancelado, $pago, null);
+            } else {
+                $certificado_detalle->saldo = $nuevo_saldo;
+                $certificado_detalle->cancelado = 0;
+                $certificado_detalle->save();
+                // el monto es 0 o no se ha cancelado, eliminar el pago
+                $pago->status = 0;
+                $pago->save();
+            }
+        }
+    }
+
+    public function verificaPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = Pago::where("modulo", "CertificadoDetalle")
+            ->where("registro_id", $certificado_detalle->id)
+            ->where("status", 1)
+            ->get()->first();
+        if ($pago) {
+            return $pago;
+        }
+        return null;
+    }
+
     public function listadoRecepcionPagos()
     {
         $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])
@@ -193,5 +226,24 @@ class PagoService
         $pagos = $pagos->get();
 
         return $pagos;
+    }
+
+    public function eliminarPagoPorCertificadoDetalle(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = $this->verificaPagoCertificadoDetalle($certificado_detalle);
+        if ($pago) {
+            $this->eliminarPago($pago);
+        }
+    }
+
+    public function eliminarPago(Pago $pago)
+    {
+        $pago->status = 0;
+        $pago->save();
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ EL PAGO DE UN CERTIFICADO", $pago, null);
+
+        return true;
     }
 }

@@ -22,7 +22,7 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
+const { form, setCertificado } = useCertificados();
 onMounted(() => {
     appStore.stopLoading();
 });
@@ -83,8 +83,9 @@ onBeforeMount(() => {
                 <div class="row mt-1">
                     <div class="col-12">
                         <Formulario
-                            :certificado="oCertificado"
+                            :form="form"
                             :cliente="cliente"
+                            :setCertificado="setCertificado"
                         ></Formulario>
                     </div>
                 </div>

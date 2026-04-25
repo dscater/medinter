@@ -1,57 +1,23 @@
 <script setup>
 import MiModal from "@/Components/MiModal.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import { useTipoCertificados } from "@/composables/tipo_certificados/useTipoCertificados";
 import { watch, ref, computed, onMounted, nextTick } from "vue";
 const props = defineProps({
     muestra_formulario: {
         type: Boolean,
         default: false,
     },
-    accion_formulario: {
-        type: Number,
-        default: 0,
+    form: {
+        type: Object,
     },
 });
 
-const { oTipoCertificado, limpiarTipoCertificado } = useTipoCertificados();
-const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-const form = useForm(oTipoCertificado.value);
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        muestra_form.value = newValue;
-        if (muestra_form.value) {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.add("modal-open");
-
-            form.id = oTipoCertificado.value.id;
-            form.nombre = oTipoCertificado.value.nombre;
-            form.precio = oTipoCertificado.value.precio;
-            form.descripcion = oTipoCertificado.value.descripcion;
-            form._method = oTipoCertificado.value._method;
-        } else {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
-        }
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
-    },
-);
+const form = props.form;
 
 const tituloDialog = computed(() => {
-    return accion_form.value == 0
+    return form.id == 0
         ? `<i class="fa fa-plus"></i> Nuevo Tipo de Certificado`
         : `<i class="fa fa-edit"></i> Editar Tipo de Certificado`;
 });
@@ -60,7 +26,7 @@ const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
     }
-    if (accion_form.value == 0) {
+    if (form.id == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
     return `<i class="fa fa-edit"></i> Actualizar`;
@@ -89,8 +55,10 @@ const enviarFormulario = () => {
                     confirmButton: "btn-alert-success",
                 },
             });
-            form.reset();
-            limpiarTipoCertificado();
+
+            document
+                .getElementsByTagName("body")[0]
+                .classList.remove("modal-open");
             emits("envio-formulario");
         },
         onError: (err, code) => {

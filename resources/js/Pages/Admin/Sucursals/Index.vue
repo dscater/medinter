@@ -20,7 +20,7 @@ onMounted(() => {
     appStore.stopLoading();
 });
 
-const { setSucursal, limpiarSucursal } = useSucursals();
+const { setSucursal, limpiarSucursal, form } = useSucursals();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
@@ -59,18 +59,17 @@ const multiSearch = ref({
     filtro: [],
 });
 
-const accion_formulario = ref(0);
 const muestra_formulario = ref(false);
 
 const agregarRegistro = () => {
     limpiarSucursal();
-    accion_formulario.value = 0;
     muestra_formulario.value = true;
 };
 
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
+        limpiarSucursal();
         muestra_formulario.value = false;
     }
 };
@@ -203,7 +202,6 @@ const eliminarSucursal = (item) => {
                                             class="btn btn-warning"
                                             @click="
                                                 setSucursal(item);
-                                                accion_formulario = 1;
                                                 muestra_formulario = true;
                                             "
                                         >
@@ -241,8 +239,9 @@ const eliminarSucursal = (item) => {
             </div>
         </div>
         <Formulario
+            v-if="muestra_formulario"
             :muestra_formulario="muestra_formulario"
-            :accion_formulario="accion_formulario"
+            :form="form"
             @envio-formulario="updateDatatable"
             @cerrar-formulario="muestra_formulario = false"
         ></Formulario>

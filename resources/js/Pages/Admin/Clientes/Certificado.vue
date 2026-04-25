@@ -1,16 +1,11 @@
 <script setup>
 import MiModal from "@/Components/MiModal.vue";
 import { Form, useForm, usePage } from "@inertiajs/vue3";
-import { useClientes } from "@/composables/clientes/useClientes";
 import { watch, ref, computed, onMounted, nextTick } from "vue";
 const props = defineProps({
     muestra_formulario: {
         type: Boolean,
         default: false,
-    },
-    accion_formulario: {
-        type: Number,
-        default: 0,
     },
     metodo: {
         type: String,
@@ -20,62 +15,14 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    form: {
+        type: Object,
+    },
 });
 
-const { oCliente, limpiarCliente } = useClientes();
-const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-const form = useForm(oCliente.value);
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        muestra_form.value = newValue;
-        if (muestra_form.value) {
-            form.clearErrors();
-            document
-                .getElementsByTagName("body")[0]
-                .classList.add("modal-open");
-
-            form.id = oCliente.value.id;
-            form.nombre = oCliente.value.nombre;
-            form.paterno = oCliente.value.paterno;
-            form.materno = oCliente.value.materno;
-            form.ci = oCliente.value.ci;
-            form.ci_exp = oCliente.value.ci_exp;
-            form.complemento = oCliente.value.complemento;
-            form.fecha_nac = oCliente.value.fecha_nac;
-            form.edad = oCliente.value.edad;
-            form.cel = oCliente.value.cel;
-            form.respuesta = oCliente.value.respuesta;
-            form._method = oCliente.value._method;
-
-            // PAGO
-            form.con_certificado = oCliente.value.con_certificado;
-            form.tipo = oCliente.value.tipo;
-            form.tramitador_id = oCliente.value.tramitador_id;
-            form.certificado_detalles = oCliente.value.certificado_detalles;
-            form.total = oCliente.value.total;
-            form.cancelado = oCliente.value.cancelado;
-            form.saldo = oCliente.value.saldo;
-            cargarListas();
-            agregarCertificado();
-        } else {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
-        }
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
-    },
-);
+const form = props.form;
 
 watch(
     () => props.ci,
@@ -84,15 +31,8 @@ watch(
     },
 );
 
-const { flash } = usePage().props;
-
-function cargaArchivo(e, key) {
-    form[key] = null;
-    form[key] = e.target.files[0];
-}
-
 const tituloDialog = computed(() => {
-    return accion_form.value == 0
+    return form.id == 0
         ? `<i class="fa fa-plus"></i> Nuevo Cliente`
         : `<i class="fa fa-clipboard-list"></i> Iniciar Certificado`;
 });
@@ -101,7 +41,7 @@ const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
     }
-    if (accion_form.value == 0) {
+    if (form.id == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
     return `<i class="fa fa-save"></i> Registrar Certificado`;
@@ -127,8 +67,6 @@ const enviarFormulario = () => {
                     confirmButton: "btn-alert-success",
                 },
             });
-            form.reset();
-            limpiarCliente();
             document
                 .getElementsByTagName("body")[0]
                 .classList.remove("modal-open");
@@ -170,18 +108,6 @@ const enviarFormulario = () => {
     });
 };
 
-const listExpedido = [
-    { value: "LP", label: "La Paz" },
-    { value: "CB", label: "Cochabamba" },
-    { value: "SC", label: "Santa Cruz" },
-    { value: "CH", label: "Chuquisaca" },
-    { value: "OR", label: "Oruro" },
-    { value: "PT", label: "Potosi" },
-    { value: "TJ", label: "Tarija" },
-    { value: "PD", label: "Pando" },
-    { value: "BN", label: "Beni" },
-];
-
 const emits = defineEmits(["cerrar-formulario", "envio-formulario"]);
 
 watch(muestra_form, (newVal) => {
@@ -190,39 +116,9 @@ watch(muestra_form, (newVal) => {
     }
 });
 
-const archivo = ref(null);
-const cargarArchivo = (e, key) => {
-    form[key] = null;
-    const file = e.target.files[0];
-    if (file) {
-        form[key] = e.target.files[0];
-    }
-};
-
 const cerrarFormulario = () => {
     muestra_form.value = false;
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
-};
-
-const calcularEdad = () => {
-    if (!form.fecha_nac) return null;
-
-    const hoy = new Date();
-    const fecha = new Date(form.fecha_nac);
-
-    let edad = hoy.getFullYear() - fecha.getFullYear();
-
-    const mesActual = hoy.getMonth();
-    const mesNacimiento = fecha.getMonth();
-
-    // Ajustar si aún no cumplió años este año
-    if (
-        mesActual < mesNacimiento ||
-        (mesActual === mesNacimiento && hoy.getDate() < fecha.getDate())
-    ) {
-        edad--;
-    }
-    form.edad = edad;
 };
 
 const listTramitadors = ref([]);
@@ -312,7 +208,10 @@ const cargarListas = () => {
     cargarTipoPagos();
 };
 
-onMounted(() => {});
+onMounted(() => {
+    cargarListas();
+    agregarCertificado();
+});
 </script>
 
 <template>

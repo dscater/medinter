@@ -1,47 +1,41 @@
 <script setup>
+import MiModal from "@/Components/MiModal.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
-import { useUsuarios } from "@/composables/usuarios/useUsuarios";
 import { watch, ref, computed } from "vue";
 const props = defineProps({
     muestra_formulario: {
         type: Boolean,
         default: false,
     },
-    accion_formulario: {
-        type: Number,
-        default: 0,
+    formUser: {
+        type: Object,
     },
 });
 
-const { oUsuario, limpiarUsuario } = useUsuarios();
-const accion = ref(props.accion_formulario);
-const formulario = ref(props.muestra_formulario);
-let form = useForm({
+const muestra_form = ref(props.muestra_formulario);
+const enviando = ref(false);
+const form = useForm({
     password: "",
 });
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        formulario.value = newValue;
-
-        document.getElementsByTagName("body")[0].classList.add("modal-open");
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion.value = newValue;
-    },
-);
-
 const { flash } = usePage().props;
+const tituloDialog = computed(() => {
+    return form.id == 0
+        ? `<i class="fa fa-plus"></i>`
+        : `<i class="fa fa-key"></i> Cambiar Contraseña`;
+});
 
-const tituloFormulario = computed(() => {
-    return accion.value == 0 ? `Agregar Usuario` : `Actualizar Contraseña`;
+const textBtn = computed(() => {
+    if (enviando.value) {
+        return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
+    }
+    if (form.id == 0) {
+        return `<i class="fa fa-save"></i> Guardar`;
+    }
+    return `<i class="fa fa-edit"></i> Actualizar`;
 });
 
 const enviarFormulario = () => {
-    let url = route("usuarios.password", oUsuario.value.id);
+    let url = route("usuarios.password", props.formUser.id);
 
     form.put(url, {
         preserveScroll: true,
@@ -54,7 +48,10 @@ const enviarFormulario = () => {
                 confirmButtonText: `Aceptar`,
             });
             form.password = "";
-            limpiarUsuario();
+
+            document
+                .getElementsByTagName("body")[0]
+                .classList.remove("modal-open");
             emits("envio-formulario");
         },
         onError: (err) => {
@@ -77,83 +74,76 @@ const enviarFormulario = () => {
 
 const emits = defineEmits(["cerrar-formulario", "envio-formulario"]);
 
-watch(formulario, (newVal) => {
+watch(muestra_form, (newVal) => {
     if (!newVal) {
         emits("cerrar-formulario");
     }
 });
 
 const cerrarFormulario = () => {
-    formulario.value = false;
+    muestra_form.value = false;
 };
 </script>
 
 <template>
-    <div
-        class="modal fade"
-        :class="{
-            show: formulario,
-        }"
-        id="modal-formulario-form"
-        :style="{
-            display: formulario ? 'block' : 'none',
-        }"
+    <MiModal
+        :open_modal="muestra_form"
+        @close="cerrarFormulario"
+        :size="'modal-xl'"
+        :header-class="'bg-principal'"
+        :footer-class="'justify-content-end'"
     >
-        <div class="modal-formulario modal-lg mx-auto">
-            <div class="modal-content">
-                <div class="modal-header bg-principal text-white">
-                    <h4
-                        class="modal-title text-white"
-                        v-html="tituloFormulario"
-                    ></h4>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        @click="cerrarFormulario()"
-                    ></button>
+        <template #header>
+            <h4 class="modal-title text-white" v-html="tituloDialog"></h4>
+            <button
+                type="button"
+                class="close"
+                @click.prevent="cerrarFormulario()"
+            >
+                <span aria-hidden="true">×</span>
+            </button>
+        </template>
+
+        <template #body>
+            <form @submit.prevent="enviarFormulario()">
+                <div class="row">
+                    <div class="px-4 text-center col-md-12">
+                        <span class="text-body-2 h3"
+                            >{{ formUser.nombre }}
+                            {{ formUser.paterno }}
+                            {{ formUser.materno }}</span
+                        >
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form @submit.prevent="enviarFormulario()">
-                        <div class="row">
-                            <div class="px-4 text-center col-md-12">
-                                <span class="text-body-2 h3"
-                                    >{{ oUsuario.nombre }}
-                                    {{ oUsuario.paterno }}
-                                    {{ oUsuario.materno }}</span
-                                >
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <label>Ingresa la nueva contraseña:</label>
-                                <input
-                                    placeholder="Ingresa la nueva contraseña"
-                                    class="form-control"
-                                    autocomplete="false"
-                                    v-model="form.password"
-                                    type="password"
-                                />
-                            </div>
-                        </div>
-                    </form>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Ingresa la nueva contraseña:</label>
+                        <input
+                            placeholder="Ingresa la nueva contraseña"
+                            class="form-control"
+                            autocomplete="false"
+                            v-model="form.password"
+                            type="password"
+                        />
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <a
-                        href="javascript:;"
-                        class="btn btn-default"
-                        @click="cerrarFormulario()"
-                        ><i class="fa fa-times"></i> Cerrar</a
-                    >
-                    <button
-                        type="button"
-                        @click="enviarFormulario()"
-                        class="btn btn-primary"
-                    >
-                        <i class="fa fa-save"></i>
-                        Guardar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+            </form>
+        </template>
+        <template #footer>
+            <button
+                type="button"
+                class="btn btn-default"
+                @click.prevent="cerrarFormulario()"
+            >
+                Cerrar
+            </button>
+            <button
+                type="button"
+                class="btn btn-primary"
+                :disabled="enviando"
+                @click.prevent="enviarFormulario"
+                v-html="textBtn"
+            ></button>
+        </template>
+    </MiModal>
 </template>

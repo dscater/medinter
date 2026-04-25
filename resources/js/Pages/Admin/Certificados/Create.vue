@@ -11,7 +11,7 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
-const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
+const { limpiarCertificado, form, setCertificado } = useCertificados();
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -21,9 +21,12 @@ const goBack = () => {
     }
 };
 
+onBeforeMount(() => {
+    limpiarCertificado();
+});
+
 onMounted(() => {
     appStore.stopLoading();
-    limpiarCertificado();
 });
 </script>
 <template>
@@ -69,7 +72,11 @@ onMounted(() => {
                 </div>
                 <div class="row mt-1">
                     <div class="col-12">
-                        <Formulario :certificado="oCertificado"></Formulario>
+                        <Formulario
+                            :form="form"
+                            :setCertificado="setCertificado"
+                            :limpiarCertificado="limpiarCertificado"
+                        ></Formulario>
                     </div>
                 </div>
             </div>

@@ -7,7 +7,7 @@ import { useAppStore } from "@/stores/aplicacion/appStore";
 import { useCertificados } from "@/composables/certificados/useCertificados";
 import Formulario from "./Formulario.vue";
 const { props: props_page } = usePage();
-const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
+const { setCertificado, limpiarCertificado, form } = useCertificados();
 const appStore = useAppStore();
 onBeforeMount(() => {
     appStore.startLoading();
@@ -195,9 +195,9 @@ onBeforeMount(() => {});
             </div>
             <div class="col-12 mt-1">
                 <Formulario
+                    v-if="muestra_form"
                     :muestra_formulario="muestra_form"
-                    :certificado="oCertificado"
-                    :accion_formulario="0"
+                    :form="form"
                     @cerrar-formulario="muestra_form = false"
                     @envio-formulario="detectaNuevoPago"
                 ></Formulario>

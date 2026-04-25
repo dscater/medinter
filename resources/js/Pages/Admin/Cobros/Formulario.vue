@@ -2,7 +2,6 @@
 import MiModal from "@/Components/MiModal.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { watch, ref, computed, defineEmits, onMounted, nextTick } from "vue";
-import { useCertificados } from "@/composables/certificados/useCertificados";
 // TOAST
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -11,78 +10,18 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    accion_formulario: {
-        type: Number,
-        default: 0,
-    },
-    certificado: {
+    form: {
         type: Object,
-        default: null,
     },
 });
-const { setCertificado, limpiarCertificado, oCertificado } = useCertificados();
 
-const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const saldo_aux = ref(props.certificado?.saldo);
 const enviando = ref(false);
-const form = useForm(oCertificado.value);
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        muestra_form.value = newValue;
-        if (muestra_form.value) {
-            cargarListas();
-            document
-                .getElementsByTagName("body")[0]
-                .classList.add("modal-open");
-
-            form.id = oCertificado.value.id;
-            form.cliente_id = oCertificado.value.cliente_id;
-            form.cliente = oCertificado.value.cliente;
-            form.total = oCertificado.value.total;
-            form.cancelado = oCertificado.value.cancelado;
-            form.saldo = oCertificado.value.saldo;
-            form.tipo_pago = oCertificado.value.tipo_pago;
-            form.tipo = oCertificado.value.tipo;
-            form.tramitador_id = oCertificado.value.tramitador_id;
-            form.tramitador = oCertificado.value.tramitador;
-            form.user_id = oCertificado.value.user_id;
-            form.sucursal_id = oCertificado.value.sucursal_id;
-            form.fecha_inicio = oCertificado.value.fecha_inicio;
-            form.hora_inicio = oCertificado.value.hora_inicio;
-            form.fecha_fin = oCertificado.value.fecha_fin;
-            form.hora_fin = oCertificado.value.hora_fin;
-            form.estado = oCertificado.value.estado;
-            form.certificado_detalles = oCertificado.value.certificado_detalles;
-            form.eliminados = oCertificado.value.eliminados;
-            form._method = oCertificado.value._method;
-        } else {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
-        }
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
-    },
-);
-watch(
-    () => props.certificado,
-    (newValue) => {
-        oCertificado.value = newValue;
-        saldo_aux.value = oCertificado.value.saldo;
-    },
-);
+const form = props.form;
 
 const tituloDialog = computed(() => {
-    return accion_form.value == 0
+    return form.id == 0
         ? `<i class="fa fa-hand-holding-usd"></i> Registrar Cobro`
         : `<i class="fa fa-hand-holding-usd"></i> Registrar Cobro`;
 });
@@ -91,7 +30,7 @@ const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
     }
-    if (accion_form.value == 0) {
+    if (form.id == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
     return `<i class="fa fa-edit"></i> Actualizar`;
@@ -99,7 +38,7 @@ const textBtn = computed(() => {
 const enviarFormulario = () => {
     enviando.value = true;
     form._method = "POST";
-    let url = route("cobros.registrarPago", oCertificado.value.id);
+    let url = route("cobros.registrarPago", form.id);
     form.post(url, {
         preserveScroll: true,
         forceFormData: true,
@@ -116,6 +55,10 @@ const enviarFormulario = () => {
                     confirmButton: "btn-alert-success",
                 },
             });
+
+            document
+                .getElementsByTagName("body")[0]
+                .classList.remove("modal-open");
             emits("envio-formulario");
         },
         onError: (err, code) => {

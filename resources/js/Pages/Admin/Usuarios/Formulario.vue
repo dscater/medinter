@@ -8,62 +8,15 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    accion_formulario: {
-        type: Number,
-        default: 0,
+    form: {
+        type: Object,
     },
 });
 
 const { oUsuario, limpiarUsuario } = useUsuarios();
-const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
-let form = useForm(oUsuario.value);
-watch(
-    () => props.muestra_formulario,
-    (newValue) => {
-        muestra_form.value = newValue;
-        if (muestra_form.value) {
-            foto.value.value = null;
-            cargarTipoUsuarios();
-            cargarSucursals();
-            document
-                .getElementsByTagName("body")[0]
-                .classList.add("modal-open");
-            form.id = oUsuario.value.id;
-            form.usuario = oUsuario.value.usuario;
-            form.nombre = oUsuario.value.nombre;
-            form.paterno = oUsuario.value.paterno;
-            form.materno = oUsuario.value.materno;
-            form.ci = oUsuario.value.ci;
-            form.ci_exp = oUsuario.value.ci_exp;
-            form.dir = oUsuario.value.dir;
-            form.correo = oUsuario.value.correo;
-            form.fono = oUsuario.value.fono;
-            form.password = oUsuario.value.password;
-            form.acceso = oUsuario.value.acceso;
-            form.tipo = oUsuario.value.tipo;
-            form.foto = oUsuario.value.foto;
-            form.sucursal_id = oUsuario.value.sucursal_id;
-            form._method = oUsuario.value._method;
-        } else {
-            document
-                .getElementsByTagName("body")[0]
-                .classList.remove("modal-open");
-        }
-    },
-);
-watch(
-    () => props.accion_formulario,
-    (newValue) => {
-        accion_form.value = newValue;
-        if (accion_form.value == 0) {
-            form["_method"] = "POST";
-        }
-    },
-);
-
-const { flash } = usePage().props;
+const form = props.form;
 
 const listExpedido = [
     { value: "LP", label: "La Paz" },
@@ -99,7 +52,7 @@ function cargaArchivo(e, key) {
 }
 
 const tituloDialog = computed(() => {
-    return accion_form.value == 0
+    return form.id == 0
         ? `<i class="fa fa-plus"></i> Nuevo Usuario`
         : `<i class="fa fa-edit"></i> Editar Usuario`;
 });
@@ -108,7 +61,7 @@ const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
     }
-    if (accion_form.value == 0) {
+    if (form.id == 0) {
         return `<i class="fa fa-save"></i> Guardar`;
     }
     return `<i class="fa fa-edit"></i> Actualizar`;
@@ -137,7 +90,9 @@ const enviarFormulario = () => {
                     confirmButton: "btn-alert-success",
                 },
             });
-            limpiarUsuario();
+            document
+                .getElementsByTagName("body")[0]
+                .classList.remove("modal-open");
             emits("envio-formulario");
         },
         onError: (err, code) => {
@@ -189,11 +144,15 @@ const cerrarFormulario = () => {
     document.getElementsByTagName("body")[0].classList.remove("modal-open");
 };
 
-const cargarListas = () => {};
+const cargarListas = () => {
+    cargarTipoUsuarios();
+    cargarSucursals();
+};
 
 const options = ref([]);
 const loading = ref(false);
 onMounted(() => {
+    foto.value.value = null;
     cargarListas();
 });
 </script>

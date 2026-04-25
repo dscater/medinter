@@ -299,7 +299,6 @@ class CertificadoService
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
                 }
 
-
                 if ($old_certificado->estado == 1) {
                     // previamente atendido
                     $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id, $certificado_detalle->tipo_certificado_id);
@@ -309,6 +308,8 @@ class CertificadoService
                     $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
                 }
 
+                $old_cancelado = $certificado_detalle->cancelado;
+
                 $certificado_detalle->update([
                     "categoria" => $item["categoria"],
                     "precio" => $item["precio"],
@@ -316,6 +317,26 @@ class CertificadoService
                     "saldo" => $saldo,
                     "tipo_certificado_id" => $item["tipo_certificado_id"],
                 ]);
+
+                Log::debug("AAAAAAA");
+                // PAGO POR DETALLE
+                if ((!$this->pago_service->verificaPagoCertificadoDetalle($certificado_detalle) || $certificado->estado == 0) && $cancelado > 0) {
+                    // si no hay pago registrado y el cancelado es mayor a 0, crear el pago
+                    Log::debug("BBBBB");
+                    $this->pago_service->crear([
+                        "registro_id" => $certificado_detalle->id,
+                        "modulo" => "CertificadoDetalle",
+                        "monto" => $cancelado,
+                        "tipo_pago" => $certificado->tipo_pago,
+                        "descripcion" => "PAGO POR CERTIFICADO",
+                        "cliente_id" => $datos["cliente_id"],
+                        "certificado_atendido" => $certificado->estado,
+                    ]);
+                } else {
+                    Log::debug("CCCCCCCCCCCCC");
+                    // si hay pago registrado, verificar si el monto del pago es diferente al cancelado del detalle, si es diferente actualizar el monto del pago
+                    $this->pago_service->actualizarPagoCertificadoDetalle($certificado_detalle, $old_cancelado, $saldo);
+                }
             }
         }
 
@@ -324,6 +345,7 @@ class CertificadoService
                 $certificado_detalle = CertificadoDetalle::find($value);
                 $this->certificado_emitido_service->descontarCertificadoEmitido($certificado_detalle->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
                 \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+                $this->pago_service->eliminarPagoCertificadoDetalle($certificado_detalle);
                 $certificado_detalle->delete();
             }
         }

@@ -1,35 +1,34 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { useCertificados } from "@/composables/certificados/useCertificados";
 import { watch, ref, computed, onMounted, nextTick, onBeforeMount } from "vue";
+import { useClientes } from "@/composables/clientes/useClientes";
 import Formulario from "../Clientes/Formulario.vue";
 import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
 import axios from "axios";
+import { useVerificaCertificados } from "@/composables/certificados/useVerificaPendientes";
 const { props: propsPage } = usePage();
 const loginUserStore = useLoginUserStore();
+const { verificarPendiente } = useVerificaCertificados();
 const props = defineProps({
-    certificado: {
+    form: {
         type: Object,
-        default: { id: 0, errors: null },
     },
     cliente: {
         type: Object,
         default: { id: 0, ci: "" },
     },
+    setCertificado: Function,
+    limpiarCertificado: {
+        type: Function,
+        default: null,
+    },
 });
 
-const { oCertificado, limpiarCertificado } = useCertificados();
 const enviando = ref(false);
 const certificadoPendiente = ref(null);
-const form = useForm(props.certificado);
-watch(
-    () => props.certificado,
-    (newValue) => {
-        asignaDatosFormulario(newValue);
-    },
-    { deep: true },
-);
-
+const form = props.form;
+const setCertificado = props.setCertificado;
+const limpiarCertificado = props.limpiarCertificado;
 const textBtn = computed(() => {
     if (enviando.value) {
         return `<i class="fa fa-spin fa-spinner"></i> Enviando...`;
@@ -42,35 +41,6 @@ const textBtn = computed(() => {
     }
     return `<i class="fa fa-edit"></i> Actualizar Certificado`;
 });
-
-const asignaDatosFormulario = (item) => {
-    form.id = item.id;
-    form.cliente_id = item.cliente_id;
-    form.total = item.total;
-    form.cancelado = item.cancelado;
-    form.saldo = item.saldo;
-    form.tipo_pago = item.tipo_pago;
-    form.tipo = item.tipo;
-    form.tramitador_id = item.tramitador_id;
-    form.user_id = item.user_id;
-    form.sucursal_id = item.sucursal_id;
-    form.fecha_inicio = item.fecha_inicio;
-    form.hora_inicio = item.hora_inicio;
-    form.fecha_fin = item.fecha_fin;
-    form.hora_fin = item.hora_fin;
-    form.estado = item.estado;
-    form.certificado_detalles = item.certificado_detalles;
-    form.eliminados = item.eliminados ?? [];
-    if (item._method) {
-        form._method = item._method;
-    } else {
-        form._method = form.id == 0 ? "POST" : "PUT";
-    }
-
-    if (form.certificado_detalles.length == 0) {
-        agregarCertificado();
-    }
-};
 
 const enviarFormulario = () => {
     enviando.value = true;
@@ -96,7 +66,6 @@ const enviarFormulario = () => {
                 },
             });
             form.reset();
-            limpiarCertificado();
             emits("envio-formulario");
         },
         onError: (err, code) => {
@@ -197,13 +166,12 @@ const buscarClienteByCi = () => {
         });
 };
 
-const accion_form_cliente = ref(0);
+const { setCliente, limpiarCliente, form: FormCliente } = useClientes();
 const muestra_form_cliente = ref(false);
 
 const agregarCliente = () => {
+    limpiarCliente();
     muestra_form_cliente.value = true;
-    form.certificado_detalles = [];
-    agregarCertificado();
 };
 
 const cierraFormularioCliente = () => {
@@ -218,48 +186,44 @@ const clienteAgregado = (cliente) => {
     listClientes.value.push(cliente);
     muestra_form_cliente.value = false;
     // buscar certificado pendiente
-    verificaPendiente(oCliente.value.id);
+    buscaPendienteCliente(oCliente.value);
 };
 
 const seleccionaCliente = (cliente) => {
+    buscandoPendiente.value = true;
     certificadoPendiente.value = null;
     oCliente.value = cliente;
     // buscar certificado pendiente
-    verificaPendiente(cliente.id);
+    buscaPendienteCliente(cliente);
 };
 
-const verificaPendiente = (cliente_id) => {
-    asignaDatosFormulario(oCertificado.value);
-    form.id = 0;
-    if (!cliente_id || cliente_id == 0) {
-        return;
+const buscandoPendiente = ref(false);
+const buscaPendienteCliente = async (cliente) => {
+    const pendiente = await verificarPendiente(cliente.id);
+
+    if (pendiente) {
+        certificadoPendiente.value = pendiente;
+        setCertificado(pendiente);
     }
-    axios
-        .get(route("certificados.verificaPendienteCliente", cliente_id))
-        .then((response) => {
-            if (response.data.existe) {
-                certificadoPendiente.value = response.data.certificado;
-            }
-            if (certificadoPendiente.value) {
-                asignaDatosFormulario(certificadoPendiente.value);
-            }
-            form.cliente_id = cliente_id;
-            clienteSeleccionado.value = true;
 
-            // una vez seleccionado asignar la fecha y hora
-            iniciarFechaHoraInicio();
-        });
+    if (pendiente || form.id == 0) {
+        iniciarFechaHoraInicio();
+    }
+    form.cliente_id = cliente.id;
+    clienteSeleccionado.value = true;
+    buscandoPendiente.value = false;
 };
-
 const quitarSeleccionCliente = () => {
     clienteSeleccionado.value = false;
     oCliente.value = null;
-    limpiarCertificado();
-    asignaDatosFormulario(oCertificado.value);
-    agregarCertificado();
-    form.fecha_inicio = "";
-    form.hora_inicio = "";
-    fechaHoraTexto.value = "";
+    certificadoPendiente.value = null;
+    if (limpiarCertificado) {
+        limpiarCertificado();
+        form.fecha_inicio = "";
+        form.hora_inicio = "";
+        fechaHoraTexto.value = "";
+        agregarCertificado();
+    }
 };
 
 const nroTipoCertificadoDia = ref(0);
@@ -278,41 +242,22 @@ const detectarTipoCertificado = (value, index) => {
     form.certificado_detalles[index].saldo = item.precio;
     form.certificado_detalles[index].cancelado = 0;
     form.certificado_detalles[index].con_saldo = false;
-    // if (item.id) {
-    //     axios
-    //         .get(route("certificado_emitidos.verificaCantidad"), {
-    //             params: {
-    //                 tipo_certificado_id: item.id,
-    //             },
-    //         })
-    //         .then((response) => {
-    //             nroTipoCertificadoDia.value = response.data.conteo_siguiente;
-    //             if (nroTipoCertificadoDia.value % 10 === 0) {
-    //                 form.certificado_detalles[index].precio = 0;
-    //                 form.certificado_detalles[index].muestra_conteo = true;
-    //             } else {
-    //                 form.certificado_detalles[index].muestra_conteo = false;
-    //                 form.certificado_detalles[index].precio = item.precio;
-    //             }
-    //         })
-    //         .finally(() => {
-    //             nroTipoCertificadoDia.value = 0;
-    //         });
-    // }
+};
+
+const detalleBase = {
+    id: 0,
+    certificado_id: "",
+    categoria: "",
+    precio: 0,
+    cancelado: 0,
+    saldo: 0,
+    tipo_certificado_id: "",
+    archivo: null,
+    con_saldo: false,
 };
 
 const agregarCertificado = () => {
-    form.certificado_detalles.push({
-        id: 0,
-        certificado_id: "",
-        categoria: "",
-        precio: "",
-        cancelado: "",
-        saldo: "",
-        tipo_certificado_id: "",
-        archivo: null,
-        con_saldo: false,
-    });
+    form.certificado_detalles.push({ ...detalleBase });
 };
 
 const quitarCertificado = (index) => {
@@ -324,12 +269,14 @@ const quitarCertificado = (index) => {
 };
 
 const total = computed(() => {
+    if (!form?.certificado_detalles) return 0;
     return form.certificado_detalles.reduce((acc, item) => {
         return acc + parseFloat(item.precio || 0);
     }, 0);
 });
 
 const cancelado = computed(() => {
+    if (!form?.certificado_detalles) return 0;
     return form.certificado_detalles.reduce((acc, item) => {
         return item.con_saldo ? acc + parseFloat(item.precio || 0) : acc;
     }, 0);
@@ -359,14 +306,12 @@ const iniciarFechaHoraInicio = () => {
     fechaHoraTexto.value = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 };
 onMounted(() => {
-    if (form.id == 0) {
-        limpiarCertificado();
-        asignaDatosFormulario(oCertificado.value);
-        agregarCertificado();
-    } else {
+    if (form.id != 0) {
         txtCi.value = props.cliente.ci;
         buscarClienteByCi();
         seleccionaCliente(props.cliente);
+    } else {
+        agregarCertificado();
     }
 });
 
@@ -486,14 +431,13 @@ onBeforeMount(() => {
                                             Nuevo Cliente
                                         </button>
                                         <Formulario
-                                            :accion_formulario="
-                                                accion_form_cliente
-                                            "
+                                            v-if="muestra_form_cliente"
                                             :muestra_formulario="
                                                 muestra_form_cliente
                                             "
                                             :ci="txtCi"
                                             :metodo="'axios'"
+                                            :form="FormCliente"
                                             @cerrar-formulario="
                                                 cierraFormularioCliente()
                                             "
@@ -669,7 +613,8 @@ onBeforeMount(() => {
                 <div class="row">
                     <div class="col-12 my-2">
                         <h4 class="card-title w-100 text-center">
-                            <i class="fa fa-clipboard-list"></i> Certificado(s)
+                            <i class="fa fa-clipboard-list"></i>
+                            Certificado(s)
                             <template v-if="oCliente">
                                 <span
                                     v-if="form.estado == 0"
@@ -696,12 +641,26 @@ onBeforeMount(() => {
                             </template>
                         </h4>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 contenedor_certificados">
+                        <div
+                            class="loading_certificados"
+                            v-if="buscandoPendiente"
+                        >
+                            <i class="fa fa-spin fa-spinner"></i>
+                        </div>
                         <div
                             class="card mb-2"
+                            :class="{
+                                'card-outline card-success': form.estado == 1,
+                                'card-outline card-primary':
+                                    form.estado == 0 && !certificadoPendiente,
+                                'card-outline card-warning':
+                                    form.estado == 0 && certificadoPendiente,
+                            }"
                             v-for="(
                                 certificado_detalle, index
                             ) in form.certificado_detalles"
+                            :key="index"
                         >
                             <div class="card-body pt-0 pb-2">
                                 <button
@@ -808,7 +767,10 @@ onBeforeMount(() => {
                                                     no-data-text="Sin datos"
                                                     no-match-text="No se entrarón coincidencias"
                                                     filterable
-                                                    :disabled="form.id != 0"
+                                                    :disabled="
+                                                        certificado_detalle.id !=
+                                                        0
+                                                    "
                                                     @change="
                                                         detectarTipoCertificado(
                                                             $event,
@@ -835,7 +797,10 @@ onBeforeMount(() => {
                                                         v-model="
                                                             certificado_detalle.precio
                                                         "
-                                                        :disabled="form.id != 0"
+                                                        :disabled="
+                                                            certificado_detalle.id !=
+                                                            0
+                                                        "
                                                     />
                                                     <div
                                                         class="input-group-append"
@@ -850,7 +815,8 @@ onBeforeMount(() => {
                                                                     certificado_detalle.con_saldo
                                                                 "
                                                                 :disabled="
-                                                                    form.id != 0
+                                                                    certificado_detalle.id !=
+                                                                    0
                                                                 "
                                                             />
                                                         </div>
@@ -986,7 +952,7 @@ onBeforeMount(() => {
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mb-3">
                     <div
                         class="col-12 text-center"
                         v-if="!oCliente || !form.cliente_id"
@@ -1009,4 +975,32 @@ onBeforeMount(() => {
         </div>
     </form>
 </template>
-<style scoped></style>
+<style scoped>
+.contenedor_certificados {
+    position: relative;
+}
+.loading_certificados {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+}
+
+.loading_certificados::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(253, 253, 253, 0.808);
+    filter: blur(10px);
+}
+</style>

@@ -1,35 +1,30 @@
-import { onMounted, ref } from "vue";
-
-const oSucursal = ref({
-    id: 0,
-    nombre: "",
-    descripcion: "",
-    _method: "POST",
-});
+import { useForm } from "@inertiajs/vue3";
 
 export const useSucursals = () => {
-    const setSucursal = (item = null) => {
-        if (item) {
-            oSucursal.value.id = item.id;
-            oSucursal.value.nombre = item.nombre;
-            oSucursal.value.descripcion = item.descripcion;
-            oSucursal.value._method = "PUT";
-            return oSucursal;
-        }
-        return false;
+    const initialState = {
+        id: 0,
+        nombre: "",
+        descripcion: "",
+        _method: "POST",
+    };
+
+    const form = useForm({ ...initialState });
+
+    const setSucursal = (item) => {
+        form.clearErrors();
+        form.reset();
+        Object.assign(form, item);
+        form._method = "PUT";
     };
 
     const limpiarSucursal = () => {
-        oSucursal.value.id = 0;
-        oSucursal.value.nombre = "";
-        oSucursal.value.descripcion = "";
-        oSucursal.value._method = "POST";
+        form.clearErrors();
+        form.reset();
+        form.defaults({ ...initialState });
     };
 
-    onMounted(() => {});
-
     return {
-        oSucursal,
+        form,
         setSucursal,
         limpiarSucursal,
     };
