@@ -18,12 +18,14 @@ const props = defineProps({
     },
 });
 
+const { auth } = usePage().props;
 const { oUsuario, limpiarUsuario } = useUsuarios();
 const accion_form = ref(props.accion_formulario);
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
 const loginUserStore = useLoginUserStore();
 const sucursal_id = ref("");
+const verifica_pagos = ref(auth?.user.tipo == "SECRETARIA" ? 1 : 0);
 const errors = ref(null);
 watch(
     () => props.muestra_formulario,
@@ -32,6 +34,11 @@ watch(
         if (muestra_form.value) {
             cargarSucursals();
             sucursal_id.value = loginUserStore.getLoginUser?.sucursal_id || "";
+            verifica_pagos.value =
+                loginUserStore.getLoginUser?.verifica_pagos || 0;
+            if (auth?.user.tipo == "SECRETARIA") {
+                verifica_pagos.value = 1;
+            }
             document
                 .getElementsByTagName("body")[0]
                 .classList.add("modal-open");
@@ -116,7 +123,10 @@ const enviarFormulario = () => {
             /* Read more about isConfirmed, isDenied below */
             if (result.isConfirmed) {
                 enviando.value = true;
-                await loginUserStore.asignaLoginuser(sucursal_id.value);
+                await loginUserStore.asignaLoginuser(
+                    sucursal_id.value,
+                    verifica_pagos.value,
+                );
                 enviando.value = false;
 
                 if (loginUserStore.login_user) {
@@ -184,7 +194,7 @@ onMounted(() => {
         <template #body>
             <form @submit.prevent="enviarFormulario()">
                 <div class="row">
-                    <div class="col-lg-4 mt-2 offset-lg-4 col-md-6 offset-md-3">
+                    <div class="col-lg-4 mt-2 offset-lg-4 col-md-8 offset-md-2">
                         <label class="required">Seleccionar Sucursal</label>
                         <select class="form-control" v-model="sucursal_id">
                             <option value="">- Seleccione -</option>
@@ -205,6 +215,32 @@ onMounted(() => {
                         >
                             <li class="parsley-required">
                                 {{ errors?.sucursal_id }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-4 mt-2 offset-lg-4 col-md-8 offset-md-2">
+                        <label class="required">Recepción de Pagos</label>
+                        <br />
+                        <el-switch
+                            size="large"
+                            active-text="SI"
+                            inactive-text="NO"
+                            v-model="verifica_pagos"
+                            :active-value="1"
+                            :inactive-value="0"
+                            :disabled="auth?.user.tipo == 'SECRETARIA'"
+                            style="
+                                --el-switch-on-color: #13ce66;
+                                --el-switch-off-color: #ff4949;
+                            "
+                        />
+                        <ul
+                            v-if="errors?.verifica_pagos"
+                            class="d-block text-danger list-unstyled"
+                        >
+                            <li class="parsley-required">
+                                {{ errors?.verifica_pagos }}
                             </li>
                         </ul>
                     </div>

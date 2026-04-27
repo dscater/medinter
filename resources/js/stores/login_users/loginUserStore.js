@@ -25,12 +25,13 @@ export const useLoginUserStore = defineStore("loginUser", {
                 );
             }
         },
-        async asignaLoginuser(sucursal_id) {
+        async asignaLoginuser(sucursal_id, verifica_pagos) {
             try {
                 const res = await axios.post(
                     route("login_users.asignaSucursal"),
                     {
                         sucursal_id,
+                        verifica_pagos,
                     },
                 );
                 if (res) {

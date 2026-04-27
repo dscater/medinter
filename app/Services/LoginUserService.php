@@ -47,18 +47,31 @@ class LoginUserService
         return $login_secretaria;
     }
 
-    public function asignaSucursal($sucursal_id)
+    public function asignaSucursal($sucursal_id, $verifica_pagos)
     {
         $user = Auth::user();
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
 
-        $login_user = LoginUser::create([
-            "user_id" => $user->id,
-            "sucursal_id" => $sucursal_id,
-            "fecha" => $fecha_actual,
-            "hora" => $hora_actual,
-        ]);
+        $existe = LoginUser::where("user_id", $user->id)
+            ->where("fecha", $fecha_actual)
+            ->orderBy("id", "desc")
+            ->get()->first();
+        if ($existe && $existe->sucursal_id == $sucursal_id) {
+            $existe->update([
+                "verifica_pagos" => $verifica_pagos,
+            ]);
+            $login_user = $existe;
+        } else {
+            $login_user = LoginUser::create([
+                "user_id" => $user->id,
+                "sucursal_id" => $sucursal_id,
+                "verifica_pagos" => $verifica_pagos,
+                "fecha" => $fecha_actual,
+                "hora" => $hora_actual,
+            ]);
+        }
+
 
         return $login_user->load("sucursal");
     }

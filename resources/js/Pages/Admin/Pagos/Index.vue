@@ -66,7 +66,6 @@ const cargarPagosVerificados = async () => {
     if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
         return;
     }
-    await nextTick();
     axios
         .get(route("pagos.verificados"), {
             params: {
@@ -83,37 +82,7 @@ const cargarPagosVerificados = async () => {
             sumaPorTiposSinVerificar.value =
                 response.data.suma_tipos_sin_verificar;
             suma_total_tipos.value = response.data.suma_total_tipos;
-            if (listTipoPagos.value.length > 0) {
-                // crear columnas dinamicas
-                if (!colsIniciado.value)
-                    listTipoPagos.value.forEach((elem) => {
-                        headers1.value.push({
-                            label: elem.value,
-                            key: "monto",
-                            fixed: "right",
-                            sortable: true,
-                            classTd: (item) => {
-                                return "justify-content-end";
-                            },
-                            render: (item, index) => {
-                                if (item.tipo_pago != elem.value) return "-";
-                                // if (item.tipo !== elem.value) return "";
-                                return item.monto || "";
-                            },
-                        });
-                    });
-
-                await nextTick();
-                if (miTable1.value) {
-                    miTable1.value.cargarDatos();
-                }
-
-                if (miTable2.value) {
-                    miTable2.value.cargarDatos();
-                }
-                appStore.stopLoading();
-                colsIniciado.value = true;
-            }
+            appStore.stopLoading();
         });
 };
 
@@ -137,9 +106,38 @@ const cargarSucursals = () => {
 };
 
 const listTipoPagos = ref([]);
-const cargarTipoPagos = () => {
-    axios.get(route("tipo_pagos.listado")).then((response) => {
+const cargarTipoPagos = async () => {
+    axios.get(route("tipo_pagos.listado")).then(async (response) => {
         listTipoPagos.value = response.data;
+        // crear columnas dinamicas
+        if (!colsIniciado.value)
+            listTipoPagos.value.forEach((elem) => {
+                headers1.value.push({
+                    label: elem.value,
+                    key: "monto",
+                    fixed: "right",
+                    sortable: true,
+                    classTd: (item) => {
+                        return "justify-content-end";
+                    },
+                    render: (item, index) => {
+                        if (item.tipo_pago != elem.value) return "-";
+                        // if (item.tipo !== elem.value) return "";
+                        return item.monto || "";
+                    },
+                });
+            });
+
+        colsIniciado.value = true;
+
+        await nextTick();
+        if (miTable1.value) {
+            miTable1.value.cargarDatos();
+        }
+
+        if (miTable2.value) {
+            miTable2.value.cargarDatos();
+        }
     });
 };
 
@@ -383,7 +381,7 @@ onBeforeMount(() => {
             </div>
 
             <MiTable
-                v-if="listPagosVerificados.length > 0"
+                v-show="listPagosVerificados.length > 0"
                 ref="miTable1"
                 :tableClass="'bg-white mitabla'"
                 :header-class="'bg__primary'"
@@ -465,14 +463,12 @@ onBeforeMount(() => {
                     </tr>
                 </template>
             </MiTable>
-            <div class="col-12 mt-2" v-else>
-                <h4 class="text-muted">
-                    No se encontrarón pagos sin verificar
-                </h4>
+            <div class="col-12 mt-2" v-show="listPagosVerificados.length == 0">
+                <h4 class="text-muted">No se encontrarón registros</h4>
             </div>
             <div
                 class="col-12 overflow-auto mt-5"
-                v-if="listPagosSinVerificar.length > 0"
+                v-show="listPagosSinVerificar.length > 0"
             >
                 <h4 class="h5 font-weight-bold text-center w-100">
                     {{
@@ -482,7 +478,6 @@ onBeforeMount(() => {
                     }}
                 </h4>
                 <MiTable
-                    v-if="listPagosSinVerificar.length > 0"
                     ref="miTable2"
                     :tableClass="'bg-white mitabla'"
                     :header-class="'bg__danger'"
@@ -600,7 +595,7 @@ onBeforeMount(() => {
                                         {{
                                             suma_total_tipos[
                                                 tipo_pago.value
-                                            ].toFixed(2)
+                                            ]?.toFixed(2)
                                         }}
                                     </td>
                                 </tr>

@@ -93,6 +93,7 @@ const agregarRegistro = () => {
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
+        limpiarCliente();
         muestra_formulario.value = false;
     }
 };

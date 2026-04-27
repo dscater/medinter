@@ -54,21 +54,22 @@ class PagoService
                     $pagos->where("medico_id", $medico_id);
                 }
             }
-            if (Auth::user()->tipo == 'SECRETARIA') {
-                $pagos->where("sucursal_id", $login_user->sucursal_id);
+            $pagos_sin_verificar = clone $pagos;
+            if (Auth::user()->tipo == 'MÉDICO' || Auth::user()->tipo == 'SECRETARIA') {
+                $pagos->where("user_id", Auth::user()->id);
             }
-
-            if (Auth::user()->tipo == 'MÉDICO') {
-                $pagos->where("medico_id", Auth::user()->id);
-            }
-
             $pagos->where("status", 1);
 
-            $pagos_sin_verificar = clone $pagos;
+            // SIN VERIFICAR VOLVER A VALIDAR
             $pagos_sin_verificar->where("verificado", 0);
+            if (Auth::user()->tipo == 'MÉDICO') {
+                $pagos_sin_verificar->where("user_id", Auth::user()->id);
+            }
+            if (Auth::user()->tipo == 'SECRETARIA') {
+                $pagos_sin_verificar->where("sucursal_id", $login_user->sucursal_id);
+            }
 
             $pagos->where("verificado", 1);
-
             $tipo_pagos = $this->tipo_pago_service->listado();
 
             foreach ($tipo_pagos as $item) {
@@ -105,7 +106,7 @@ class PagoService
             throw new Exception("Error no se encontró la sucursal del usuario");
         }
         $sucursal_id = $login_user->sucursal_id;
-        $verificado = $this->obtieneEstadoVerificado($sucursal_id);
+        $verificado = $this->obtieneEstadoVerificado($sucursal_id, $login_user);
         $fecha_verificado = $fecha_actual;
         $hora_verificado = $hora_actual;
 
@@ -141,15 +142,20 @@ class PagoService
         return $pago;
     }
 
-    public function obtieneEstadoVerificado($sucursal_id)
+    public function obtieneEstadoVerificado($sucursal_id, $login_user)
     {
         $verificado = 0;
         $tipo_usuario = $this->login_user_service->getTipoUsuarioLogin();
-        if ($tipo_usuario == 'SECRETARIA' || !$this->login_user_service->verificaSecretariaSucursal($sucursal_id)) {
-            // si es secretaria
-            // o no hay secretaria en sucursal
+        // if ($tipo_usuario == 'SECRETARIA' || !$this->login_user_service->verificaSecretariaSucursal($sucursal_id)) {
+        //     // si es secretaria
+        //     // o no hay secretaria en sucursal
+        //     $verificado = 1;
+        // }
+
+        if ($login_user->verifica_pagos == 1) {
             $verificado = 1;
         }
+
         return $verificado;
     }
 
@@ -208,7 +214,7 @@ class PagoService
                             throw new Exception("Error no se encontró la sucursal del usuario");
                         }
                         $sucursal_id = $login_user->sucursal_id;
-                        $verificado = $this->obtieneEstadoVerificado($sucursal_id);
+                        $verificado = $this->obtieneEstadoVerificado($sucursal_id, $login_user);
                         $pago->fecha_verificado = $fecha_actual;
                         $pago->hora_verificado = $hora_actual;
                         $pago->verificado = $verificado;
@@ -249,6 +255,11 @@ class PagoService
         return null;
     }
 
+    /**
+     * LISTADO DE PAGOS PARA EL MODULO DE RECEPCION
+     *
+     * @return void
+     */
     public function listadoRecepcionPagos()
     {
         $pagos = Pago::with(["sucursal:id,nombre", "user:id,nombre,paterno,materno"])

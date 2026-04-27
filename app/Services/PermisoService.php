@@ -122,6 +122,9 @@ class PermisoService
 
         ],
         "GERENTE" => [
+            "usuarios.listado",
+            "usuarios.byTipo",
+
             "tipo_usuarios.listado",
 
             "sucursals.paginado",

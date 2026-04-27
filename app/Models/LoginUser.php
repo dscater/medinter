@@ -9,6 +9,7 @@ class LoginUser extends Model
     protected $fillable = [
         "user_id",
         "sucursal_id",
+        "verifica_pagos",
         "fecha",
         "hora",
     ];

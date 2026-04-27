@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger("user_id");
             $table->unsignedBigInteger("sucursal_id");
+            $table->integer("verifica_pagos")->default(0);
             $table->date("fecha");
             $table->time("hora");
             $table->timestamps();

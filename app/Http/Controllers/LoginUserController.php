@@ -23,11 +23,13 @@ class LoginUserController extends Controller
     {
         $request->validate([
             "sucursal_id" => "required",
+            "verifica_pagos" => "required",
         ], [
-            "sucursal_id.required" => "Debes seleccionar una sucursal"
+            "sucursal_id.required" => "Debes seleccionar una sucursal",
+            "verifica_pagos.required" => "No se seleccionó una opción"
         ]);
         return response()->JSON([
-            "login_user" => $this->login_user_service->asignaSucursal($request->sucursal_id)
+            "login_user" => $this->login_user_service->asignaSucursal($request->sucursal_id, $request->verifica_pagos)
         ]);
     }
 }
