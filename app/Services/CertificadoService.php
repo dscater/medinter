@@ -93,10 +93,10 @@ class CertificadoService
 
         $certificados->where("saldo", ">", 0);
 
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $login_user = $this->login_user_service->verificaSucursal();
-            $certificados->where("sucursal_id", $login_user->sucursal_id ?? '');
-        }
+        // if (Auth::user()->tipo == 'MÉDICO') {
+        //     $login_user = $this->login_user_service->verificaSucursal();
+        //     $certificados->where("sucursal_id", $login_user->sucursal_id ?? '');
+        // }
 
         // FILTROS
         $certificados
