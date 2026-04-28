@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Certificado extends Model
 {
@@ -28,6 +29,23 @@ class Certificado extends Model
     ];
 
     protected $appends = ["fecha_registro_t", "fecha_inicio_t", "fecha_fin_t"];
+
+    public function getEditableAttribute()
+    {
+        $editable = false;
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $editable = true;
+            if ($user->tipo == 'SECRETARIA') {
+                if ($user->id != $this->inicio_id) {
+                    $editable = false;
+                }
+            }
+        }
+        return $editable;
+    }
+
     public function getFechaInicioTAttribute()
     {
         return date("d/m/Y", strtotime($this->fecha_inicio));

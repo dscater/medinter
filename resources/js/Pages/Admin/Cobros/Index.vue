@@ -92,6 +92,7 @@ const headers = [
 const multiSearch = ref({
     cliente: "",
     ci: "",
+    tramitador_id: "",
     fecha: "",
     codigo: "",
     filtro: [],
@@ -109,13 +110,22 @@ const detectaNuevoPago = () => {
     updateDatatable();
 };
 
+const listTramitadors = ref([]);
+const cargarTramitadores = () => {
+    axios.get(route("tramitadors.listado")).then((response) => {
+        listTramitadors.value = response.data.tramitadors;
+    });
+};
+
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
     }
 };
 
-onBeforeMount(() => {});
+onBeforeMount(() => {
+    cargarTramitadores();
+});
 </script>
 <template>
     <Head title="Cobros"></Head>
@@ -174,6 +184,32 @@ onBeforeMount(() => {});
                                 placeholder="Nro. C.I."
                                 v-model="multiSearch.ci"
                             />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-white"
+                                    ><i class="fa fa-user-friends"></i
+                                ></span>
+                            </div>
+                            <div class="form-control border-0 p-0">
+                                <el-select
+                                    class="el-select-input-group-right"
+                                    v-model="multiSearch.tramitador_id"
+                                    placeholder="Tramitador"
+                                    size="large"
+                                    filterable
+                                    clearable
+                                >
+                                    <el-option
+                                        v-for="item in listTramitadors"
+                                        :key="item.id"
+                                        :value="item.id"
+                                        :label="item.nombre"
+                                    ></el-option>
+                                </el-select>
+                            </div>
                         </div>
                     </div>
                     <!-- <div class="col-md-3">

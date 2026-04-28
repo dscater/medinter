@@ -192,6 +192,8 @@ class PagoService
         $pago = $this->obtienePagoAnuladoExistente($certificado_detalle);
         if ($pago) {
             // si el monto del pago es diferente al cancelado del detalle, actualizar el monto del pago
+            $pago->tipo_pago = $certificado_detalle->certificado->tipo_pago;
+            $pago->status = 1;
             if ($pago->monto != $certificado_detalle->cancelado && $certificado_detalle->cancelado > 0) {
                 $pago->monto = $certificado_detalle->cancelado;
                 $pago->save();
@@ -221,7 +223,6 @@ class PagoService
                     }
                     $certificado_detalle->cancelado = $certificado_detalle->precio;
                     $pago->monto = $certificado_detalle->precio;
-                    $pago->status = 1;
                 }
                 $certificado_detalle->save();
                 // el monto es 0 o no se ha cancelado, eliminar el pago
@@ -296,6 +297,49 @@ class PagoService
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ EL PAGO DE UN CERTIFICADO", $pago, null);
+
+        return true;
+    }
+
+    public function restaurarPagoPorCertificadoDetalle(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = $this->obtienePagoAnuladoExistente($certificado_detalle);
+        if ($pago) {
+            $this->restaurarPago($pago);
+        }
+    }
+
+    public function restaurarPago(Pago $pago)
+    {
+        $pago->status = 1;
+        $pago->save();
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "RESTAURACIÓN", "RESTAURÓ EL PAGO DE UN CERTIFICADO", $pago, null);
+
+        return true;
+    }
+
+    public function eliminarPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = $this->verificaPagoCertificadoDetalle($certificado_detalle);
+        $pago->delete();
+    }
+
+
+    public function eliminaPagoPorCertificadoDetallePermanente(CertificadoDetalle $certificado_detalle)
+    {
+        $pago = $this->obtienePagoAnuladoExistente($certificado_detalle);
+        if ($pago) {
+            $this->eliminarPagoPermanente($pago);
+        }
+    }
+
+    public function eliminarPagoPermanente(Pago $pago)
+    {
+        $pago->delete();
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ PERMANENTEMENTE EL PAGO DE UN CERTIFICADO", $pago, null);
 
         return true;
     }

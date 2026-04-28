@@ -121,9 +121,14 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     );
 
     // CERTIFICADOS
+    Route::put("certificados/updateDetalles/{certificado}", [CertificadoController::class, 'updateDetalles'])->name("certificados.updateDetalles");
+    Route::patch("certificados/restaurar/{certificado}", [CertificadoController::class, 'restaurar'])->name("certificados.restaurar");
+    Route::delete("certificados/eliminacionPermanente/{certificado}", [CertificadoController::class, 'eliminacionPermanente'])->name("certificados.eliminacionPermanente");
     Route::get("certificados/verificaPendienteCliente/{cliente}", [CertificadoController::class, 'verificaPendienteCliente'])->name("certificados.verificaPendienteCliente");
     Route::post("certificados/registroCliente/{cliente}", [CertificadoController::class, 'registroCliente'])->name("certificados.registroCliente");
     Route::get("certificados/paginado", [CertificadoController::class, 'paginado'])->name("certificados.paginado");
+    Route::get("certificados/eliminados", [CertificadoController::class, 'eliminados'])->name("certificados.eliminados");
+    Route::get("certificados/paginadoEliminados", [CertificadoController::class, 'paginadoEliminados'])->name("certificados.paginadoEliminados");
     Route::get("certificados/listado", [CertificadoController::class, 'listado'])->name("certificados.listado");
     Route::get("certificados/listadoCobros", [CertificadoController::class, 'listadoCobros'])->name("certificados.listadoCobros");
     Route::resource("certificados", CertificadoController::class)->only(

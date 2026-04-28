@@ -79,6 +79,13 @@ class PermisoService
             "certificados.update",
             "certificados.destroy",
             "certificados.verificaPendienteCliente",
+            "certificados.registroCliente",
+            "certificados.editDetalles",
+            "certificados.updateDetalles",
+            "certificados.eliminados",
+            "certificados.restaurar",
+            "certificados.eliminacionPermanente",
+            "certificados.paginadoEliminados",
 
             "certificado_emitidos.verificaCantidad",
 
@@ -182,6 +189,13 @@ class PermisoService
             "certificados.update",
             "certificados.destroy",
             "certificados.verificaPendienteCliente",
+            "certificados.registroCliente",
+            "certificados.editDetalles",
+            "certificados.updateDetalles",
+            "certificados.eliminados",
+            "certificados.restaurar",
+            "certificados.eliminacionPermanente",
+            "certificados.paginadoEliminados",
 
             "certificado_emitidos.verificaCantidad",
 
@@ -258,7 +272,14 @@ class PermisoService
             "certificados.index",
             "certificados.listado",
             "certificados.show",
+            "certificados.destroy",
             "certificados.registroCliente",
+            "certificados.editDetalles",
+            "certificados.updateDetalles",
+            "certificados.eliminados",
+            "certificados.restaurar",
+            "certificados.eliminacionPermanente",
+            "certificados.paginadoEliminados",
 
             "certificado_emitidos.verificaCantidad",
 
@@ -317,6 +338,12 @@ class PermisoService
             "certificados.show",
             "certificados.update",
             "certificados.destroy",
+            "certificados.editDetalles",
+            "certificados.updateDetalles",
+            "certificados.eliminados",
+            "certificados.restaurar",
+            "certificados.eliminacionPermanente",
+            "certificados.paginadoEliminados",
 
             "certificado_emitidos.verificaCantidad",
 

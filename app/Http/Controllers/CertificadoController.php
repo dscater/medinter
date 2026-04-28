@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CertificadoClienteRequest;
+use App\Http\Requests\CertificadoDetalleRequest;
 use App\Http\Requests\CertificadoStoreRequest;
 use App\Http\Requests\CertificadoUpdateRequest;
 use App\Models\Certificado;
@@ -33,6 +34,11 @@ class CertificadoController extends Controller
     public function index(): ResponseInertia
     {
         return Inertia::render("Admin/Certificados/Index");
+    }
+
+    public function eliminados(): ResponseInertia
+    {
+        return Inertia::render("Admin/Certificados/Eliminados");
     }
 
     /**
@@ -82,12 +88,50 @@ class CertificadoController extends Controller
         ]);
     }
 
+    public function paginadoEliminados(Request $request)
+    {
+        $perPage = $request->perPage;
+        $page = (int)($request->input("page", 1));
+        $cliente = (string)$request->input("cliente", "");
+        $ci = (string)$request->input("ci", "");
+        // $tipo_certificado_id = $request->input("tipo_certificado_id", []);
+        // $tipo_pago = (string)$request->input("tipo_pago", "todos");
+        // $sucursal_id = (string)$request->input("sucursal_id", "todos");
+        // $medico = (string)$request->input("medico", "");
+        // $fecha = (string)$request->input("fecha", "");
+        $orderBy = $request->orderBy;
+        $orderAsc = $request->orderAsc;
+
+        $arrayOrderBy = [];
+        if ($orderBy && $orderAsc) {
+            $arrayOrderBy = [
+                [$orderBy, $orderAsc]
+            ];
+        }
+
+        $certificados = $this->certificadoService->listadoPaginadoEliminados(
+            $perPage,
+            $page,
+            $arrayOrderBy,
+            $cliente,
+            $ci,
+        );
+        return response()->JSON([
+            "data" => $certificados->items(),
+            "total" => $certificados->total(),
+            "lastPage" => $certificados->lastPage()
+        ]);
+    }
+
+
+
     public function listadoCobros(Request $request)
     {
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
         $cliente = (string)$request->input("cliente", "");
         $ci = $request->input("ci", "");
+        $tramitador_id = $request->input("tramitador_id", "");
         // $fecha = (string)$request->input("fecha", "");
         // $codigo = (string)$request->input("codigo", "");
         $orderBy = $request->orderBy;
@@ -106,6 +150,7 @@ class CertificadoController extends Controller
             $arrayOrderBy,
             $cliente,
             $ci,
+            $tramitador_id
         );
         return response()->JSON([
             "data" => $certificados->items(),
@@ -225,6 +270,23 @@ class CertificadoController extends Controller
         }
     }
 
+    public function updateDetalles(Certificado $certificado, CertificadoDetalleRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            // actualizar certificado
+            $this->certificadoService->actualizarCertificadoDetalle($request->validated(), $certificado);
+            DB::commit();
+            return redirect()->route("certificados.index")->with("bien", "Registro actualizado");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Log::debug($e->getMessage());
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
     /**
      * Eliminar certificado
      *
@@ -236,6 +298,48 @@ class CertificadoController extends Controller
         DB::beginTransaction();
         try {
             $this->certificadoService->eliminar($certificado);
+            DB::commit();
+            return response()->JSON([
+                'sw' => true,
+                'message' => 'El registro se eliminó correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function restaurar(Certificado $certificado): JsonResponse|Response
+    {
+        DB::beginTransaction();
+        try {
+            $this->certificadoService->restaurar($certificado);
+            DB::commit();
+            return response()->JSON([
+                'sw' => true,
+                'message' => 'El registro se restauro correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Eliminar certificado
+     *
+     * @param Certificado $certificado
+     * @return JsonResponse|Response
+     */
+    public function eliminacionPermanente(Certificado $certificado): JsonResponse|Response
+    {
+        DB::beginTransaction();
+        try {
+            $this->certificadoService->eliminacionPermanente($certificado);
             DB::commit();
             return response()->JSON([
                 'sw' => true,

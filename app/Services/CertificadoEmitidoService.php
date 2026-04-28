@@ -19,13 +19,17 @@ class CertificadoEmitidoService
      * @param array $datos
      * @return CertificadoEmitido
      */
-    public function actualizarCertificadoEmitido($tipo_certificado_id, $fecha_actual, $user_id, $old_tipo_certificado_id = null): CertificadoEmitido
+    public function actualizarCertificadoEmitido($tipo_certificado_id, $fecha_actual, $user_id, $old_tipo_certificado_id = null)
     {
         $certificado_emitido = CertificadoEmitido::where("tipo_certificado_id", $tipo_certificado_id)
             ->where("fecha", $fecha_actual)
             ->where("user_id", $user_id)
             ->get()
             ->first();
+
+        if (!$certificado_emitido) {
+            return null;
+        }
 
         if (!$old_tipo_certificado_id) {
             // NUEVO
@@ -74,7 +78,7 @@ class CertificadoEmitidoService
         return $certificado_emitido;
     }
 
-    public function descontarCertificadoEmitido($tipo_certificado_id, $fecha_actual, $user_id): CertificadoEmitido
+    public function descontarCertificadoEmitido($tipo_certificado_id, $fecha_actual, $user_id)
     {
         $certificado_emitido = CertificadoEmitido::where("tipo_certificado_id", $tipo_certificado_id)
             ->where("fecha", $fecha_actual)
@@ -82,9 +86,11 @@ class CertificadoEmitidoService
             ->get()
             ->first();
 
-        $certificado_emitido->conteo = (int)$certificado_emitido->conteo - 1;
-        $certificado_emitido->save();
-
-        return $certificado_emitido;
+        if ($certificado_emitido) {
+            $certificado_emitido->conteo = (int)$certificado_emitido->conteo - 1;
+            $certificado_emitido->save();
+            return $certificado_emitido;
+        }
+        return null;
     }
 }

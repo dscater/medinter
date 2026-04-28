@@ -6,8 +6,6 @@ import { useCertificados } from "@/composables/certificados/useCertificados";
 import { useAxios } from "@/composables/axios/useAxios";
 import { ref, onMounted, onBeforeMount } from "vue";
 import { useAppStore } from "@/stores/aplicacion/appStore";
-import Reporte from "./Reporte.vue";
-import CertificadoDetalle from "./CertificadoDetalle.vue";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
 onBeforeMount(() => {
@@ -55,7 +53,7 @@ onMounted(() => {
 });
 
 const { setCertificado, limpiarCertificado, form } = useCertificados();
-const { axiosDelete } = useAxios();
+const { axiosDelete, axiosPost } = useAxios();
 
 const miTable = ref(null);
 const headers = [
@@ -139,10 +137,37 @@ const updateDatatable = async () => {
     }
 };
 
+const restaurar = (item) => {
+    Swal.fire({
+        title: "¿Quierés restaurar este registro?",
+        html: `<strong>Nro. de registro: ${item.id}</strong>`,
+        showCancelButton: true,
+        confirmButtonText: "Si, restaurar",
+        cancelButtonText: "No, cancelar",
+        denyButtonText: `No, cancelar`,
+        customClass: {
+            confirmButton: "btn-success",
+        },
+    }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            let respuesta = await axiosPost(
+                route("certificados.restaurar", item.id),
+                {
+                    _method: "PATCH",
+                },
+            );
+            if (respuesta && respuesta.sw) {
+                updateDatatable();
+            }
+        }
+    });
+};
+
 const eliminarCertificado = (item) => {
     Swal.fire({
         title: "¿Quierés eliminar este registro?",
-        html: `<strong>Nro. de registro: ${item.id}</strong>`,
+        html: `<strong>Nro. de registro: ${item.id}</strong><h4>Esta acción no se podra deshacer!!!</h4>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -154,7 +179,7 @@ const eliminarCertificado = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("certificados.destroy", item.id),
+                route("certificados.eliminacionPermanente", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -172,13 +197,14 @@ const editarDetalle = (item) => {
 };
 </script>
 <template>
-    <Head title="Certificados"></Head>
+    <Head title="Certificados Eliminados"></Head>
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h1 class="m-0">
                         <i class="fa fa-clipboard-list"></i> Certificados
+                        Eliminados
                     </h1>
                 </div>
                 <!-- /.col -->
@@ -187,7 +213,9 @@ const editarDetalle = (item) => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">Certificados</li>
+                        <li class="breadcrumb-item active">
+                            Certificados Eliminados
+                        </li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -197,47 +225,19 @@ const editarDetalle = (item) => {
         <div class="row">
             <div class="col-md-12">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <Link
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'certificados.create',
+                                    'certificados.index',
                                 )
                             "
-                            class="btn btn-primary text-sm"
-                            :href="route('certificados.create')"
+                            class="btn btn-default text-sm"
+                            :href="route('certificados.index')"
                         >
-                            <i class="fa fa-plus"></i> Nuevo Certificado
+                            <i class="fa fa-arrow-left"></i> Volver
                         </Link>
-                        <button
-                            v-if="
-                                props_page.auth?.user.permisos == '*' ||
-                                props_page.auth?.user.permisos.includes(
-                                    'reportes.r_certificados_diario',
-                                )
-                            "
-                            class="btn btn-success text-sm mx-1"
-                            @click="muestra_reporte = true"
-                        >
-                            <i class="fa fa-file-alt"></i> Reporte
-                        </button>
-                        <Link
-                            v-if="
-                                props_page.auth?.user.permisos == '*' ||
-                                props_page.auth?.user.permisos.includes(
-                                    'certificados.eliminados',
-                                )
-                            "
-                            class="btn btn-outline-danger text-sm"
-                            :href="route('certificados.eliminados')"
-                        >
-                            <i class="fa fa-trash"></i> Eliminados
-                        </Link>
-                        <Reporte
-                            :muestra_formulario="muestra_reporte"
-                            @cerrar-formulario="muestra_reporte = false"
-                        ></Reporte>
                     </div>
                     <div class="col-md-12 my-1">
                         <div class="row">
@@ -273,7 +273,7 @@ const editarDetalle = (item) => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('certificados.paginado')"
+                            :url="route('certificados.paginadoEliminados')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -370,48 +370,21 @@ const editarDetalle = (item) => {
                                         (props_page.auth?.user.permisos ==
                                             '*' ||
                                             props_page.auth?.user.permisos.includes(
-                                                'certificados.editDetalles',
+                                                'certificados.restaurar',
                                             ))
                                     "
                                 >
                                     <el-tooltip
                                         class="box-item"
                                         effect="dark"
-                                        content="Editar Detalles"
+                                        content="Restaurar"
                                         placement="left-start"
                                     >
                                         <button
-                                            type="button"
-                                            class="btn btn-default bg-orange"
-                                            @click.prevent="editarDetalle(item)"
+                                            class="btn btn-success"
+                                            @click="restaurar(item)"
                                         >
-                                            <i class="fa fa-edit"></i></button
-                                    ></el-tooltip>
-                                </template>
-                                <template
-                                    v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'certificados.edit',
-                                        )
-                                    "
-                                >
-                                    <el-tooltip
-                                        class="box-item"
-                                        effect="dark"
-                                        content="Editar"
-                                        placement="left-start"
-                                    >
-                                        <Link
-                                            :href="
-                                                route(
-                                                    'certificados.edit',
-                                                    item.id,
-                                                )
-                                            "
-                                            class="btn btn-warning"
-                                        >
-                                            <i class="fa fa-pen"></i></Link
+                                            <i class="fa fa-sync"></i></button
                                     ></el-tooltip>
                                 </template>
 
@@ -453,12 +426,5 @@ const editarDetalle = (item) => {
                 </div>
             </div>
         </div>
-        <CertificadoDetalle
-            v-if="muestra_formulario"
-            :muestra_formulario="muestra_formulario"
-            :form="form"
-            @envio-formulario="updateDatatable"
-            @cerrar-formulario="muestra_formulario = false"
-        ></CertificadoDetalle>
     </Content>
 </template>
