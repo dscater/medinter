@@ -88,6 +88,7 @@ class InicioController extends Controller
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
                     $q->whereDate('fecha_registro', $item);
                     $q->where("status", 1);
+                    $q->where("estado", 1);
 
                     if (Auth::user()->tipo == 'MÉDICO') {
                         $q->where("user_id", Auth::user()->id);
@@ -102,6 +103,7 @@ class InicioController extends Controller
                     $q->whereMonth('fecha_registro', $item);
                     $q->whereYear('fecha_registro', Carbon::now()->year);
                     $q->where("status", 1);
+                    $q->where("estado", 1);
                     if (Auth::user()->tipo == 'MÉDICO') {
                         $q->where("user_id", Auth::user()->id);
                     }
@@ -115,6 +117,7 @@ class InicioController extends Controller
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
                     $q->whereYear('fecha_registro', $item);
                     $q->where("status", 1);
+                    $q->where("estado", 1);
                     if (Auth::user()->tipo == 'MÉDICO') {
                         $q->where("user_id", Auth::user()->id);
                     }

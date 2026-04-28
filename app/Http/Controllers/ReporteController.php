@@ -1590,6 +1590,7 @@ class ReporteController extends Controller
             $cantidad_por_tipo = [];
             foreach ($users as $key => $user) {
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($user, $fecha_ini, $fecha_fin, $sucursal_id, $cliente_id) {
+                    $q->where("estado", 1);
                     $q->where("status", 1);
                     $q->where("user_id", $user->id);
                     if ($fecha_ini && $fecha_fin) {

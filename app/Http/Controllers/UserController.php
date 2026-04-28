@@ -87,7 +87,7 @@ class UserController extends Controller
                 if (Auth::user()->tipo == 'MÉDICO') {
                     $certificados->where("user_id", Auth::user()->id);
                 }
-                $certificados = $certificados->count();
+                $certificados = $certificados->where("status", 1)->count();
                 $array_infos[] = [
                     'label' => 'CERTIFICADOS',
                     'cantidad' => $certificados,
