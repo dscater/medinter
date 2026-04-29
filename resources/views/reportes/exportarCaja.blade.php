@@ -157,7 +157,6 @@
         }
 
         .fecha_caja {
-            margin-top: 20px;
             font-size: 10pt;
             text-align: left;
             margin-bottom: 2px;
@@ -183,8 +182,19 @@
         <h4 class="fecha">Expedido: {{ date('d/m/Y') }}</h4>
     </div>
 
-    <div class="fecha_caja centreado">
-        Del {{ date('d/m/Y', strtotime($fecha_ini)) }} al {{ date('d/m/Y', strtotime($fecha_fin)) }}
+    <div class="fecha_caja centreado" style="margin-top: 25px;margin-bottom:5px;">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="bold" width="12%">Elaborado por:</td>
+                    <td>{{ Auth::user()->nombre }} {{ Auth::user()->paterno }}
+                        {{ Auth::user()->materno }}</td>
+                    <td class="derecha">Del {{ date('d/m/Y', strtotime($fecha_ini)) }} al
+                        {{ date('d/m/Y', strtotime($fecha_fin)) }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <table border="1">
         <thead class="bg-principal">

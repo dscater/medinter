@@ -414,6 +414,13 @@ class ReporteController extends Controller
                 ->applyFromArray($this->titulo);
 
             $fila += 2;
+            /* ===================== ELABORADO ===================== */
+            $sheet->setCellValue('A' . $fila, 'Elaborado por:');
+            $sheet->mergeCells("A{$fila}:B{$fila}");
+            $sheet->getStyle("A{$fila}:B{$fila}")->applyFromArray($this->textRight);
+            $sheet->setCellValue('C' . $fila, Auth::user()->nombre . ' ' . AUth::user()->paterno . ' ' . Auth::user()->materno);
+            $sheet->mergeCells("C{$fila}:{$lastColumn}{$fila}");
+            $fila++;
 
             /* ===================== FECHA ===================== */
             $sheet->setCellValue('A' . $fila, 'Fecha:');
