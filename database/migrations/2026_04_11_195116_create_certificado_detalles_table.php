@@ -19,11 +19,20 @@ return new class extends Migration
             $table->decimal("cancelado", 24, 2)->nullable();
             $table->decimal("saldo", 24, 2)->nullable();
             $table->unsignedBigInteger("tipo_certificado_id");
+            $table->unsignedBigInteger("sucursal_id")->nullable();
+            $table->unsignedBigInteger("user_id")->nullable();
+            $table->date("fecha_inicio")->nullable();
+            $table->time("hora_inicio")->nullable();
+            $table->date("fecha_fin")->nullable();
+            $table->time("hora_fin")->nullable();
+            $table->integer("estado")->default(0);
             $table->string("archivo", 255)->nullable();
             $table->timestamps();
 
             $table->foreign("certificado_id")->on("certificados")->references("id");
             $table->foreign("tipo_certificado_id")->on("tipo_certificados")->references("id");
+            $table->foreign("user_id")->on("users")->references("id");
+            $table->foreign("sucursal_id")->on("sucursals")->references("id");
         });
     }
 

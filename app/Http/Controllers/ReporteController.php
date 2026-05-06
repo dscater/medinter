@@ -932,15 +932,17 @@ class ReporteController extends Controller
         }
 
         if ($sucursal_id != 'todos') {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
-                $q->where("sucursal_id", $sucursal_id);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
+            //     $q->where("sucursal_id", $sucursal_id);
+            // });
+            $certificado_detalles->where("sucursal_id", $sucursal_id);
         }
 
         if ($user_id != 'todos') {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
-                $q->where("user_id", $user_id);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
+            //     $q->where("user_id", $user_id);
+            // });
+            $certificado_detalles->where("user_id", $user_id);
         }
 
         if ($tipo_certificado_id != 'todos') {
@@ -948,15 +950,18 @@ class ReporteController extends Controller
         }
 
         if ($fecha_ini && $fecha_fin) {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($fecha_ini, $fecha_fin) {
-                $q->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($fecha_ini, $fecha_fin) {
+            //     $q->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
+            // });
+            $certificado_detalles->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
         }
 
         $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
-            $q->where("estado", 1);
+            // $q->where("estado", 1);
             $q->where("status", 1);
         });
+
+        $certificado_detalles->where("estado", 1);
 
         $certificado_detalles = $certificado_detalles->get();
 
@@ -1033,7 +1038,7 @@ class ReporteController extends Controller
                 $sheet->setCellValue('E' . $fila, $item->certificado->cliente->materno);
                 $sheet->setCellValue('F' . $fila, $item->certificado->cliente->edad);
                 $sheet->setCellValue('G' . $fila, $item->categoria);
-                $sheet->setCellValue('H' . $fila, $item->certificado->user->full_name);
+                $sheet->setCellValue('H' . $fila, $item->user->full_name);
                 $sheet->setCellValue('I' . $fila, $item->certificado->fecha_inicio_t . ' ' . $item->certificado->hora_inicio);
                 $sheet->setCellValue('J' . $fila, $item->certificado->fecha_fin_t . ' ' . $item->certificado->hora_fin);
                 $sheet->getStyle('A' . $fila . ':J' . $fila)->applyFromArray($this->bodyTabla);
@@ -1102,15 +1107,17 @@ class ReporteController extends Controller
         }
 
         if ($sucursal_id != 'todos') {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
-                $q->where("sucursal_id", $sucursal_id);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
+            //     $q->where("sucursal_id", $sucursal_id);
+            // });
+            $certificado_detalles->where("sucursal_id", $sucursal_id);
         }
 
         if ($user_id != 'todos') {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
-                $q->where("user_id", $user_id);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
+            //     $q->where("user_id", $user_id);
+            // });
+            $certificado_detalles->where("user_id", $user_id);
         }
 
         if ($tipo_certificado_id != 'todos') {
@@ -1118,15 +1125,18 @@ class ReporteController extends Controller
         }
 
         if ($fecha_ini && $fecha_fin) {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($fecha_ini, $fecha_fin) {
-                $q->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
-            });
+            // $certificado_detalles->whereHas('certificado', function ($q) use ($fecha_ini, $fecha_fin) {
+            //     $q->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
+            // });
+            $certificado_detalles->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
         }
 
         $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
-            $q->where("estado", 1);
+            // $q->where("estado", 1);
             $q->where("status", 1);
         });
+
+        $certificado_detalles->where("estado", 1);
 
         $certificado_detalles = $certificado_detalles->get();
 
@@ -1203,7 +1213,7 @@ class ReporteController extends Controller
                 $sheet->setCellValue('F' . $fila, $item->certificado->cliente->cel);
                 $sheet->setCellValue('G' . $fila, $item->certificado->cliente->edad);
                 $sheet->setCellValue('H' . $fila, $item->categoria);
-                $sheet->setCellValue('I' . $fila, $item->certificado->user->full_name);
+                $sheet->setCellValue('I' . $fila, $item->user->full_name);
                 $sheet->getStyle('A' . $fila . ':I' . $fila)->applyFromArray($this->bodyTabla);
                 $fila++;
             }
@@ -1263,24 +1273,18 @@ class ReporteController extends Controller
         }
 
         if (Auth::user()->tipo == 'MÉDICO') {
-            $certificado_detalles->whereHas('certificado', function ($q) {
-                $q->where("user_id", Auth::user()->id);
-            });
+            $certificado_detalles->where("user_id", Auth::user()->id);
         } else {
             if ($user_id != 'todos') {
-                $certificado_detalles->whereHas('certificado', function ($q) use ($user_id) {
-                    $q->where("user_id", $user_id);
-                });
+                $certificado_detalles->where("user_id", $user_id);
             }
         }
 
         if ($fecha_ini && $fecha_fin) {
-            $certificado_detalles->whereHas('certificado', function ($q) use ($fecha_ini, $fecha_fin) {
-                $q->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
-            });
+            $certificado_detalles->whereBetween('fecha_inicio', [$fecha_ini, $fecha_fin]);
         }
 
-        $certificado_detalles->whereHas('certificado', function ($q) use ($sucursal_id) {
+        $certificado_detalles->whereHas('certificado', function ($q) {
             $q->where("estado", 1);
             $q->where("status", 1);
         });
@@ -1366,8 +1370,8 @@ class ReporteController extends Controller
                 $sheet->setCellValue('D' . $fila, $item->categoria);
                 $sheet->setCellValue('E' . $fila, $item->certificado->tipo);
                 $sheet->setCellValue('F' . $fila, $item->tipo_certificado->nombre);
-                $sheet->setCellValue('G' . $fila, $item->certificado->user->full_name);
-                $sheet->setCellValue('H' . $fila, $item->certificado->sucursal->nombre);
+                $sheet->setCellValue('G' . $fila, $item->user->full_name);
+                $sheet->setCellValue('H' . $fila, $item->sucursal->nombre);
                 $sheet->setCellValue('I' . $fila, $item->certificado->fecha_inicio_t . ' ' . $item->certificado->hora_inicio);
                 $sheet->setCellValue('J' . $fila, $item->certificado->fecha_fin_t . ' ' . $item->certificado->hora_fin);
                 $sheet->getStyle('A' . $fila . ':J' . $fila)->applyFromArray($this->bodyTabla);
@@ -1570,7 +1574,6 @@ class ReporteController extends Controller
         $fecha_ini = $request->fecha_ini;
         $fecha_fin = $request->fecha_fin;
 
-
         $users = User::select("users.*")
             ->where("tipo", "MÉDICO");
         if ($user_id != 'todos') {
@@ -1597,9 +1600,9 @@ class ReporteController extends Controller
             $cantidad_por_tipo = [];
             foreach ($users as $key => $user) {
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($user, $fecha_ini, $fecha_fin, $sucursal_id, $cliente_id) {
-                    $q->where("estado", 1);
+                    // $q->where("estado", 1);
                     $q->where("status", 1);
-                    $q->where("user_id", $user->id);
+                    // $q->where("user_id", $user->id);
                     if ($fecha_ini && $fecha_fin) {
                         $q->whereBetween("fecha_registro", [$fecha_ini, $fecha_fin]);
                     }
@@ -1610,6 +1613,8 @@ class ReporteController extends Controller
                         $q->where("cliente_id", $cliente_id);
                     }
                 })->where("tipo_certificado_id", $tipo_certificado->id);
+                $total->where("user_id", $user->id);
+                $total->where("estado", 1);
                 $total = $total->count();
                 $cantidad_por_tipo[] = $total;
                 $total_final += (int)$total;

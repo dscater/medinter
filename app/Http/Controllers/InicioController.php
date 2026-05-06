@@ -88,12 +88,13 @@ class InicioController extends Controller
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
                     $q->whereDate('fecha_registro', $item);
                     $q->where("status", 1);
-                    $q->where("estado", 1);
-
-                    if (Auth::user()->tipo == 'MÉDICO') {
-                        $q->where("user_id", Auth::user()->id);
-                    }
+                    // $q->where("estado", 1);
                 });
+
+                $total->where("estado", 1);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
                 $total = $total->count();
                 $categories[] = date("d/m/Y", strtotime($item));
             }
@@ -103,11 +104,12 @@ class InicioController extends Controller
                     $q->whereMonth('fecha_registro', $item);
                     $q->whereYear('fecha_registro', Carbon::now()->year);
                     $q->where("status", 1);
-                    $q->where("estado", 1);
-                    if (Auth::user()->tipo == 'MÉDICO') {
-                        $q->where("user_id", Auth::user()->id);
-                    }
+                    // $q->where("estado", 1);
                 });
+                $total->where("estado", 1);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
 
                 $total = $total->count();
                 $categories[] = $array_meses[$item];
@@ -117,11 +119,12 @@ class InicioController extends Controller
                 $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
                     $q->whereYear('fecha_registro', $item);
                     $q->where("status", 1);
-                    $q->where("estado", 1);
-                    if (Auth::user()->tipo == 'MÉDICO') {
-                        $q->where("user_id", Auth::user()->id);
-                    }
+                    // $q->where("estado", 1);
                 });
+                $total->where("estado", 1);
+                if (Auth::user()->tipo == 'MÉDICO') {
+                    $total->where("user_id", Auth::user()->id);
+                }
                 $total = $total->count();
                 $categories[] = $item;
             }
@@ -140,20 +143,25 @@ class InicioController extends Controller
     public function cantidadTramitesNormal()
     {
         $normales = CertificadoDetalle::whereHas("certificado", function ($q) {
-            if (Auth::user()->tipo == 'MÉDICO') {
-                $q->where("user_id", Auth::user()->id);
-            }
             $q->where("tipo", "NORMAL");
             $q->where("status", 1);
-        })->count();
+        });
+
+        if (Auth::user()->tipo == 'MÉDICO') {
+            $normales->where("user_id", Auth::user()->id);
+        }
+        $normales = $normales->count();
 
         $tramites = CertificadoDetalle::whereHas("certificado", function ($q) {
-            if (Auth::user()->tipo == 'MÉDICO') {
-                $q->where("user_id", Auth::user()->id);
-            }
             $q->where("tipo", "TRAMITE");
             $q->where("status", 1);
-        })->count();
+        });
+
+        if (Auth::user()->tipo == 'MÉDICO') {
+            $tramites->where("user_id", Auth::user()->id);
+        }
+        $tramites = $tramites->count();
+
         $data = [
             ["name" => "TRÁMITE", "y" => (float)$tramites],
             ["name" => "NORMAL", "y" => (float)$normales],

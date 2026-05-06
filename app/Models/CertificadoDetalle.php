@@ -13,10 +13,26 @@ class CertificadoDetalle extends Model
         "cancelado",
         "saldo",
         "tipo_certificado_id",
+        "sucursal_id",
+        "user_id",
+        "fecha_inicio",
+        "hora_inicio",
+        "fecha_fin",
+        "hora_fin",
+        "estado", // 0: PENDIENTE, 1: ATENDIDO
         "archivo",
     ];
 
-    protected $appends = ["url_archivo", "name", "con_saldo"];
+    protected $appends = ["url_archivo", "name", "con_saldo", "fecha_inicio_t", "fecha_fin_t"];
+
+    public function getFechaInicioTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha_inicio));
+    }
+    public function getFechaFinTAttribute()
+    {
+        return date("d/m/Y", strtotime($this->fecha_fin));
+    }
 
     public function getConSaldoAttribute()
     {
@@ -46,6 +62,16 @@ class CertificadoDetalle extends Model
     public function tipo_certificado()
     {
         return $this->belongsTo(TipoCertificado::class, 'tipo_certificado_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_id');
     }
 
     public function pago()

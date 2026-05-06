@@ -344,16 +344,20 @@ const editarDetalle = (item) => {
                             </template>
 
                             <template #user="{ item }">
-                                <span v-if="item.estado == 1 && item.user"
-                                    >{{ item.user.nombre }}
-                                    {{ item.user.paterno }}
-                                    {{ item.user.materno }}
-                                </span>
-                                <span
-                                    v-else
-                                    class="badge badge-warning text-md text-dark"
-                                    >PENDIENTE</span
-                                >
+                                <ul class="p-1">
+                                    <li v-for="d in item.certificado_detalles">
+                                        <span v-if="d.estado == 1 && item.user"
+                                            >{{ d.user.nombre }}
+                                            {{ d.user.paterno }}
+                                            {{ d.user.materno }}
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="text-precargado text-sm font-weight-bold"
+                                            >PENDIENTE</span
+                                        >
+                                    </li>
+                                </ul>
                             </template>
 
                             <template #accion="{ item }">

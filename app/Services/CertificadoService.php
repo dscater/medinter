@@ -46,7 +46,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "certificado_detalles.user", "tramitador:id,nombre"])->where("status", 1);
 
         // FILTROS
         $certificados->when($cliente, function ($q) use ($cliente) {
@@ -79,7 +79,7 @@ class CertificadoService
         $ci,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 0);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "certificado_detalles.user", "tramitador:id,nombre"])->where("status", 0);
 
         // FILTROS
         $certificados->when($cliente, function ($q) use ($cliente) {
@@ -124,7 +124,7 @@ class CertificadoService
         $tramitador_id,
     ): LengthAwarePaginator {
         $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "tramitador:id,nombre"])->where("status", 1);
+            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "certificado_detalles.user", "tramitador:id,nombre"])->where("status", 1);
 
         $certificados->where("saldo", ">", 0);
 
@@ -228,6 +228,14 @@ class CertificadoService
                 if (!is_string($item["archivo"])) {
                     $archivo = $item["archivo"];
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                    // ATENDIDO
+                    $certificado_detalle->estado = 1;
+                    $certificado_detalle->user_id = Auth::user()->id;
+                    $certificado_detalle->fecha_inicio = $datos["fecha_inicio"];
+                    $certificado_detalle->hora_inicio = $datos["hora_inicio"];
+                    $certificado_detalle->fecha_fin = $fecha_actual;
+                    $certificado_detalle->hora_fin = $hora_actual;
+                    $certificado_detalle->save();
                 }
             }
 
@@ -245,6 +253,7 @@ class CertificadoService
             }
         }
 
+        $this->actualizaEstadoCertificado($certificado);
         // registrar accion
         if ($certificado->estado == 1) {
             $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
@@ -282,8 +291,14 @@ class CertificadoService
             "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
         ]);
 
+        $login_user = $this->login_user_service->verificaSucursal();
+        if (!$login_user) {
+            throw new Exception("Error no se encontró la sucursal del usuario");
+        }
+        $sucursal_id = $login_user->sucursal_id;
+
         // HORA INICIO-FIN
-        // atendido
+        // ATENDIDO
         if ($old_certificado->estado == 0) {
             $certificado->fecha_inicio = $datos["fecha_inicio"];
             $certificado->hora_inicio = $datos["hora_inicio"];
@@ -293,6 +308,8 @@ class CertificadoService
             $certificado->estado = 1;
             $certificado->save();
         }
+
+
 
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
@@ -316,6 +333,17 @@ class CertificadoService
                 if (!is_string($item["archivo"])) {
                     $archivo = $item["archivo"];
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                    if ($certificado_detalle->estado == 0) {
+                        // ATENDIDO
+                        $certificado_detalle->sucursal_id = $sucursal_id;
+                        $certificado_detalle->estado = 1;
+                        $certificado_detalle->user_id = Auth::user()->id;
+                        $certificado_detalle->fecha_inicio = $datos["fecha_inicio"];
+                        $certificado_detalle->hora_inicio = $datos["hora_inicio"];
+                        $certificado_detalle->fecha_fin = $fecha_actual;
+                        $certificado_detalle->hora_fin = $hora_actual;
+                        $certificado_detalle->save();
+                    }
                 }
 
                 if ($old_certificado->estado == 1) {
@@ -337,10 +365,21 @@ class CertificadoService
             } else {
                 $certificado_detalle = CertificadoDetalle::find($item["id"]);
                 // cargar archivo
-                if (!is_string($item["archivo"])) {
+                if (isset($item["archivo"]) && !is_string($item["archivo"])) {
                     $archivo = $item["archivo"];
                     \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
+                    if ($certificado_detalle->estado == 0) {
+                        // ATENDIDO
+                        $certificado_detalle->sucursal_id = $sucursal_id;
+                        $certificado_detalle->estado = 1;
+                        $certificado_detalle->user_id = Auth::user()->id;
+                        $certificado_detalle->fecha_inicio = $datos["fecha_inicio"];
+                        $certificado_detalle->hora_inicio = $datos["hora_inicio"];
+                        $certificado_detalle->fecha_fin = $fecha_actual;
+                        $certificado_detalle->hora_fin = $hora_actual;
+                        $certificado_detalle->save();
+                    }
                 }
 
                 if ($old_certificado->estado == 1) {
@@ -354,7 +393,7 @@ class CertificadoService
                 $old_cancelado = $certificado_detalle->cancelado;
 
                 $certificado_detalle->update([
-                    "categoria" => $item["categoria"],
+                    "categoria" => $item["categoria"] ?? '',
                     "precio" => $item["precio"],
                     "cancelado" => $cancelado,
                     "saldo" => $saldo,
@@ -391,6 +430,8 @@ class CertificadoService
             }
         }
 
+        $this->actualizaEstadoCertificado($certificado);
+
         // registrar accion
         if ($old_certificado->estado == 0) {
             // registrar accion
@@ -402,9 +443,21 @@ class CertificadoService
         return $certificado;
     }
 
+    public function actualizaEstadoCertificado(Certificado $certificado)
+    {
+        $detalle_pendientes = $certificado->certificado_detalles->where("estado", 0)->count();
+        $certificado->estado = 1;
+        if ($detalle_pendientes > 0) {
+            $certificado->estado = 0;
+        }
+        $certificado->save();
+    }
+
 
     /**
-     * Actualizar detalles de certificado
+     * Actualizar detalles de certificado 
+     * Solo detalles sin archivos
+     * no se Toma en cuenta los Médicos
      *
      * @param array $datos
      * @param Certificado $certificado
@@ -496,6 +549,8 @@ class CertificadoService
                 $certificado_detalle->delete();
             }
         }
+
+        $this->actualizaEstadoCertificado($certificado);
 
         $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN LOS DETALLES DE UN CERTIFICADO", $old_certificado, $certificado, ["certificado_detalles"]);
 

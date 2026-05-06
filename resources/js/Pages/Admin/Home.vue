@@ -181,7 +181,7 @@ const renderChart2 = (containerId, categories, total_final, data) => {
         },
         subtitle: {
             align: "center",
-            text: `Total emitidos: ${total_final}`,
+            text: `Total: ${total_final}`,
         },
         accessibility: {
             announceNewData: {

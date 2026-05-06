@@ -168,7 +168,7 @@
                     <td>{{ $item->certificado->cliente->cel }}</td=>
                     <td class="centreado">{{ $item->certificado->cliente->edad }}</td>
                     <td class="centreado">{{ $item->categoria }}</td>
-                    <td>{{ $item->certificado->user->full_name }}</td>
+                    <td>{{ $item->user->full_name }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -32,6 +32,10 @@ td .descripcion {
     color: var(--bg7) !important;
 }
 
+.text-precargado {
+    color: var(--bgPrecargado) !important;
+}
+
 .bg1,
 .bg1:hover {
     background-color: var(--bg1);
