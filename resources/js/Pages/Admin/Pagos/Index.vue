@@ -62,6 +62,16 @@ const sumaPorTipos = ref([]);
 const sumaPorTiposSinVerificar = ref([]);
 const suma_total_tipos = ref([]);
 const colsIniciado = ref(false);
+const loadingPagos = ref(false);
+const intervalCargaPagos = ref(null);
+const cargarRegistrosPagos = async () => {
+    clearInterval(intervalCargaPagos.value);
+    loadingPagos.value = true;
+    intervalCargaPagos.value = setTimeout(async () => {
+        await cargarPagosVerificados();
+    }, 400);
+};
+
 const cargarPagosVerificados = async () => {
     if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
         return;
@@ -83,6 +93,9 @@ const cargarPagosVerificados = async () => {
                 response.data.suma_tipos_sin_verificar;
             suma_total_tipos.value = response.data.suma_total_tipos;
             appStore.stopLoading();
+        })
+        .finally(() => {
+            loadingPagos.value = false;
         });
 };
 
@@ -270,8 +283,7 @@ onBeforeMount(() => {
                                         class="form-control"
                                         placeholder="Código Trámite"
                                         v-model="filtros.fecha_ini"
-                                        @change="cargarPagosVerificados"
-                                        @keyup="cargarPagosVerificados"
+                                        @input="cargarRegistrosPagos"
                                     />
                                 </div>
                             </div>
@@ -290,8 +302,7 @@ onBeforeMount(() => {
                                         class="form-control"
                                         placeholder="Código Trámite"
                                         v-model="filtros.fecha_fin"
-                                        @change="cargarPagosVerificados"
-                                        @keyup="cargarPagosVerificados"
+                                        @input="cargarRegistrosPagos"
                                     />
                                 </div>
                             </div>
@@ -304,7 +315,7 @@ onBeforeMount(() => {
                             filterable
                             placeholder="- Seleccione -"
                             size="large"
-                            @change="cargarPagosVerificados"
+                            @change="cargarRegistrosPagos"
                         >
                             <el-option
                                 v-for="item in listSucursals"
@@ -329,7 +340,7 @@ onBeforeMount(() => {
                             placeholder="- Seleccione -"
                             size="large"
                             clearable
-                            @change="cargarPagosVerificados"
+                            @change="cargarRegistrosPagos"
                         >
                             <el-option
                                 v-for="item in listMedicos"
@@ -391,6 +402,7 @@ onBeforeMount(() => {
                 fix-cols
                 fixed-header
                 table-height="40vh"
+                :loading="loadingPagos"
             >
                 <template #fecha_verificado="{ item }">
                     <span>{{ item.fecha_verificado_t }} {{ item.hora }}</span>
@@ -487,6 +499,7 @@ onBeforeMount(() => {
                     fix-cols
                     fixed-header
                     table-height="40vh"
+                    :loading="loadingPagos"
                 >
                     <template #fecha_verificado="{ item }">
                         <span
