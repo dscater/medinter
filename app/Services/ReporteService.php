@@ -30,15 +30,14 @@ class ReporteService extends FPDF
 
             $this->Ln(7); // Espacio debajo de la imagen
             $this->SetFont('Arial', 'B', 12);
-            $this->Cell(0, 5, $configuracion->nombre_sistema, 0, 1, 'C');
+            $this->CellUtf8(0, 5, $configuracion->nombre_sistema, 0, 1, 'C');
             if ($this->titulo) {
-                $this->Ln();
-                $this->Cell(0, $this->conFecha ? 0 : 17, $this->titulo, 0, 1, 'C');
+                $this->CellUtf8(0, $this->conFecha ? 5 : 0, $this->titulo, 0, 1, 'C');
             }
 
             if ($this->conFecha) {
-                $this->Ln();
-                $this->Cell(0, 20, "Expedido: " . date("d/m/Y"), 0, 1, 'C');
+                $this->SetFont('Arial', 'B', 10);
+                $this->CellUtf8(0, 5, "Expedido: " . date("d/m/Y"), 0, 1, 'C');
             }
         } else {
             // Header para otras páginas

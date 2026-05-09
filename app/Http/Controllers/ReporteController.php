@@ -13,6 +13,7 @@ use App\Models\TipoCertificado;
 use App\Models\User;
 use App\Services\PagoService;
 use App\Services\ReporteService;
+use App\Services\ReporteServiceTcpdf;
 use App\Services\TipoPagoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -352,18 +353,180 @@ class ReporteController extends Controller
         $tipo_pagos = $this->tipo_pago_service->listado();
 
         if ($formato == 'pdf') {
-            $pdf = PDF::loadView('reportes.exportarCaja', compact('pagos', 'suma_tipos', 'pagos_sin_verificar', 'suma_tipos_sin_verificar', 'suma_total_tipos', 'tipo_pagos', 'fecha_ini', "fecha_fin"))->setPaper('letter', '´portrait');
 
-            // ENUMERAR LAS PÁGINAS USANDO CANVAS
-            $pdf->output();
-            $dom_pdf = $pdf->getDomPDF();
-            $canvas = $dom_pdf->get_canvas();
-            $alto = $canvas->get_height();
-            $ancho = $canvas->get_width();
-            $canvas->page_text($ancho - 90, $alto - 25, "Página {PAGE_NUM} de {PAGE_COUNT}", null, 9, array(0, 0, 0));
+            $pdf = new ReporteServiceTcpdf();
+            $pdf->SetTitle('Caja');
+            $pdf->setMargins(10, 5, 5);
+            $pdf->AddPage();
+            $pdf->setPrintHeader(false);
+            $pdf->setY(13);
+            $pdf->SetFont('helvetica', 'B', 12);
+            $pdf->Cell(0, 6, "ARQUEO DE CAJA", 0, 1, 'C', 0, '', 0, false);
+            $pdf->SetFont('helvetica', 'B', 10);
+            $pdf->Cell(0, 5, "Expedido: " . date("d/m/Y"), 0, 1, 'C', 0, '', 0, false);
+            $pdf->SetFont('helvetica', 'B', 8);
+            $ancho = 20;
+            $font_size = 8;
+            $font_size2 = 9;
 
-            return $pdf->stream('caja.pdf');
+            // Encabezado de tabla
+            $pdf->Ln();
+            $pdf->SetFont('helvetica', 'B', $font_size2);
+            $pdf->SetX(9);
+            $pdf->Cell(23, 5, "Elaborado por: ", 0, 0, 'L');
+
+            $pdf->SetFont('helvetica', '', $font_size2);
+            $pdf->Cell(40, 5,  Auth::user()->full_name, 0, 0);
+            $pdf->Cell(133, 5, "Del " . date('d/m/Y', strtotime($fecha_ini)) . " al " . date('d/m/Y', strtotime($fecha_fin)), 0, 1, 'R');
+
+            $pdf->SetFont('helvetica', 'B', $font_size);
+
+            $thTipoPagos = '';
+            foreach ($tipo_pagos as $item) {
+                $thTipoPagos .= '<th style="font-weight:bold;background-color:#153f59;color:white; text-align:right;">' . $item['value'] . ' Bs.</th>';
+            }
+
+            $html = '   <table border="1" cellpadding="3">
+            <thead class="bg-red" width="100%">
+                <tr>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;" width="18">N°</th>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;" width="50">FECHA</th>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;" width="70">SUCURSAL</th>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;" width="90">PACIENTE</th>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;" width="120">DESCRIPCIÓN</th>
+                    <th style="font-weight:bold;background-color:#153f59;color:white;">MÉDICO</th>
+                    ' . $thTipoPagos . '
+                </tr>
+            </thead>
+            <tbody>';
+
+            $cont = 1;
+            $pdf->SetFont('helvetica', 'N', $font_size);
+            foreach ($pagos as $item) {
+                $html .= '<tr>';
+                $html .= '<td  width="18">' . $cont++ . '</td>';
+                $html .= '<td  width="50">' . $item->fecha_verificado_t . '<br/>' . $item->hora_verificado . '</td>';
+                $html .= '<td  width="70">' . $item->sucursal->nombre . '</td>';
+                $html .= '<td width="90">' . $item->cliente->nombre . ' ' . $item->cliente->paterno . ' ' . $item->cliente->materno . '<br/>' . $item->cliente->full_ci . '</td>';
+                $html .= '<td width="120">' . $item->certificado_detalle->tipo_certificado->nombre . '<br/><small style="font-size:6pt">(' . $item->certificado_detalle->certificado->tipo . ($item->certificado_detalle->certificado->tramitador ? ' - ' . $item->certificado_detalle->certificado->tramitador->nombre : '') . '</small>)</td>';
+                $html .= '<td>' . ($item->medico ? $item->medico->nombre . ' ' . $item->medico->paterno . ' ' . $item->medico->materno : '') . '</td>';
+
+                $tdTipoPagos = '';
+                foreach ($tipo_pagos as $tipo_pago) {
+                    $tdTipoPagos .= '<td style="text-align:right;">' . ($item->tipo_pago == $tipo_pago['value'] ? $item->monto : '') . '</td>';
+                }
+
+                $html .= $tdTipoPagos . '</tr>';
+            }
+            $suma_total = 0;
+            $html .= '<tr>';
+            $html .= '<td style="text-align:right;font-weight:bold;" colspan="6">TOTAL BS.</td>';
+            foreach ($tipo_pagos as $tipo_pago) {
+                $suma_total += (float) $suma_tipos[$tipo_pago['value']];
+                $html .= '<td style="text-align:right;font-weight:bold;">' . number_format($suma_tipos[$tipo_pago["value"]], 2, '.', '') . '</td>';
+            }
+
+            $html .= '</tr>';
+            $html .= '<tr>';
+            $html .= '<td style="text-align:right;font-weight:bold;" colspan="6">TOTAL FINAL BS.</td>';
+            $html .= '<td style="text-align:center;font-weight:bold;" colspan="2">' . number_format($suma_total, 2, '.', '') . '</td>';
+            $html .= '</tr>';
+            $html .= '</tbody></table>';
+            $pdf->writeHTML($html, true, false, true, false, '');
+
+            // SIN VERIFICAR
+            if (count($pagos_sin_verificar) > 0) {
+                $pdf->Ln();
+                $pdf->SetFont('helvetica', 'B', 12);
+                $pdf->Cell(0, 6, "PAGOS SIN RECEPCIÓN", 0, 1, 'C', 0, '', 0, false);
+                $html = '   <table border="1" cellpadding="3">
+                <thead class="bg-red" width="100%">
+                    <tr>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;" width="18">N°</th>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;" width="50">FECHA</th>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;" width="70">SUCURSAL</th>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;">PACIENTE</th>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;" width="120">DESCRIPCIÓN</th>
+                        <th style="font-weight:bold;background-color:#f02222;color:white;">MÉDICO</th>
+                        ' . $thTipoPagos . '
+                    </tr>
+                </thead>
+                <tbody>';
+
+                $cont = 1;
+                $suma_total = 0;
+                $pdf->SetFont('helvetica', 'N', $font_size);
+                foreach ($pagos_sin_verificar as $item) {
+                    $html .= '<tr>';
+                    $html .= '<td  width="18">' . $cont++ . '</td>';
+                    $html .= '<td  width="50">' . $item->fecha_verificado_t . '<br/>' . $item->hora_verificado . '</td>';
+                    $html .= '<td  width="70">' . $item->sucursal->nombre . '</td>';
+                    $html .= '<td>' . $item->cliente->nombre . ' ' . $item->cliente->paterno . ' ' . $item->cliente->materno . '<br/>' . $item->cliente->full_ci . '</td>';
+                    $html .= '<td width="120">' . $item->certificado_detalle->tipo_certificado->nombre . '<br/><small style="font-size:6pt">(' . $item->certificado_detalle->certificado->tipo . ($item->certificado_detalle->certificado->tramitador ? ' - ' . $item->certificado_detalle->certificado->tramitador->nombre : '') . '</small>)</td>';
+                    $html .= '<td>' . ($item->medico ? $item->medico->nombre . ' ' . $item->medico->paterno . ' ' . $item->medico->materno : '') . '</td>';
+
+                    $tdTipoPagos = '';
+                    foreach ($tipo_pagos as $tipo_pago) {
+                        $tdTipoPagos .= '<td style="text-align:right;">' . ($item->tipo_pago == $tipo_pago['value'] ? $item->monto : '') . '</td>';
+                    }
+
+                    $html .= $tdTipoPagos . '</tr>';
+                }
+                $suma_total = 0;
+                $html .= '<tr>';
+                $html .= '<td style="text-align:right;font-weight:bold;" colspan="6">TOTAL BS.</td>';
+                foreach ($tipo_pagos as $tipo_pago) {
+                    $suma_total += (float) $suma_tipos_sin_verificar[$tipo_pago['value']];
+                    $html .= '<td style="text-align:right;font-weight:bold;">' . number_format($suma_tipos_sin_verificar[$tipo_pago["value"]], 2, '.', '') . '</td>';
+                }
+
+                $html .= '</tr>';
+                $html .= '<tr>';
+                $html .= '<td style="text-align:right;font-weight:bold;" colspan="6">TOTAL FINAL BS.</td>';
+                $html .= '<td style="text-align:center;font-weight:bold;" colspan="2">' . number_format($suma_total, 2, '.', '') . '</td>';
+                $html .= '</tr>';
+                $html .= '</tbody></table>';
+                $pdf->writeHTML($html, true, false, true, false, '');
+
+                // resumen
+                $pdf->Ln();
+                $pdf->SetFont('helvetica', 'B', 12);
+                $pdf->Cell(0, 6, "RESUMEN GENERAL", 0, 1, 'C', 0, '', 0, false);
+
+                $html = '<table border="1" cellpadding="3">';
+                $html .= '</thead>
+                    <tr>
+                    <th>TIPO DE PAGO</th>
+                    <th>MONTO BS.</th>
+                    </tr>
+                </thead><tbody>';
+                $total_final = 0;
+
+                foreach ($tipo_pagos as $tipo_pago) {
+                    $html .= '<tr>';
+                    $html .= '<td style="font-weight:normal;">' . $tipo_pago["value"] . '</td>';
+                    $html .= '<td style="font-weight:normal;">' . number_format($suma_total_tipos[$tipo_pago['value']], 2, '.', '') . '</td>';
+                    $html .= '</tr>';
+                    $total_final += (float) $suma_total_tipos[$tipo_pago['value']];
+                }
+                $html .= '<tr>';
+                $html .= '<td>TOTAL GENERAL</td>';
+                $html .= '<td>' . number_format($total_final, 2, '.', '') . '</td>';
+                $html .= '</tr>';
+
+                $html .= '</tbody></table>';
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+
+
+            // Guardar PDF o forzar descarga
+            return response($pdf->Output('S'), 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="caja.pdf"');
         } else {
+            // EXCEL
+
             $spreadsheet = new Spreadsheet();
 
             $spreadsheet->getProperties()
