@@ -133,6 +133,7 @@ const cargarTipoPagos = async () => {
                     classTd: (item) => {
                         return "justify-content-end";
                     },
+                    width: "100px",
                     render: (item, index) => {
                         if (item.tipo_pago != elem.value) return "-";
                         // if (item.tipo !== elem.value) return "";
@@ -441,18 +442,14 @@ onBeforeMount(() => {
                 <template #tableFooter>
                     <tr class="">
                         <td
-                            class="bg-principal p-3 text-right text-md font-weight-bold"
+                            class="bg-principal p-3 text-md font-weight-bold"
                             colspan="6"
                         >
                             TOTALES
                         </td>
                         <template v-for="(tipo_pago, index) in listTipoPagos">
                             <td
-                                class="bg-principal p-3 text-right text-md font-weight-bold"
-                                style="
-                                    min-width: 400px !important;
-                                    width: inherit;
-                                "
+                                class="bg-principal p-3 text-right text-md font-weight-bold fixed-column-ext-right"
                             >
                                 {{ sumaPorTipos[tipo_pago.value] }}
                             </td>
@@ -460,14 +457,13 @@ onBeforeMount(() => {
                     </tr>
                     <tr class="">
                         <td
-                            class="bg-principal p-3 text-right text-lg font-weight-bold"
+                            class="bg-principal p-3 text-lg font-weight-bold"
                             colspan="6"
                         >
                             TOTAL FINAL
                         </td>
                         <td
-                            class="bg-principal p-3 text-center text-lg font-weight-bold"
-                            style="min-width: 400px !important; width: inherit"
+                            class="bg-principal p-3 text-center text-lg font-weight-bold fixed-column-ext-right"
                             colspan="2"
                         >
                             {{ total }}
@@ -541,7 +537,7 @@ onBeforeMount(() => {
                     <template #tableFooter>
                         <tr class="">
                             <td
-                                class="bg-danger p-3 text-right text-md font-weight-bold"
+                                class="bg-danger p-3 text-md font-weight-bold fixed-column-ext"
                                 colspan="6"
                             >
                                 TOTALES
@@ -550,7 +546,7 @@ onBeforeMount(() => {
                                 v-for="(tipo_pago, index) in listTipoPagos"
                             >
                                 <td
-                                    class="bg-danger p-3 text-right text-md font-weight-bold"
+                                    class="bg-danger p-3 text-right text-md font-weight-bold fixed-column-ext-right"
                                     style="
                                         min-width: 400px !important;
                                         width: inherit;
@@ -566,13 +562,13 @@ onBeforeMount(() => {
                         </tr>
                         <tr class="">
                             <td
-                                class="bg-danger p-3 text-right text-lg font-weight-bold"
+                                class="bg-danger p-3 text-lg font-weight-bold fixed-column-ext"
                                 colspan="6"
                             >
                                 TOTAL FINAL
                             </td>
                             <td
-                                class="bg-danger p-3 text-center text-lg font-weight-bold"
+                                class="bg-danger p-3 text-center text-lg font-weight-bold fixed-column-ext-right"
                                 style="
                                     min-width: 400px !important;
                                     width: inherit;
