@@ -61,7 +61,7 @@ class PagoService
             $pagos->where("status", 1);
 
             // SIN VERIFICAR VOLVER A VALIDAR
-            $pagos_sin_verificar->where("verificado", 0);
+            $pagos_sin_verificar->where("status", 1)->where("verificado", 0);
             if (Auth::user()->tipo == 'MÉDICO') {
                 $pagos_sin_verificar->where("user_id", Auth::user()->id);
             }
@@ -219,6 +219,8 @@ class PagoService
                         $verificado = $this->obtieneEstadoVerificado($sucursal_id, $login_user);
                         $pago->fecha_verificado = $fecha_actual;
                         $pago->hora_verificado = $hora_actual;
+                        $pago->user_id = $login_user->user_id;
+                        $pago->sucursal_id = $sucursal_id;
                         $pago->verificado = $verificado;
                     }
                     $certificado_detalle->cancelado = $certificado_detalle->precio;
