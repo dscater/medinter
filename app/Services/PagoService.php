@@ -193,7 +193,7 @@ class PagoService
         if ($pago) {
             // si el monto del pago es diferente al cancelado del detalle, actualizar el monto del pago
             $pago->tipo_pago = $certificado_detalle->certificado->tipo_pago;
-            $pago->status = 1;
+            // $pago->status = 1;
             if ($pago->monto != $certificado_detalle->cancelado && $certificado_detalle->cancelado > 0) {
                 $pago->monto = $certificado_detalle->cancelado;
                 $pago->save();
@@ -202,7 +202,7 @@ class PagoService
             } else {
                 $pago->tipo_pago = $certificado_detalle->certificado->tipo_pago;
                 $certificado_detalle->saldo = $nuevo_saldo;
-                if ($nuevo_saldo > 0) {
+                if ((float)$nuevo_saldo > 0) {
                     // ELIMINAR PAGO
                     $certificado_detalle->cancelado = 0;
                     $pago->status = 0;
@@ -215,6 +215,9 @@ class PagoService
                         if (!$login_user) {
                             throw new Exception("Error no se encontró la sucursal del usuario");
                         }
+                        // Log::debug("actuliazo");
+                        // Log::debug($login_user);
+
                         $sucursal_id = $login_user->sucursal_id;
                         $verificado = $this->obtieneEstadoVerificado($sucursal_id, $login_user);
                         $pago->fecha_verificado = $fecha_actual;
@@ -222,6 +225,7 @@ class PagoService
                         $pago->user_id = $login_user->user_id;
                         $pago->sucursal_id = $sucursal_id;
                         $pago->verificado = $verificado;
+                        $pago->status = 1;
                     }
                     $certificado_detalle->cancelado = $certificado_detalle->precio;
                     $pago->monto = $certificado_detalle->precio;
