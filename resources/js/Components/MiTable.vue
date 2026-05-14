@@ -509,8 +509,9 @@ const ajustarAnchoColumnas = async () => {
             const colsColgroupContent =
                 miContentTableRef.value.querySelectorAll("col");
 
-            const colsColgroupFooter =
-                miTableFooterRef.value.querySelectorAll("col");
+            const colsColgroupFooter = miTableFooterRef.value
+                ? miTableFooterRef.value.querySelectorAll("col")
+                : [];
 
             // recorrer las columnas listThHeader
             listThHeader.forEach((elemCol, indexCol) => {
@@ -541,8 +542,11 @@ const ajustarAnchoColumnas = async () => {
                 colsColgroupHeader[indexCol].style.width = widthDefinido + "px";
                 colsColgroupContent[indexCol].style.width =
                     widthDefinido + "px";
-                colsColgroupFooter[indexCol].style.width = widthDefinido + "px";
-                listAnchoColumnas.value[indexCol] = widthDefinido;
+                if (colsColgroupFooter.length > 0) {
+                    colsColgroupFooter[indexCol].style.width =
+                        widthDefinido + "px";
+                    listAnchoColumnas.value[indexCol] = widthDefinido;
+                }
             });
         }
 
