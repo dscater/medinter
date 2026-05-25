@@ -329,7 +329,9 @@ class PagoService
     public function eliminarPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle)
     {
         $pago = $this->verificaPagoCertificadoDetalle($certificado_detalle);
-        $pago->delete();
+        if ($pago) {
+            $pago->delete();
+        }
     }
 
 
