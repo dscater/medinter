@@ -19,6 +19,7 @@ class Cliente extends Model
         "cel",
         "fecha_registro",
         "status",
+        "user_id"
     ];
 
     protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t", "full_name"];
@@ -60,5 +61,10 @@ class Cliente extends Model
         }
 
         return $query;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

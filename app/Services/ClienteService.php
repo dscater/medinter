@@ -37,9 +37,20 @@ class ClienteService
      */
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
-        $clientes = Cliente::select("clientes.*");
+        $clientes = Cliente::select("clientes.*")
+            ->with("user:id,nombre,paterno,materno");
 
-        $clientes->buscarNombre($search);
+        $clientes->where(function ($query) use ($search) {
+
+            $query->buscarNombre($search);
+
+            $query->orWhereHas("user", function ($sub) use ($search) {
+                $sub->whereRaw(
+                    "CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?",
+                    ["%{$search}%"]
+                );
+            });
+        });
 
         // Ordenamiento
         foreach ($orderBy as $value) {

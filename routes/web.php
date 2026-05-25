@@ -11,6 +11,7 @@ use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecepcionPagoController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\SincronizacionController;
 use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\TipoCertificadoController;
 use App\Http\Controllers\TipoPagoController;
@@ -47,7 +48,8 @@ Route::get('/clear-cache', function () {
     return 'Cache eliminado <a href="/">Ir al inicio</a>';
 })->name('clear.cache');
 
-Route::get("sincronizarInicio", [CertificadoEmitidoController::class, 'sincronizarInicio']);
+Route::get("sincronizarInicio", [SincronizacionController::class, 'sincronizarInicio']);
+Route::get("sincronizarClientesTramitador", [SincronizacionController::class, 'sincronizarClientesTramitador']);
 
 // ADMINISTRACION
 Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function () {

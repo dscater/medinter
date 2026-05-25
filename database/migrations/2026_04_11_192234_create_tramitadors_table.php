@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("ci_exp");
             $table->string("cel");
             $table->date("fecha_registro");
+            $table->unsignedBigInteger("user_id")->nullable();
             $table->timestamps();
         });
     }

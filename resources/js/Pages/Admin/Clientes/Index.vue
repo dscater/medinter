@@ -22,60 +22,123 @@ const { setCliente, limpiarCliente, form } = useClientes();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
-const headers = [
-    {
-        label: "NRO.",
-        key: "id",
-        sortable: true,
-        width: "4%",
-    },
-    {
-        label: "NOMBRE",
-        key: "nombre",
-        sortable: true,
-    },
-    {
-        label: "AP. PATERNO",
-        key: "paterno",
-        sortable: true,
-    },
-    {
-        label: "AP. MATERNO",
-        key: "materno",
-        sortable: true,
-    },
-    {
-        label: "C.I.",
-        key: "full_ci",
-        sortable: true,
-    },
-    {
-        label: "FECHA NACIMIENTO",
-        key: "fecha_nac_t",
-        sortable: true,
-    },
-    {
-        label: "EDAD",
-        key: "edad",
-        sortable: true,
-    },
-    {
-        label: "TELÉFONO/CELULAR",
-        key: "cel",
-        sortable: true,
-    },
-    {
-        label: "FECHA REGISTRO",
-        key: "fecha_registro",
-        sortable: true,
-    },
-    {
-        label: "ACCIÓN",
-        key: "accion",
-        fixed: "right",
-        width: "4%",
-    },
-];
+const headers =
+    props_page.auth?.user.tipo == "ADMINISTRADOR" ||
+    props_page.auth?.user.tipo == "GERENTE"
+        ? [
+              {
+                  label: "NRO.",
+                  key: "id",
+                  sortable: true,
+                  width: "4%",
+              },
+              {
+                  label: "NOMBRE",
+                  key: "nombre",
+                  sortable: true,
+              },
+              {
+                  label: "AP. PATERNO",
+                  key: "paterno",
+                  sortable: true,
+              },
+              {
+                  label: "AP. MATERNO",
+                  key: "materno",
+                  sortable: true,
+              },
+              {
+                  label: "C.I.",
+                  key: "full_ci",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA NACIMIENTO",
+                  key: "fecha_nac_t",
+                  sortable: true,
+              },
+              {
+                  label: "EDAD",
+                  key: "edad",
+                  sortable: true,
+              },
+              {
+                  label: "TELÉFONO/CELULAR",
+                  key: "cel",
+                  sortable: true,
+              },
+              {
+                  label: "REGISTRADO POR",
+                  key: "user",
+                  keySortable: "user_id",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA REGISTRO",
+                  key: "fecha_registro",
+                  sortable: true,
+              },
+              {
+                  label: "ACCIÓN",
+                  key: "accion",
+                  fixed: "right",
+                  width: "4%",
+              },
+          ]
+        : [
+              {
+                  label: "NRO.",
+                  key: "id",
+                  sortable: true,
+                  width: "4%",
+              },
+              {
+                  label: "NOMBRE",
+                  key: "nombre",
+                  sortable: true,
+              },
+              {
+                  label: "AP. PATERNO",
+                  key: "paterno",
+                  sortable: true,
+              },
+              {
+                  label: "AP. MATERNO",
+                  key: "materno",
+                  sortable: true,
+              },
+              {
+                  label: "C.I.",
+                  key: "full_ci",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA NACIMIENTO",
+                  key: "fecha_nac_t",
+                  sortable: true,
+              },
+              {
+                  label: "EDAD",
+                  key: "edad",
+                  sortable: true,
+              },
+              {
+                  label: "TELÉFONO/CELULAR",
+                  key: "cel",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA REGISTRO",
+                  key: "fecha_registro",
+                  sortable: true,
+              },
+              {
+                  label: "ACCIÓN",
+                  key: "accion",
+                  fixed: "right",
+                  width: "4%",
+              },
+          ];
 
 const multiSearch = ref({
     search: "",
@@ -204,6 +267,13 @@ const eliminarCliente = (item) => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
+                            <template #user="{ item }">
+                                <span
+                                    >{{ item.user.nombre }}
+                                    {{ item.user.paterno }}
+                                    {{ item.user.materno }}</span
+                                >
+                            </template>
                             <template #accion="{ item }">
                                 <template
                                     v-if="

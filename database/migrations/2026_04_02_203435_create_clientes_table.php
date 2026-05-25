@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string("cel")->nullable();
             $table->date("fecha_registro")->nullable();
             $table->integer("status")->default(1);
+            $table->unsignedBigInteger("user_id")->nullable();
             $table->timestamps();
         });
     }

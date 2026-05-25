@@ -14,6 +14,7 @@ const props = defineProps({
 
 const muestra_form = ref(props.muestra_formulario);
 const enviando = ref(false);
+const verPassword = ref(false);
 const form = useForm({
     password: "",
 });
@@ -118,13 +119,30 @@ const cerrarFormulario = () => {
                 <div class="row">
                     <div class="col-md-12">
                         <label>Ingresa la nueva contraseña:</label>
-                        <input
-                            placeholder="Ingresa la nueva contraseña"
-                            class="form-control"
-                            autocomplete="false"
-                            v-model="form.password"
-                            type="password"
-                        />
+                        <div class="input-group">
+                            <input
+                                placeholder="Ingresa la nueva contraseña"
+                                class="form-control"
+                                autocomplete="false"
+                                v-model="form.password"
+                                :type="verPassword ? 'text' : 'password'"
+                            />
+                            <div class="input-group-append">
+                                <button
+                                    class="btn btn-default"
+                                    @click.prevent="verPassword = !verPassword"
+                                >
+                                    <i
+                                        class="fa"
+                                        :class="[
+                                            verPassword
+                                                ? 'fa fa-eye'
+                                                : 'fa fa-eye-slash',
+                                        ]"
+                                    ></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

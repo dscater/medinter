@@ -12,6 +12,7 @@ class Tramitador extends Model
         "ci_exp",
         "cel",
         "fecha_registro",
+        "user_id"
     ];
 
     protected $appends = ["fecha_registro_t", "full_ci"];
@@ -40,5 +41,10 @@ class Tramitador extends Model
         }
 
         return $query;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

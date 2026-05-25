@@ -24,40 +24,82 @@ const { setTramitador, limpiarTramitador, form } = useTramitadors();
 const { axiosDelete } = useAxios();
 
 const miTable = ref(null);
-const headers = [
-    {
-        label: "NRO.",
-        key: "id",
-        sortable: true,
-        width: "4%",
-    },
-    {
-        label: "NOMBRE",
-        key: "nombre",
-        sortable: true,
-    },
-    {
-        label: "C.I.",
-        key: "full_ci",
-        sortable: true,
-    },
-    {
-        label: "TELÉFONO/CELULAR",
-        key: "cel",
-        sortable: true,
-    },
-    {
-        label: "FECHA REGISTRO",
-        key: "fecha_registro",
-        sortable: true,
-    },
-    {
-        label: "ACCIÓN",
-        key: "accion",
-        fixed: "right",
-        width: "4%",
-    },
-];
+const headers =
+    props_page.auth?.user.tipo == "ADMINISTRADOR" ||
+    props_page.auth?.user.tipo == "GERENTE"
+        ? [
+              {
+                  label: "NRO.",
+                  key: "id",
+                  sortable: true,
+                  width: "4%",
+              },
+              {
+                  label: "NOMBRE",
+                  key: "nombre",
+                  sortable: true,
+              },
+              {
+                  label: "C.I.",
+                  key: "full_ci",
+                  sortable: true,
+              },
+              {
+                  label: "TELÉFONO/CELULAR",
+                  key: "cel",
+                  sortable: true,
+              },
+              {
+                  label: "REGISTRADO POR",
+                  key: "user",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA REGISTRO",
+                  key: "fecha_registro",
+                  sortable: true,
+              },
+              {
+                  label: "ACCIÓN",
+                  key: "accion",
+                  fixed: "right",
+                  width: "4%",
+              },
+          ]
+        : [
+              {
+                  label: "NRO.",
+                  key: "id",
+                  sortable: true,
+                  width: "4%",
+              },
+              {
+                  label: "NOMBRE",
+                  key: "nombre",
+                  sortable: true,
+              },
+              {
+                  label: "C.I.",
+                  key: "full_ci",
+                  sortable: true,
+              },
+              {
+                  label: "TELÉFONO/CELULAR",
+                  key: "cel",
+                  sortable: true,
+              },
+              {
+                  label: "FECHA REGISTRO",
+                  key: "fecha_registro",
+                  sortable: true,
+              },
+              {
+                  label: "ACCIÓN",
+                  key: "accion",
+                  fixed: "right",
+                  width: "4%",
+              },
+          ];
 
 const multiSearch = ref({
     search: "",
@@ -185,6 +227,13 @@ const eliminarTramitador = (item) => {
                             :header-class="'bg__primary'"
                             fixed-header
                         >
+                            <template #user="{ item }">
+                                <span
+                                    >{{ item.user.nombre }}
+                                    {{ item.user.paterno }}
+                                    {{ item.user.materno }}</span
+                                >
+                            </template>
                             <template #accion="{ item }">
                                 <template
                                     v-if="

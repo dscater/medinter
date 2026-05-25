@@ -37,9 +37,18 @@ class TramitadorService
      */
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
-        $tramitadors = Tramitador::select("tramitadors.*");
+        $tramitadors = Tramitador::select("tramitadors.*")
+            ->with("user:id,nombre,paterno,materno");
 
-        $tramitadors->buscarNombre($search);
+        $tramitadors->where(function ($query) use ($search) {
+            $query->buscarNombre($search);
+            $query->orWhereHas("user", function ($sub) use ($search) {
+                $sub->whereRaw(
+                    "CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?",
+                    ["%{$search}%"]
+                );
+            });
+        });
 
         // Ordenamiento
         foreach ($orderBy as $value) {
