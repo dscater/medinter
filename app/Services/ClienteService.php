@@ -8,9 +8,9 @@ use App\Models\User;
 use DateTime;
 use Illuminate\Http\UploadedFile;
 use Exception;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
@@ -81,7 +81,8 @@ class ClienteService
             "fecha_nac" => $datos['fecha_nac'],
             "edad" => isset($datos['edad']) && $datos['edad'] ? $datos["edad"] : $this->calcularEdad($datos["fecha_nac"]),
             "cel" => $datos['cel'],
-            "fecha_registro" => date("Y-m-d")
+            "fecha_registro" => date("Y-m-d"),
+            "user_id" => Auth::user()->id,
         ]);
 
         if ($datos["con_certificado"]) {

@@ -9,9 +9,9 @@ use App\Models\Tramite;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Exception;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class TramitadorService
@@ -74,7 +74,8 @@ class TramitadorService
             "ci" => mb_strtoupper($datos['ci']),
             "ci_exp" => mb_strtoupper($datos['ci_exp']),
             "cel" => $datos['cel'],
-            "fecha_registro" => date("Y-m-d")
+            "fecha_registro" => date("Y-m-d"),
+            "user_id" => Auth::user()->id,
         ]);
 
         // registrar accion
