@@ -952,7 +952,8 @@ class ReporteController extends Controller
         $fecha_ini =  $request->fecha_ini;
         $fecha_fin =  $request->fecha_fin;
         $formato =  $request->formato;
-        $clientes = Cliente::select("clientes.*");
+        $clientes = Cliente::select("clientes.*")
+            ->where("status", 1);
 
         if ($fecha_ini && $fecha_fin) {
             $clientes->whereBetween('fecha_registro', [$fecha_ini, $fecha_fin]);

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Certificado;
 use App\Services\HistorialAccionService;
 use App\Models\Cliente;
 use App\Models\User;
@@ -38,7 +39,8 @@ class ClienteService
     public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $clientes = Cliente::select("clientes.*")
-            ->with("user:id,nombre,paterno,materno");
+            ->with("user:id,nombre,paterno,materno")
+            ->where("status", 1);
 
         $clientes->where(function ($query) use ($search) {
 
@@ -143,6 +145,12 @@ class ClienteService
     public function eliminar(Cliente $cliente): bool|Exception
     {
         $old_cliente = clone $cliente;
+
+        $usos = Certificado::where("cliente_id", $cliente->id)->count();
+        if ($usos > 0) {
+            throw ValidationException::withMessages(["cliente" => "No se puede eliminar el cliente porque tiene certificados asociados."]);
+        }
+
         $cliente->status = 0;
         $cliente->save();
 
