@@ -341,9 +341,11 @@ class ReporteController extends Controller
         $fecha_fin = $request->fecha_fin;
         $sucursal_id = $request->sucursal_id;
         $medico_id = $request->medico_id;
+        $user_id = $request->user_id;
         $formato = $request->formato;
 
-        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id);
+        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id, $user_id);
+
         $pagos = $array_res[0];
         $suma_tipos = $array_res[1];
         $pagos_sin_verificar = $array_res[2];
@@ -353,7 +355,6 @@ class ReporteController extends Controller
         $tipo_pagos = $this->tipo_pago_service->listado();
 
         if ($formato == 'pdf') {
-
             $pdf = new ReporteServiceTcpdf();
             $pdf->SetTitle('Caja');
             $pdf->setMargins(10, 5, 5);
@@ -378,6 +379,17 @@ class ReporteController extends Controller
             $pdf->SetFont('helvetica', '', $font_size2);
             $pdf->Cell(40, 5,  Auth::user()->full_name, 0, 0);
             $pdf->Cell(133, 5, "Del " . date('d/m/Y', strtotime($fecha_ini)) . " al " . date('d/m/Y', strtotime($fecha_fin)), 0, 1, 'R');
+            if (Auth::user()->tipo == 'MÉDICO' || Auth::user()->tipo == 'SECRETARIA') {
+                $user_id = Auth::user()->id;
+            }
+            if ($user_id) {
+                $pdf->SetFont('helvetica', 'B', $font_size2);
+                $pdf->SetX(9);
+                $pdf->Cell(41, 5, "Pagos recepcionados por: ", 0, 0, 'L');
+                $user = User::find($user_id);
+                $pdf->SetFont('helvetica', '', $font_size2);
+                $pdf->Cell(40, 5, $user->full_name, 0, 1);
+            }
 
             $pdf->SetFont('helvetica', 'B', $font_size);
 
@@ -584,6 +596,21 @@ class ReporteController extends Controller
             $sheet->setCellValue('C' . $fila, Auth::user()->nombre . ' ' . AUth::user()->paterno . ' ' . Auth::user()->materno);
             $sheet->mergeCells("C{$fila}:{$lastColumn}{$fila}");
             $fila++;
+
+            if (Auth::user()->tipo == 'MÉDICO' || Auth::user()->tipo == 'SECRETARIA') {
+                $user_id = Auth::user()->id;
+            }
+            if ($user_id) {
+                /* ===================== USUARIO RECEPCION ===================== */
+                $sheet->setCellValue('A' . $fila, 'Pagos recepcionados por:');
+                $sheet->mergeCells("A{$fila}:B{$fila}");
+                $sheet->getStyle("A{$fila}:B{$fila}")->applyFromArray($this->textRight);
+                $user = User::find($user_id);
+                $sheet->setCellValue('C' . $fila, $user->full_name);
+                $sheet->mergeCells("C{$fila}:{$lastColumn}{$fila}");
+                $fila++;
+            }
+
 
             /* ===================== FECHA ===================== */
             $sheet->setCellValue('A' . $fila, 'Fecha:');

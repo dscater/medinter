@@ -19,7 +19,7 @@ onMounted(() => {
 });
 
 const { setCliente, limpiarCliente, form } = useClientes();
-const { axiosDelete } = useAxios();
+const { axiosDelete, axiosPost } = useAxios();
 
 const miTable = ref(null);
 const headers =
@@ -148,11 +148,6 @@ const multiSearch = ref({
 const muestra_formulario = ref(false);
 const muestra_form_certificado = ref(false);
 
-const agregarRegistro = () => {
-    limpiarCliente();
-    muestra_formulario.value = true;
-};
-
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
@@ -161,10 +156,37 @@ const updateDatatable = async () => {
     }
 };
 
+const restaurar = (item) => {
+    Swal.fire({
+        title: "¿Quierés restaurar este registro?",
+        html: `<strong>${item.nombre} ${item.paterno} ${item.materno}</strong>`,
+        showCancelButton: true,
+        confirmButtonText: "Si, restaurar",
+        cancelButtonText: "No, cancelar",
+        denyButtonText: `No, cancelar`,
+        customClass: {
+            confirmButton: "btn-success",
+        },
+    }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            let respuesta = await axiosPost(
+                route("clientes.restaurar", item.id),
+                {
+                    _method: "PATCH",
+                },
+            );
+            if (respuesta && respuesta.sw) {
+                updateDatatable();
+            }
+        }
+    });
+};
+
 const eliminarCliente = (item) => {
     Swal.fire({
-        title: "¿Quierés eliminar este registro?",
-        html: `<strong>${item.nombre} ${item.paterno} ${item.materno}</strong>`,
+        title: "¿Quierés eliminar de forma permanente este registro?",
+        html: `<strong>${item.nombre} ${item.paterno} ${item.materno}</strong><h4>Esta acción no se podra deshacer!!!</h4>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
         cancelButtonText: "No, cancelar",
@@ -176,7 +198,7 @@ const eliminarCliente = (item) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             let respuesta = await axiosDelete(
-                route("clientes.destroy", item.id),
+                route("clientes.eliminacionPermanente", item.id),
             );
             if (respuesta && respuesta.sw) {
                 updateDatatable();
@@ -186,13 +208,13 @@ const eliminarCliente = (item) => {
 };
 </script>
 <template>
-    <Head title="Clientes"></Head>
+    <Head title="Clientes Eliminados"></Head>
     <Content>
         <template #header>
             <div class="row">
                 <div class="col-sm-6">
                     <h1 class="m-0">
-                        <i class="fa fa-user-friends"></i> Clientes
+                        <i class="fa fa-user-friends"></i> Clientes Eliminados
                     </h1>
                 </div>
                 <!-- /.col -->
@@ -201,7 +223,12 @@ const eliminarCliente = (item) => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">Clientes</li>
+                        <li class="breadcrumb-item">
+                            <Link :href="route('clientes.index')"
+                                >Clientes</Link
+                            >
+                        </li>
+                        <li class="breadcrumb-item active">Eliminados</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -212,30 +239,17 @@ const eliminarCliente = (item) => {
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-4">
-                        <button
-                            v-if="
-                                props_page.auth?.user.permisos == '*' ||
-                                props_page.auth?.user.permisos.includes(
-                                    'clientes.create',
-                                )
-                            "
-                            type="button"
-                            class="btn btn-primary text-sm"
-                            @click="agregarRegistro"
-                        >
-                            <i class="fa fa-plus"></i> Nuevo Cliente
-                        </button>
                         <Link
                             v-if="
                                 props_page.auth?.user.permisos == '*' ||
                                 props_page.auth?.user.permisos.includes(
-                                    'clientes.eliminados',
+                                    'clientes.index',
                                 )
                             "
-                            class="btn btn-outline-danger text-sm ml-1"
-                            :href="route('clientes.eliminados')"
+                            class="btn btn-default text-sm"
+                            :href="route('clientes.index')"
                         >
-                            <i class="fa fa-trash"></i> Eliminados
+                            <i class="fa fa-arrow-left"></i> Volver
                         </Link>
                     </div>
                     <div class="col-md-8 my-1">
@@ -270,7 +284,7 @@ const eliminarCliente = (item) => {
                             ref="miTable"
                             :cols="headers"
                             :api="true"
-                            :url="route('clientes.paginado')"
+                            :url="route('clientes.paginadoEliminados')"
                             :numPages="5"
                             :multiSearch="multiSearch"
                             :syncOrderBy="'id'"
@@ -291,50 +305,21 @@ const eliminarCliente = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'certificados.registroCliente',
+                                            'clientes.restaurar',
                                         )
                                     "
                                 >
                                     <el-tooltip
                                         class="box-item"
                                         effect="dark"
-                                        content="Certificado"
+                                        content="Restaurar"
                                         placement="left-start"
                                     >
                                         <button
-                                            class="btn btn-primary"
-                                            @click="
-                                                setCliente(item);
-                                                muestra_form_certificado = true;
-                                            "
+                                            class="btn btn-success"
+                                            @click="restaurar(item)"
                                         >
-                                            <i
-                                                class="fa fa-clipboard-list"
-                                            ></i></button
-                                    ></el-tooltip>
-                                </template>
-                                <template
-                                    v-if="
-                                        props_page.auth?.user.permisos == '*' ||
-                                        props_page.auth?.user.permisos.includes(
-                                            'clientes.edit',
-                                        )
-                                    "
-                                >
-                                    <el-tooltip
-                                        class="box-item"
-                                        effect="dark"
-                                        content="Editar"
-                                        placement="left-start"
-                                    >
-                                        <button
-                                            class="btn btn-warning"
-                                            @click="
-                                                setCliente(item);
-                                                muestra_formulario = true;
-                                            "
-                                        >
-                                            <i class="fa fa-pen"></i></button
+                                            <i class="fa fa-sync"></i></button
                                     ></el-tooltip>
                                 </template>
 
@@ -342,7 +327,7 @@ const eliminarCliente = (item) => {
                                     v-if="
                                         props_page.auth?.user.permisos == '*' ||
                                         props_page.auth?.user.permisos.includes(
-                                            'clientes.destroy',
+                                            'clientes.eliminacionPermanente',
                                         )
                                     "
                                 >

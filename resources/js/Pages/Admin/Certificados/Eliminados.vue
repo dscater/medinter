@@ -166,7 +166,7 @@ const restaurar = (item) => {
 
 const eliminarCertificado = (item) => {
     Swal.fire({
-        title: "¿Quierés eliminar este registro?",
+        title: "¿Quierés eliminar de forma permanente este registro?",
         html: `<strong>Nro. de registro: ${item.id}</strong><h4>Esta acción no se podra deshacer!!!</h4>`,
         showCancelButton: true,
         confirmButtonText: "Si, eliminar",
@@ -213,9 +213,12 @@ const editarDetalle = (item) => {
                         <li class="breadcrumb-item">
                             <Link :href="route('inicio')">Inicio</Link>
                         </li>
-                        <li class="breadcrumb-item active">
-                            Certificados Eliminados
+                        <li class="breadcrumb-item">
+                            <Link :href="route('certificados.index')"
+                                >Certificados</Link
+                            >
                         </li>
+                        <li class="breadcrumb-item active">Eliminados</li>
                     </ol>
                 </div>
                 <!-- /.col -->
@@ -405,7 +408,7 @@ const editarDetalle = (item) => {
                                         (props_page.auth?.user.permisos ==
                                             '*' ||
                                             props_page.auth?.user.permisos.includes(
-                                                'certificados.destroy',
+                                                'certificados.eliminacionPermanente',
                                             ))
                                     "
                                 >

@@ -45,6 +45,10 @@ class PermisoService
             "clientes.show",
             "clientes.update",
             "clientes.destroy",
+            "clientes.eliminados",
+            "clientes.restaurar",
+            "clientes.eliminacionPermanente",
+            "clientes.paginadoEliminados",
 
             "tramitadors.paginado",
             "tramitadors.index",
@@ -155,6 +159,10 @@ class PermisoService
             "clientes.show",
             "clientes.update",
             "clientes.destroy",
+            "clientes.eliminados",
+            "clientes.restaurar",
+            "clientes.eliminacionPermanente",
+            "clientes.paginadoEliminados",
 
             "tramitadors.paginado",
             "tramitadors.index",
@@ -254,6 +262,10 @@ class PermisoService
             "clientes.show",
             "clientes.update",
             "clientes.destroy",
+            "clientes.eliminados",
+            "clientes.restaurar",
+            "clientes.eliminacionPermanente",
+            "clientes.paginadoEliminados",
 
             "tramitadors.paginado",
             "tramitadors.index",
@@ -320,6 +332,10 @@ class PermisoService
             "clientes.update",
             "clientes.destroy",
             "certificados.verificaPendienteCliente",
+            "clientes.eliminados",
+            "clientes.restaurar",
+            "clientes.eliminacionPermanente",
+            "clientes.paginadoEliminados",
 
             "tramitadors.paginado",
             "tramitadors.index",

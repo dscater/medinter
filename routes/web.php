@@ -102,6 +102,10 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     Route::get("clientes/paginado", [ClienteController::class, 'paginado'])->name("clientes.paginado");
     Route::get("clientes/listado", [ClienteController::class, 'listado'])->name("clientes.listado");
     Route::get("clientes/byCi", [ClienteController::class, 'byCi'])->name("clientes.byCi");
+    Route::patch("clientes/restaurar/{cliente}", [ClienteController::class, 'restaurar'])->name("clientes.restaurar");
+    Route::delete("clientes/eliminacionPermanente/{cliente}", [ClienteController::class, 'eliminacionPermanente'])->name("clientes.eliminacionPermanente");
+    Route::get("clientes/eliminados", [ClienteController::class, 'eliminados'])->name("clientes.eliminados");
+    Route::get("clientes/paginadoEliminados", [ClienteController::class, 'paginadoEliminados'])->name("clientes.paginadoEliminados");
     Route::resource("clientes", ClienteController::class)->only(
         ["index", "store", "edit", "show", "update", "destroy"]
     );

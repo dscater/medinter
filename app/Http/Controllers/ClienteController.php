@@ -33,6 +33,11 @@ class ClienteController extends Controller
         return Inertia::render("Admin/Clientes/Index");
     }
 
+    public function eliminados(): ResponseInertia
+    {
+        return Inertia::render("Admin/Clientes/Eliminados");
+    }
+
     /**
      * Listado de clientes
      *
@@ -73,6 +78,34 @@ class ClienteController extends Controller
         }
 
         $clientes = $this->clienteService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        return response()->JSON([
+            "data" => $clientes->items(),
+            "total" => $clientes->total(),
+            "lastPage" => $clientes->lastPage()
+        ]);
+    }
+
+    public function paginadoEliminados(Request $request)
+    {
+        $perPage = $request->perPage;
+        $page = (int)($request->input("page", 1));
+        $search = (string)$request->input("search", "");
+        $orderBy = $request->orderBy;
+        $orderAsc = $request->orderAsc;
+
+        $columnsSerachLike = [
+            "ci",
+        ];
+        $columnsFilter = [];
+        $columnsBetweenFilter = [];
+        $arrayOrderBy = [];
+        if ($orderBy && $orderAsc) {
+            $arrayOrderBy = [
+                [$orderBy, $orderAsc]
+            ];
+        }
+
+        $clientes = $this->clienteService->listadoPaginadoEliminados($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
         return response()->JSON([
             "data" => $clientes->items(),
             "total" => $clientes->total(),
@@ -162,6 +195,48 @@ class ClienteController extends Controller
         DB::beginTransaction();
         try {
             $this->clienteService->eliminar($cliente);
+            DB::commit();
+            return response()->JSON([
+                'sw' => true,
+                'message' => 'El registro se eliminó correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function restaurar(Cliente $cliente): JsonResponse|Response
+    {
+        DB::beginTransaction();
+        try {
+            $this->clienteService->restaurar($cliente);
+            DB::commit();
+            return response()->JSON([
+                'sw' => true,
+                'message' => 'El registro se restauro correctamente'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw ValidationException::withMessages([
+                'error' =>  $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Eliminar cliente
+     *
+     * @param Cliente $cliente
+     * @return JsonResponse|Response
+     */
+    public function eliminacionPermanente(Cliente $cliente): JsonResponse|Response
+    {
+        DB::beginTransaction();
+        try {
+            $this->clienteService->eliminacionPermanente($cliente);
             DB::commit();
             return response()->JSON([
                 'sw' => true,

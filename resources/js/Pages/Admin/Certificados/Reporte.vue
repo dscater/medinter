@@ -117,7 +117,7 @@ const cargarUsers = async () => {
     }
     const response = await axios.get(route("usuarios.byTipo"), {
         params: {
-            tipo: "MÉDICO",
+            tipo: ["MÉDICO", "GERENTE"],
         },
     });
     listUsers.value = response.data.usuarios;
@@ -202,7 +202,7 @@ onMounted(() => {});
                                 v-for="item in listUsers"
                                 :key="item.id"
                                 :value="item.id"
-                                :label="item.full_name"
+                                :label="`${item.full_name} ${item.tipo ? ' - ' + item.tipo : ''}`"
                             >
                             </el-option>
                         </el-select>

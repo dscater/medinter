@@ -26,7 +26,8 @@ class PagoService
         $fecha_ini,
         $fecha_fin,
         $sucursal_id,
-        $medico_id
+        $medico_id,
+        $user_id,
     ) {
         $pagos = [];
         $suma_tipos = [];
@@ -56,7 +57,11 @@ class PagoService
             }
             $pagos_sin_verificar = clone $pagos;
             if (Auth::user()->tipo == 'MÉDICO' || Auth::user()->tipo == 'SECRETARIA') {
-                $pagos->where("user_id", Auth::user()->id);
+                $user_id = Auth::user()->id;
+                // $pagos->where("user_id", Auth::user()->id);
+            }
+            if ($user_id) {
+                $pagos->where("user_id", $user_id);
             }
             $pagos->where("status", 1);
 
@@ -65,6 +70,7 @@ class PagoService
             if (Auth::user()->tipo == 'MÉDICO') {
                 $pagos_sin_verificar->where("user_id", Auth::user()->id);
             }
+
             if (Auth::user()->tipo == 'SECRETARIA') {
                 $pagos_sin_verificar->where("sucursal_id", $login_user->sucursal_id);
             }

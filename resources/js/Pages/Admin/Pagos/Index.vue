@@ -83,6 +83,7 @@ const cargarPagosVerificados = async () => {
                 fecha_fin: filtros.value.fecha_fin,
                 sucursal_id: filtros.value.sucursal_id,
                 medico_id: filtros.value.medico_id,
+                user_id: filtros.value.user_id,
             },
         })
         .then(async (response) => {
@@ -168,11 +169,28 @@ const cargarMedicos = () => {
         });
 };
 
+const listUsers = ref([]);
+const cargarUsers = () => {
+    axios.get(route("usuarios.listado")).then((response) => {
+        listUsers.value = response.data.usuarios;
+    });
+};
+
+const txtUsuarioRecepcion = computed(() => {
+    if (!filtros.value.user_id) return "";
+    const user = listUsers.value.find((u) => u.id === filtros.value.user_id);
+    console.log("Usuario seleccionado:", user);
+    return user
+        ? `Pagos recepcionados por ${user.nombre} ${user.paterno} ${user.materno} - ${user.tipo}`
+        : "";
+});
+
 const filtros = ref({
     fecha_ini: obtenerFechaActual(),
     fecha_fin: obtenerFechaActual(),
     sucursal_id: "",
     medico_id: "",
+    user_id: "",
 });
 
 const total = computed(() => {
@@ -210,6 +228,7 @@ const exportar = (formato) => {
         fecha_fin: filtros.value.fecha_fin,
         sucursal_id: filtros.value.sucursal_id,
         medico_id: filtros.value.medico_id,
+        user_id: filtros.value.user_id,
         formato,
     });
     window.open(url, "_blank");
@@ -239,6 +258,7 @@ onBeforeMount(() => {
     cargarSucursals();
     cargarTipoPagos();
     cargarMedicos();
+    cargarUsers();
 });
 </script>
 <template>
@@ -353,6 +373,35 @@ onBeforeMount(() => {
                         </el-select>
                     </div>
                 </div>
+                <div class="row mt-1">
+                    <div
+                        class="col-md-3"
+                        v-if="
+                            props_page.auth.user.tipo == 'ADMINISTRADOR' ||
+                            props_page.auth.user.tipo == 'GERENTE'
+                        "
+                    >
+                        <label class="mb-0 text-xs text-muted"
+                            >Usuario Recepción de Pago</label
+                        >
+                        <el-select
+                            v-model="filtros.user_id"
+                            filterable
+                            placeholder="- Seleccione -"
+                            size="large"
+                            clearable
+                            @change="cargarRegistrosPagos"
+                        >
+                            <el-option
+                                v-for="item in listUsers"
+                                :key="item.id"
+                                :value="item.id"
+                                :label="`${item.nombre} ${item.paterno} ${item.materno} - ${item.tipo}`"
+                            >
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
                 <div class="row mb-1">
                     <div class="col-md-9 d-flex align-items-end">
                         <span class="text-primary">
@@ -367,8 +416,13 @@ onBeforeMount(() => {
                             verificar</span
                         >
                     </div>
+                    <div class="col-12" v-if="txtUsuarioRecepcion">
+                        <h5 class="text-info font-weight-bold">
+                            {{ txtUsuarioRecepcion }}
+                        </h5>
+                    </div>
                     <div class="col-md-3">
-                        <div class="row mt-4">
+                        <div class="row mt-1">
                             <div class="col-md-6">
                                 <button
                                     class="btn btn-danger w-100"

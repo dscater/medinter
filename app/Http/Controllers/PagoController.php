@@ -28,8 +28,9 @@ class PagoController extends Controller
         $fecha_fin = $request->fecha_fin;
         $sucursal_id = $request->sucursal_id;
         $medico_id = $request->medico_id;
+        $user_id = $request->user_id;
 
-        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id);
+        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id, $user_id);
         $pagos = $array_res[0];
         $suma_tipos = $array_res[1];
         $pagos_sin_verificar = $array_res[2];

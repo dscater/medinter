@@ -65,6 +65,35 @@ class ClienteService
         return $clientes;
     }
 
+    public function listadoPaginadoEliminados(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
+    {
+        $clientes = Cliente::select("clientes.*")
+            ->with("user:id,nombre,paterno,materno")
+            ->where("status", 0);
+
+        $clientes->where(function ($query) use ($search) {
+
+            $query->buscarNombre($search);
+
+            $query->orWhereHas("user", function ($sub) use ($search) {
+                $sub->whereRaw(
+                    "CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?",
+                    ["%{$search}%"]
+                );
+            });
+        });
+
+        // Ordenamiento
+        foreach ($orderBy as $value) {
+            if (isset($value[0], $value[1])) {
+                $clientes->orderBy($value[0], $value[1]);
+            }
+        }
+
+        $clientes = $clientes->paginate($length, ['*'], 'page', $page);
+        return $clientes;
+    }
+
     /**
      * Crear cliente
      *
@@ -156,6 +185,35 @@ class ClienteService
 
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN CLIENTE", $old_cliente, $cliente);
+
+        return true;
+    }
+
+    public function restaurar(Cliente $cliente): bool|Exception
+    {
+        $old_cliente = clone $cliente;
+        $cliente->status = 1;
+        $cliente->save();
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "RESTAURACIÓN", "RESTAURÓ UN CLIENTE", $old_cliente, $cliente);
+
+        return true;
+    }
+
+    public function eliminacionPermanente(Cliente $cliente): bool|Exception
+    {
+        $old_cliente = clone $cliente;
+        $usos = Certificado::where("cliente_id", $cliente->id)->count();
+
+        if ($usos > 0) {
+            throw ValidationException::withMessages(["cliente" => "No se puede eliminar el cliente porque tiene certificados asociados."]);
+        }
+
+        $cliente->delete();
+
+        // registrar accion
+        $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ PERMANENTEMENTE UN CLIENTE", $old_cliente, $cliente);
 
         return true;
     }
