@@ -54,11 +54,16 @@ class CertificadoDetalleRule implements ValidationRule
                 if (!isset($detalle['archivo']) || $detalle['archivo'] === null) {
                     if ($detalle['tipo_certificado_id'] == 1) {
                         $fail("El archivo del certificado " . ($index + 1) . " es obligatorio.");
+                        continue;
                     }
-                } else if (!is_string($detalle["archivo"])) {
+                }
+                if ($detalle["archivo"] && !is_string($detalle["archivo"])) {
                     // validar tamaño (2MB = 2048 KB)
-                    if ($detalle['archivo']->getSize() > 2048 * 1024) {
-                        $fail("El archivo del certificado " . ($index + 1) . " no debe superar los 2MB.");
+                    // Log::debug($detalle["archivo"]);
+                    // Log::debug($detalle["archivo"]->getSize());
+                    if ($detalle['archivo']->getSize() > 1024 * 1024) {
+                        $fail("El archivo del certificado " . ($index + 1) . " no debe superar los 1MB.");
+                        continue;
                     }
                 }
             }
