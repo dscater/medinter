@@ -51,6 +51,7 @@ const form = ref({
     sucursal_id: "todos",
     user_id: "todos",
     tipo_certificado_id: "todos",
+    tipo: "todos",
     fecha_ini: obtenerFechaActual(),
     fecha_fin: obtenerFechaActual(),
     formato: "pdf",
@@ -207,7 +208,26 @@ onMounted(() => {});
                             </el-option>
                         </el-select>
                     </div>
-
+                    <div class="col-md-12 mt-1">
+                        <label class="">Tipo</label>
+                        <el-select v-model="form.tipo">
+                            <el-option
+                                :key="'todos'"
+                                :value="'todos'"
+                                :label="'TODOS'"
+                            ></el-option>
+                            <el-option
+                                :key="'NORMAL'"
+                                :value="'NORMAL'"
+                                :label="'NORMAL'"
+                            ></el-option>
+                            <el-option
+                                :key="'TRAMITE'"
+                                :value="'TRAMITE'"
+                                :label="'TRAMITE'"
+                            ></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-12 mt-1">
                         <label>Rango de Fechas</label>
                         <div class="row">

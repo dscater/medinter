@@ -1451,6 +1451,7 @@ class ReporteController extends Controller
         set_time_limit(-1);
         $sucursal_id =  $request->sucursal_id;
         $user_id =  $request->user_id;
+        $tipo =  $request->tipo;
         $fecha_ini =  $request->fecha_ini;
         $fecha_fin =  $request->fecha_fin;
         // $tipo_certificado_id =  $request->tipo_certificado_id;
@@ -1469,6 +1470,12 @@ class ReporteController extends Controller
             if ($user_id != 'todos') {
                 $certificado_detalles->where("user_id", $user_id);
             }
+        }
+
+        if ($tipo != 'todos') {
+            $certificado_detalles->whereHas('certificado', function ($q) use ($tipo) {
+                $q->where("tipo", $tipo);
+            });
         }
 
         if ($fecha_ini && $fecha_fin) {
