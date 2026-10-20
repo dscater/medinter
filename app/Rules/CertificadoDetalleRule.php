@@ -51,12 +51,12 @@ class CertificadoDetalleRule implements ValidationRule
             $id = $detalle["id"] ?? 0;
             if ($this->conArchivo) {
                 // archivo
-                if (!isset($detalle['archivo']) || $detalle['archivo'] === null) {
-                    if ($detalle['tipo_certificado_id'] == 1) {
-                        $fail("El archivo del certificado " . ($index + 1) . " es obligatorio.");
-                        continue;
-                    }
-                }
+                // if (!isset($detalle['archivo']) || $detalle['archivo'] === null) {
+                //     if ($detalle['tipo_certificado_id'] == 1) {
+                //         $fail("El archivo del certificado " . ($index + 1) . " es obligatorio.");
+                //         continue;
+                //     }
+                // }
                 if ($detalle["archivo"] && !is_string($detalle["archivo"])) {
                     // validar tamaño (2MB = 2048 KB)
                     // Log::debug($detalle["archivo"]);
@@ -69,11 +69,11 @@ class CertificadoDetalleRule implements ValidationRule
             }
             if ($this->conCategoria) {
                 // categoria
-                if ($detalle['tipo_certificado_id'] == 1) {
-                    if ($detalle['categoria'] === "" || $detalle['categoria'] === null) {
-                        $fail("La categoría del certificado " . ($index + 1) . " es obligatorio." . $detalle['categoria']);
-                    }
-                }
+                // if ($detalle['tipo_certificado_id'] == 1) {
+                //     if ($detalle['categoria'] === "" || $detalle['categoria'] === null) {
+                //         $fail("La categoría del certificado " . ($index + 1) . " es obligatorio." . $detalle['categoria']);
+                //     }
+                // }
             }
         }
     }
