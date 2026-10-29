@@ -69,7 +69,14 @@ const salir = () => {
     });
 };
 
-onUnmounted(() => {});
+const removeNavigateListener = router.on("navigate", () => {
+    route_current.value = route().current();
+    closeSidebar();
+});
+
+onUnmounted(() => {
+    removeNavigateListener();
+});
 </script>
 <template>
     <!-- Main Sidebar Container -->
