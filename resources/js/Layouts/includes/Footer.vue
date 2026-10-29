@@ -3,7 +3,6 @@ import { onMounted, onBeforeUnmount } from "vue";
 import { useConfiguracionStore } from "@/stores/configuracion/configuracionStore";
 const configuracionStore = useConfiguracionStore();
 onMounted(() => {
-    configuracionStore.initConfiguracion();
     document.getElementsByTagName("body")[0].classList.add("login");
 });
 onBeforeUnmount(() => {

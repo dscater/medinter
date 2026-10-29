@@ -72,6 +72,24 @@ const cargarRegistrosPagos = async () => {
     }, 400);
 };
 
+const paginacionVerificados = ref({
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+    from: null,
+    to: null,
+});
+
+const paginacionSinVerificar = ref({
+    current_page: 1,
+    last_page: 1,
+    per_page: 20,
+    total: 0,
+    from: null,
+    to: null,
+});
+
 const cargarPagosVerificados = async () => {
     if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
         return;
@@ -84,15 +102,37 @@ const cargarPagosVerificados = async () => {
                 sucursal_id: filtros.value.sucursal_id,
                 medico_id: filtros.value.medico_id,
                 user_id: filtros.value.user_id,
+                pagina_verificados: paginaVerificados.value,
+                pagina_sin_verificar: paginaSinVerificar.value,
             },
         })
         .then(async (response) => {
-            listPagosVerificados.value = response.data.pagos;
+            listPagosVerificados.value = response.data.pagos.data;
             sumaPorTipos.value = response.data.suma_tipos;
-            listPagosSinVerificar.value = response.data.pagos_sin_verificar;
+            listPagosSinVerificar.value =
+                response.data.pagos_sin_verificar.data;
             sumaPorTiposSinVerificar.value =
                 response.data.suma_tipos_sin_verificar;
             suma_total_tipos.value = response.data.suma_total_tipos;
+
+            paginacionVerificados.value = {
+                current_page: response.data.pagos.current_page,
+                last_page: response.data.pagos.last_page,
+                per_page: response.data.pagos.per_page,
+                total: response.data.pagos.total,
+                from: response.data.pagos.from,
+                to: response.data.pagos.to,
+            };
+
+            paginacionSinVerificar.value = {
+                current_page: response.data.pagos_sin_verificar.current_page,
+                last_page: response.data.pagos_sin_verificar.last_page,
+                per_page: response.data.pagos_sin_verificar.per_page,
+                total: response.data.pagos_sin_verificar.total,
+                from: response.data.pagos_sin_verificar.from,
+                to: response.data.pagos_sin_verificar.to,
+            };
+
             appStore.stopLoading();
         })
         .finally(() => {
@@ -193,24 +233,51 @@ const filtros = ref({
     user_id: "",
 });
 
-const total = computed(() => {
-    const total = listPagosVerificados.value.reduce(
-        (sum, p) => sum + Number(p.monto),
-        0,
-    );
+const rangoVerificados = computed(() => {
+    const p = paginacionVerificados.value;
 
-    return total.toFixed(2);
+    return p.total > 0 ? `${p.from}–${p.to} de ${p.total}` : "0 de 0";
+});
+
+const rangoSinVerificar = computed(() => {
+    const p = paginacionSinVerificar.value;
+
+    return p.total > 0 ? `${p.from}–${p.to} de ${p.total}` : "0 de 0";
+});
+
+const paginaVerificados = ref(1);
+const paginaSinVerificar = ref(1);
+
+const cambiarPaginaVerificados = (pagina) => {
+    console.log(pagina);
+    if (pagina < 1 || pagina > paginacionVerificados.value.last_page) {
+        return;
+    }
+
+    paginaVerificados.value = pagina;
+    cargarPagosVerificados();
+};
+
+const cambiarPaginaSinVerificar = (pagina) => {
+    if (pagina < 1 || pagina > paginacionSinVerificar.value.last_page) {
+        return;
+    }
+
+    paginaSinVerificar.value = pagina;
+    cargarPagosVerificados();
+};
+
+const total = computed(() => {
+    return Object.values(suma_total_tipos.value ?? {})
+        .reduce((sum, monto) => sum + Number(monto || 0), 0)
+        .toFixed(2);
 });
 
 const totalSinVerificar = computed(() => {
-    const total = listPagosSinVerificar.value.reduce(
-        (sum, p) => sum + Number(p.monto),
-        0,
-    );
-
-    return total.toFixed(2);
+    return Object.values(sumaPorTiposSinVerificar.value ?? {})
+        .reduce((sum, monto) => sum + Number(monto || 0), 0)
+        .toFixed(2);
 });
-
 const totalGeneral = computed(() => {
     const total = Object.values(suma_total_tipos.value).reduce(
         (sum, value) => sum + Number(value || 0),
@@ -405,16 +472,19 @@ onBeforeMount(() => {
                 <div class="row mb-1">
                     <div class="col-md-9 d-flex align-items-end">
                         <span class="text-primary">
-                            {{ listPagosVerificados.length }}
-                            Registros</span
-                        >
+                            <i class="fas fa-list mr-1"></i>
+                            {{ paginacionVerificados.total }} registros
+                            verificados
+                            <small>({{ rangoVerificados }})</small>
+                        </span>
+
                         <span
-                            v-if="listPagosSinVerificar.length > 0"
+                            v-if="paginacionSinVerificar.total > 0"
                             class="text-danger font-weight-600"
                         >
-                            | {{ listPagosSinVerificar.length }} sin
-                            verificar</span
-                        >
+                            | {{ paginacionSinVerificar.total }} sin verificar
+                            <small>({{ rangoSinVerificar }})</small>
+                        </span>
                     </div>
                     <div class="col-12" v-if="txtUsuarioRecepcion">
                         <h5 class="text-info font-weight-bold">
@@ -443,6 +513,55 @@ onBeforeMount(() => {
                             </div>
                         </div>
                     </div>
+                    <!-- Paginador de pagos verificados -->
+                    <div class="col-12 mt-3">
+                        <div
+                            class="d-flex justify-content-between align-items-center flex-wrap"
+                        >
+                            <small class="text-muted">
+                                Verificados: página
+                                {{ paginacionVerificados.current_page }}
+                                de {{ paginacionVerificados.last_page }}
+                            </small>
+
+                            <div class="btn-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    :disabled="
+                                        paginacionVerificados.current_page <= 1
+                                    "
+                                    @click="
+                                        cambiarPaginaVerificados(
+                                            paginacionVerificados.current_page -
+                                                1,
+                                        )
+                                    "
+                                >
+                                    <i class="fas fa-chevron-left"></i>
+                                    Anterior
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    :disabled="
+                                        paginacionVerificados.current_page >=
+                                        paginacionVerificados.last_page
+                                    "
+                                    @click="
+                                        cambiarPaginaVerificados(
+                                            paginacionVerificados.current_page +
+                                                1,
+                                        )
+                                    "
+                                >
+                                    Siguiente
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -463,7 +582,10 @@ onBeforeMount(() => {
                     <span>{{ item.fecha_verificado_t }} {{ item.hora }}</span>
                 </template>
                 <template #cliente="{ item }">
-                    <span>{{ item.cliente.full_name }}</span>
+                    <span
+                        >{{ item.cliente.nombre }} {{ item.cliente.paterno }}
+                        {{ item.cliente.materno }}</span
+                    >
                     <br />
                     <span>{{ item.cliente.full_ci }}</span>
                 </template>
@@ -532,13 +654,66 @@ onBeforeMount(() => {
                 class="col-12 overflow-auto mt-5"
                 v-show="listPagosSinVerificar.length > 0"
             >
-                <h4 class="h5 font-weight-bold text-center w-100">
-                    {{
-                        props_page.auth?.user.tipo == "MÉDICO"
-                            ? "PAGOS SIN ENTREGAR"
-                            : "PAGOS SIN RECEPCIÓN"
-                    }}
-                </h4>
+                <div class="row">
+                    <div class="col-12">
+                        <div
+                            class="d-flex justify-content-between align-items-center flex-wrap"
+                        >
+                            <small class="text-muted">
+                                Sin verificar: página
+                                {{ paginacionSinVerificar.current_page }}
+                                de {{ paginacionSinVerificar.last_page }}
+                            </small>
+
+                            <div class="btn-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger btn-sm"
+                                    :disabled="
+                                        paginacionSinVerificar.current_page <= 1
+                                    "
+                                    @click="
+                                        cambiarPaginaSinVerificar(
+                                            paginacionSinVerificar.current_page -
+                                                1,
+                                        )
+                                    "
+                                >
+                                    <i class="fas fa-chevron-left"></i>
+                                    Anterior
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-danger btn-sm"
+                                    :disabled="
+                                        paginacionSinVerificar.current_page >=
+                                        paginacionSinVerificar.last_page
+                                    "
+                                    @click="
+                                        cambiarPaginaSinVerificar(
+                                            paginacionSinVerificar.current_page +
+                                                1,
+                                        )
+                                    "
+                                >
+                                    Siguiente
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <h4 class="h5 font-weight-bold text-center w-100">
+                        {{
+                            props_page.auth?.user.tipo == "MÉDICO"
+                                ? "PAGOS SIN ENTREGAR"
+                                : "PAGOS SIN RECEPCIÓN"
+                        }}
+                    </h4>
+                </div>
                 <MiTable
                     ref="miTable2"
                     :tableClass="'bg-white mitabla'"

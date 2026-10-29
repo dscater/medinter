@@ -22,7 +22,7 @@ class ConfiguracionController extends Controller
 
     public function getConfiguracion()
     {
-        $configuracion = Configuracion::first()->setAppends(["url_logo"]);
+        $configuracion = $this->configuracionService->obtenerConfiguracion();
         return response()->JSON([
             "configuracion" => $configuracion
         ], 200);

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class InicioController extends Controller
 {
@@ -35,143 +36,194 @@ class InicioController extends Controller
         return Inertia::render("Auth/Login");
     }
 
+
     public function certificadosEmitidosLinea(Request $request)
     {
-        $tipo =  $request->tipo;
+        $tipo = $request->tipo;
 
-        $recorrido = [];
-
-        if ($tipo == 'semanal') {
-            $fecha = Carbon::now("America/La_Paz");
-
-            for ($i = 6; $i >= 0; $i--) {
-                $recorrido[] = $fecha->copy()->subDays($i)->format("Y-m-d");
-            }
-        }
-        if ($tipo == 'meses') {
-            $fecha = Carbon::now("America/La_Paz");
-            $mes_actual = $fecha->month;
-
-            for ($i = 1; $i <= $mes_actual; $i++) {
-                $recorrido[] = Carbon::create(null, $i, 1)->format("m");
-            }
-        }
-        if ($tipo == 'gestion') {
-            $recorrido = Certificado::selectRaw("YEAR(fecha_registro) as gestion")
-                ->where("status", 1)
-                ->groupBy("gestion")
-                ->orderBy("gestion")
-                ->pluck("gestion")
-                ->toArray();
+        if (!in_array($tipo, ['semanal', 'meses', 'gestion'])) {
+            return response()->json([
+                'message' => 'Tipo de reporte no válido'
+            ], 422);
         }
 
-        $data = [];
+        $usuario = Auth::user();
 
         $categories = [];
-        $array_meses = [
-            "01" => "Enero",
-            "02" => "Febrero",
-            "03" => "Marzo",
-            "04" => "Abril",
-            "05" => "Mayo",
-            "06" => "Junio",
-            "07" => "Julio",
-            "08" => "Agosto",
-            "09" => "Septiembre",
-            "10" => "Octubre",
-            "11" => "Noviembre",
-            "12" => "Diciembre",
-        ];
-        $total_final = 0;
-        foreach ($recorrido as $item) {
-            if ($tipo == 'semanal') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereDate('fecha_registro', $item);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
+        $data = [];
 
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
-                $total = $total->count();
-                $categories[] = date("d/m/Y", strtotime($item));
-            }
+        $query = CertificadoDetalle::query()
+            ->join(
+                'certificados',
+                'certificado_detalles.certificado_id',
+                '=',
+                'certificados.id'
+            )
+            ->where('certificado_detalles.estado', 1)
+            ->where('certificados.status', 1);
 
-            if ($tipo == 'meses') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereMonth('fecha_registro', $item);
-                    $q->whereYear('fecha_registro', Carbon::now()->year);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
-
-                $total = $total->count();
-                $categories[] = $array_meses[$item];
-            }
-
-            if ($tipo == 'gestion') {
-                $total = CertificadoDetalle::whereHas("certificado", function ($q) use ($item) {
-                    $q->whereYear('fecha_registro', $item);
-                    $q->where("status", 1);
-                    // $q->where("estado", 1);
-                });
-                $total->where("estado", 1);
-                if (Auth::user()->tipo == 'MÉDICO') {
-                    $total->where("user_id", Auth::user()->id);
-                }
-                $total = $total->count();
-                $categories[] = $item;
-            }
-
-            $total_final += (float)$total;
-            $data[] = (float)$total;
+        // Mantener el filtro de los médicos.
+        if ($usuario->tipo == 'MÉDICO') {
+            $query->where(
+                'certificado_detalles.user_id',
+                $usuario->id
+            );
         }
 
-        return response()->JSON([
-            "categories" => $categories,
-            "data" => $data,
-            "total_final" => $total_final
+        if ($tipo == 'semanal') {
+            $fecha = Carbon::now('America/La_Paz');
+
+            $inicio = $fecha->copy()->subDays(6)->startOfDay();
+            $fin = $fecha->copy()->endOfDay();
+
+            // Una consulta para los siete días.
+            $resultados = $query
+                ->whereBetween('certificados.fecha_registro', [
+                    $inicio,
+                    $fin
+                ])
+                ->selectRaw(
+                    'DATE(certificados.fecha_registro) as periodo,
+                 COUNT(*) as total'
+                )
+                ->groupBy('periodo')
+                ->get()
+                ->keyBy('periodo');
+
+            for ($i = 6; $i >= 0; $i--) {
+                $dia = $fecha->copy()
+                    ->subDays($i)
+                    ->format('Y-m-d');
+
+                $categories[] = Carbon::parse($dia)
+                    ->format('d/m/Y');
+
+                $data[] = (float) (
+                    $resultados->get($dia)->total ?? 0
+                );
+            }
+        }
+
+        if ($tipo == 'meses') {
+            $fecha = Carbon::now('America/La_Paz');
+            $gestion = $fecha->year;
+
+            // Una consulta para todos los meses del año.
+            $resultados = $query
+                ->whereYear('certificados.fecha_registro', $gestion)
+                ->whereMonth('certificados.fecha_registro', '<=', $fecha->month)
+                ->selectRaw(
+                    'MONTH(certificados.fecha_registro) as periodo,
+                 COUNT(*) as total'
+                )
+                ->groupBy('periodo')
+                ->get()
+                ->keyBy('periodo');
+
+            $array_meses = [
+                1 => 'Enero',
+                2 => 'Febrero',
+                3 => 'Marzo',
+                4 => 'Abril',
+                5 => 'Mayo',
+                6 => 'Junio',
+                7 => 'Julio',
+                8 => 'Agosto',
+                9 => 'Septiembre',
+                10 => 'Octubre',
+                11 => 'Noviembre',
+                12 => 'Diciembre',
+            ];
+
+            for ($mes = 1; $mes <= $fecha->month; $mes++) {
+                $categories[] = $array_meses[$mes];
+
+                $data[] = (float) (
+                    $resultados->get($mes)->total ?? 0
+                );
+            }
+        }
+
+        if ($tipo == 'gestion') {
+            // Mantener los años con certificados registrados.
+            $gestiones = Certificado::query()
+                ->where('status', 1)
+                ->selectRaw('YEAR(fecha_registro) as gestion')
+                ->groupBy('gestion')
+                ->orderBy('gestion')
+                ->pluck('gestion');
+
+            // Una consulta para contar todos los años.
+            $resultados = $query
+                ->selectRaw(
+                    'YEAR(certificados.fecha_registro) as periodo,
+                 COUNT(*) as total'
+                )
+                ->groupBy('periodo')
+                ->get()
+                ->keyBy('periodo');
+
+            foreach ($gestiones as $gestion) {
+                $categories[] = $gestion;
+
+                $data[] = (float) (
+                    $resultados->get($gestion)->total ?? 0
+                );
+            }
+        }
+
+        return response()->json([
+            'categories' => $categories,
+            'data' => $data,
+            'total_final' => array_sum($data)
         ]);
     }
 
     public function cantidadTramitesNormal()
     {
-        $normales = CertificadoDetalle::whereHas("certificado", function ($q) {
-            $q->where("tipo", "NORMAL");
-            $q->where("status", 1);
-        });
+        $usuario = Auth::user();
 
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $normales->where("user_id", Auth::user()->id);
+        $query = CertificadoDetalle::query()
+            ->join(
+                'certificados',
+                'certificado_detalles.certificado_id',
+                '=',
+                'certificados.id'
+            )
+            ->whereIn('certificados.tipo', ['NORMAL', 'TRAMITE'])
+            ->where('certificados.status', 1);
+
+        // Si es médico, contar solamente sus certificados.
+        if ($usuario->tipo === 'MÉDICO') {
+            $query->where(
+                'certificado_detalles.user_id',
+                $usuario->id
+            );
         }
-        $normales = $normales->count();
 
-        $tramites = CertificadoDetalle::whereHas("certificado", function ($q) {
-            $q->where("tipo", "TRAMITE");
-            $q->where("status", 1);
-        });
+        // Obtener ambos totales en una consulta.
+        $resultados = $query
+            ->select('certificados.tipo', DB::raw('COUNT(*) as total'))
+            ->groupBy('certificados.tipo')
+            ->pluck('total', 'tipo');
 
-        if (Auth::user()->tipo == 'MÉDICO') {
-            $tramites->where("user_id", Auth::user()->id);
-        }
-        $tramites = $tramites->count();
+        $normales = (int) ($resultados['NORMAL'] ?? 0);
+        $tramites = (int) ($resultados['TRAMITE'] ?? 0);
 
         $data = [
-            ["name" => "TRÁMITE", "y" => (float)$tramites],
-            ["name" => "NORMAL", "y" => (float)$normales],
+            [
+                'name' => 'TRÁMITE',
+                'y' => (float) $tramites,
+            ],
+            [
+                'name' => 'NORMAL',
+                'y' => (float) $normales,
+            ],
         ];
 
-        $total_final = (float)$normales + (float)$tramites;
-
-        return response()->JSON([
-            "data" => $data,
-            "total_final" => $total_final
+        return response()->json([
+            'data' => $data,
+            'total_final' => (float) ($normales + $tramites),
         ]);
     }
 }

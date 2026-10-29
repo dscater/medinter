@@ -22,84 +22,393 @@ class PagoService
 
     public function __construct(private HistorialAccionService $historialAccionService, private LoginUserService $login_user_service, private TipoPagoService $tipo_pago_service) {}
 
+    private function consultaPagos(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id
+    ) {
+        $usuario = Auth::user();
+
+        $query = Pago::query()
+            ->whereBetween('fecha_verificado', [
+                $fecha_ini,
+                $fecha_fin
+            ]);
+
+        if ($sucursal_id && $sucursal_id !== 'todos') {
+            $query->where('sucursal_id', $sucursal_id);
+        }
+
+        if (
+            in_array($usuario->tipo, ['ADMINISTRADOR', 'GERENTE'])
+            && $medico_id
+        ) {
+            $query->where('medico_id', $medico_id);
+        }
+
+        return $query;
+    }
+
+    private function consultaPagosVerificados(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $user_id
+    ) {
+        $usuario = Auth::user();
+
+        $query = $this->consultaPagos(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id
+        );
+
+        if (in_array($usuario->tipo, ['MÉDICO', 'SECRETARIA'])) {
+            $user_id = $usuario->id;
+        }
+
+        if ($user_id) {
+            $query->where('user_id', $user_id);
+        }
+
+        return $query
+            ->where('status', 1)
+            ->where('verificado', 1);
+    }
+    private function consultaPagosSinVerificar(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id
+    ) {
+        $usuario = Auth::user();
+
+        $query = $this->consultaPagos(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id
+        )->where('status', 1)
+            ->where('verificado', 0);
+
+        if ($usuario->tipo === 'MÉDICO') {
+            $query->where('user_id', $usuario->id);
+        }
+
+        if ($usuario->tipo === 'SECRETARIA') {
+            $login_user = $this->login_user_service->verificaSucursal();
+
+            $query->where('sucursal_id', $login_user->sucursal_id);
+        }
+
+        return $query;
+    }
+
+    public function listadoArqueoPaginado(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $user_id
+    ) {
+        $pagos = $this->relacionesPagos(
+            $this->consultaPagosVerificados(
+                $fecha_ini,
+                $fecha_fin,
+                $sucursal_id,
+                $medico_id,
+                $user_id
+            )
+        )->paginate(
+            20,
+            ['*'],
+            'pagina_verificados',
+            request()->integer('pagina_verificados', 1)
+        );
+        $pagos_sin_verificar = $this->relacionesPagos(
+            $this->consultaPagosSinVerificar(
+                $fecha_ini,
+                $fecha_fin,
+                $sucursal_id,
+                $medico_id
+            )
+        )->paginate(
+            20,
+            ['*'],
+            'pagina_sin_verificar',
+            request()->integer('pagina_sin_verificar', 1)
+        );
+        $sumas = $this->sumasArqueo(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id,
+            $user_id
+        );
+
+        return [
+            "pagos" => $pagos,
+            "suma_tipos" => $sumas["suma_tipos"],
+            "pagos_sin_verificar" => $pagos_sin_verificar,
+            "suma_tipos_sin_verificar" => $sumas["suma_tipos_sin_verificar"],
+            "suma_total_tipos" => $sumas["suma_total_tipos"],
+        ];
+    }
+
+
+    private function relacionesPagos($query)
+    {
+        return $query->with([
+            'sucursal:id,nombre',
+            'user:id,nombre,paterno,materno',
+            'medico:id,nombre,paterno,materno',
+            'certificado_detalle.tipo_certificado',
+            'certificado_detalle.certificado.tramitador',
+            'cliente:id,nombre,paterno,materno,ci,ci_exp,complemento',
+        ]);
+    }
+
+    public function listadoArqueoCompleto(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $user_id
+    ) {
+        $pagos = $this->relacionesPagos(
+            $this->consultaPagosVerificados(
+                $fecha_ini,
+                $fecha_fin,
+                $sucursal_id,
+                $medico_id,
+                $user_id
+            )
+        )->get();
+
+        $pagos_sin_verificar = $this->relacionesPagos(
+            $this->consultaPagosSinVerificar(
+                $fecha_ini,
+                $fecha_fin,
+                $sucursal_id,
+                $medico_id
+            )
+        )->get();
+
+        $sumas = $this->sumasArqueo(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id,
+            $user_id
+        );
+
+        return [
+            "pagos" => $pagos,
+            "suma_tipos" => $sumas["suma_tipos"],
+            "pagos_sin_verificar" => $pagos_sin_verificar,
+            "suma_tipos_sin_verificar" => $sumas["suma_tipos_sin_verificar"],
+            "suma_total_tipos" => $sumas["suma_total_tipos"],
+        ];
+    }
+    public function sumasArqueo(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $user_id
+    ) {
+        $verificados = $this->consultaPagosVerificados(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id,
+            $user_id
+        );
+
+        $sin_verificar = $this->consultaPagosSinVerificar(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id
+        );
+
+        $sumas_verificados = (clone $verificados)
+            ->selectRaw('tipo_pago, SUM(monto) AS total')
+            ->groupBy('tipo_pago')
+            ->pluck('total', 'tipo_pago');
+
+        $sumas_sin_verificar = (clone $sin_verificar)
+            ->selectRaw('tipo_pago, SUM(monto) AS total')
+            ->groupBy('tipo_pago')
+            ->pluck('total', 'tipo_pago');
+
+        $suma_tipos = $sumas_verificados->toArray();
+        $suma_tipos_sin_verificar = $sumas_sin_verificar->toArray();
+
+        $suma_total_tipos = [];
+
+        foreach ($suma_tipos as $tipo => $total) {
+            $suma_total_tipos[$tipo] = (float) $total;
+        }
+
+        foreach ($suma_tipos_sin_verificar as $tipo => $total) {
+            $suma_total_tipos[$tipo] =
+                ($suma_total_tipos[$tipo] ?? 0) + (float) $total;
+        }
+
+        return [
+            'suma_tipos' => $suma_tipos,
+            'suma_tipos_sin_verificar' => $suma_tipos_sin_verificar,
+            'suma_total_tipos' => $suma_total_tipos,
+        ];
+    }
     public function reporteArqueo(
         $fecha_ini,
         $fecha_fin,
         $sucursal_id,
         $medico_id,
-        $user_id,
+        $user_id
     ) {
         $pagos = [];
+        $pagos_sin_verificar = [];
+
         $suma_tipos = [];
         $suma_tipos_sin_verificar = [];
         $suma_total_tipos = [];
+
         if ($fecha_ini && $fecha_fin) {
-            $pagos = Pago::with([
-                "sucursal:id,nombre",
-                "user:id,nombre,paterno,materno",
-                "medico:id,nombre,paterno,materno",
-                "certificado_detalle.tipo_certificado",
-                "certificado_detalle.certificado.tramitador",
-                "cliente:id,nombre,paterno,materno,ci,ci_exp,complemento",
-            ])
-                ->whereBetween("fecha_verificado", [$fecha_ini, $fecha_fin]);
 
-            if ($sucursal_id != 'todos' || !$sucursal_id   || $sucursal_id == '') {
-                $pagos->where("sucursal_id", $sucursal_id);
+            $usuario = Auth::user();
+
+            $login_user = $this->login_user_service
+                ->verificaSucursal();
+
+            // Consulta base compartida.
+            $base = Pago::query()
+                ->whereBetween('fecha_verificado', [
+                    $fecha_ini,
+                    $fecha_fin
+                ]);
+
+            if ($sucursal_id && $sucursal_id !== 'todos') {
+                $base->where('sucursal_id', $sucursal_id);
             }
 
-            $login_user = $this->login_user_service->verificaSucursal();
+            if (
+                in_array($usuario->tipo, [
+                    'ADMINISTRADOR',
+                    'GERENTE'
+                ])
+                && $medico_id
+            ) {
+                $base->where('medico_id', $medico_id);
+            }
 
-            if (Auth::user()->tipo == 'ADMINISTRADOR' || Auth::user()->tipo == 'GERENTE') {
-                if ($medico_id) {
-                    $pagos->where("medico_id", $medico_id);
-                }
+            // Consulta de pagos sin verificar.
+            $pagos_sin_verificar = clone $base;
+
+            // Consulta de pagos verificados.
+            $pagos = clone $base;
+
+            if (
+                in_array($usuario->tipo, [
+                    'MÉDICO',
+                    'SECRETARIA'
+                ])
+            ) {
+                $user_id = $usuario->id;
             }
-            $pagos_sin_verificar = clone $pagos;
-            if (Auth::user()->tipo == 'MÉDICO' || Auth::user()->tipo == 'SECRETARIA') {
-                $user_id = Auth::user()->id;
-                // $pagos->where("user_id", Auth::user()->id);
-            }
+
             if ($user_id) {
-                $pagos->where("user_id", $user_id);
-            }
-            $pagos->where("status", 1);
-
-            // SIN VERIFICAR VOLVER A VALIDAR
-            $pagos_sin_verificar->where("status", 1)->where("verificado", 0);
-            if (Auth::user()->tipo == 'MÉDICO') {
-                $pagos_sin_verificar->where("user_id", Auth::user()->id);
+                $pagos->where('user_id', $user_id);
             }
 
-            if (Auth::user()->tipo == 'SECRETARIA') {
-                $pagos_sin_verificar->where("sucursal_id", $login_user->sucursal_id);
+            $pagos->where('status', 1)
+                ->where('verificado', 1);
+
+            $pagos_sin_verificar
+                ->where('status', 1)
+                ->where('verificado', 0);
+
+            if ($usuario->tipo === 'MÉDICO') {
+                $pagos_sin_verificar->where(
+                    'user_id',
+                    $usuario->id
+                );
             }
 
-            $pagos->where("verificado", 1);
+            if ($usuario->tipo === 'SECRETARIA') {
+                $pagos_sin_verificar->where(
+                    'sucursal_id',
+                    $login_user->sucursal_id
+                );
+            }
+
+            /*
+         * Obtener los totales agrupados.
+         * Una consulta para verificados y otra para pendientes.
+         */
+            $sumas_verificados = (clone $pagos)
+                ->selectRaw('tipo_pago, SUM(monto) AS total')
+                ->groupBy('tipo_pago')
+                ->pluck('total', 'tipo_pago');
+
+            $sumas_pendientes = (clone $pagos_sin_verificar)
+                ->selectRaw('tipo_pago, SUM(monto) AS total')
+                ->groupBy('tipo_pago')
+                ->pluck('total', 'tipo_pago');
+
+            // Inicializar las claves de todos los tipos de pago.
             $tipo_pagos = $this->tipo_pago_service->listado();
 
             foreach ($tipo_pagos as $item) {
-                // Inicializar si no existe
-                if (!isset($suma_total_tipos[$item["value"]])) {
-                    $suma_total_tipos[$item["value"]] = 0;
-                }
+                $tipo = $item['value'];
 
-                $query = clone $pagos;
-                $suma_total = $query->where("tipo_pago", $item["value"])->sum("monto");
-                $suma_tipos[$item["value"]] = $suma_total;
-                $suma_total_tipos[$item["value"]] += (float)$suma_total;
-                // sin verificar
-                $query2 = clone $pagos_sin_verificar;
-                $suma_total = $query2->where("tipo_pago", $item["value"])->sum("monto");
-                $suma_tipos_sin_verificar[$item["value"]] = $suma_total;
-                $suma_total_tipos[$item["value"]] += (float)$suma_total;
+                $verificado = (float) (
+                    $sumas_verificados[$tipo] ?? 0
+                );
+
+                $pendiente = (float) (
+                    $sumas_pendientes[$tipo] ?? 0
+                );
+
+                $suma_tipos[$tipo] = $verificado;
+
+                $suma_tipos_sin_verificar[$tipo] = $pendiente;
+
+                $suma_total_tipos[$tipo] =
+                    $verificado + $pendiente;
             }
 
-            $pagos_sin_verificar = $pagos_sin_verificar->get();
-            $pagos = $pagos->get();
+            // Cargar relaciones solamente para los listados.
+            $relaciones = [
+                'sucursal:id,nombre',
+                'user:id,nombre,paterno,materno',
+                'medico:id,nombre,paterno,materno',
+                'certificado_detalle.tipo_certificado',
+                'certificado_detalle.certificado.tramitador',
+                'cliente:id,nombre,paterno,materno,ci,ci_exp,complemento',
+            ];
+
+            $pagos_sin_verificar = $pagos_sin_verificar
+                ->with($relaciones)
+                ->get();
+
+            $pagos = $pagos
+                ->with($relaciones)
+                ->get();
         }
 
-        return [$pagos, $suma_tipos, $pagos_sin_verificar, $suma_tipos_sin_verificar, $suma_total_tipos];
+        return [
+            $pagos,
+            $suma_tipos,
+            $pagos_sin_verificar,
+            $suma_tipos_sin_verificar,
+            $suma_total_tipos
+        ];
     }
 
     public function crear($datos)

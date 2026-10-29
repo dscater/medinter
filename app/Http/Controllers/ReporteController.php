@@ -344,13 +344,13 @@ class ReporteController extends Controller
         $user_id = $request->user_id;
         $formato = $request->formato;
 
-        $array_res = $this->pagoService->reporteArqueo($fecha_ini, $fecha_fin, $sucursal_id, $medico_id, $user_id);
+        $array_res = $this->pagoService->listadoArqueoCompleto($fecha_ini, $fecha_fin, $sucursal_id, $medico_id, $user_id);
 
-        $pagos = $array_res[0];
-        $suma_tipos = $array_res[1];
-        $pagos_sin_verificar = $array_res[2];
-        $suma_tipos_sin_verificar = $array_res[3];
-        $suma_total_tipos = $array_res[4];
+        $pagos = $array_res["pagos"];
+        $suma_tipos = $array_res["suma_tipos"];
+        $pagos_sin_verificar = $array_res["pagos_sin_verificar"];
+        $suma_tipos_sin_verificar = $array_res["suma_tipos_sin_verificar"];
+        $suma_total_tipos = $array_res["suma_total_tipos"];
 
         $tipo_pagos = $this->tipo_pago_service->listado();
 

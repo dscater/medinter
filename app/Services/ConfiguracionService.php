@@ -6,9 +6,12 @@ use App\Models\Configuracion;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ConfiguracionService
 {
+    private const CACHE_KEY = 'configuracion_app';
+
     public function __construct(private CargarArchivoService $cargarArchivoService) {}
 
     /**
@@ -23,7 +26,6 @@ class ConfiguracionService
         $old_area = clone $configuracion;
 
         $configuracion = Configuracion::first();
-        Log::debug("AAA");
 
         if (!$configuracion) {
             $configuracion = Configuracion::create([
@@ -48,13 +50,12 @@ class ConfiguracionService
                 "correo" => $datos["correo"],
             ]);
         }
-
-        Log::debug("BBB");
         // cargar logo
         if ($datos["logo"] && !is_string($datos["logo"])) {
             $this->cargarLogo($configuracion, $datos["logo"]);
         }
-        Log::debug("BBB");
+
+        $this->actualizarCache();
 
         return $configuracion;
     }
@@ -67,5 +68,31 @@ class ConfiguracionService
         $nombre = $configuracion->id . time();
         $configuracion->logo = $this->cargarArchivoService->cargarArchivo($logo, public_path("imgs"), $nombre);
         $configuracion->save();
+    }
+
+    /**
+     * Obtener configuración desde caché.
+     * Si no existe, consultar la BD y almacenarla.
+     */
+    public function obtenerConfiguracion()
+    {
+        return Cache::rememberForever(self::CACHE_KEY, function () {
+            return Configuracion::first()
+                ?->append('url_logo');
+        });
+    }
+
+    /**
+     * Actualizar la caché con los datos actuales de la BD.
+     * Llamar después de modificar la configuración.
+     */
+    public function actualizarCache()
+    {
+        $configuracion = Configuracion::first()
+            ?->append('url_logo');
+
+        Cache::forever(self::CACHE_KEY, $configuracion);
+
+        return $configuracion;
     }
 }
