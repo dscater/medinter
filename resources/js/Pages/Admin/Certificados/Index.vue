@@ -48,9 +48,9 @@ const cargarSucursals = () => {
 };
 
 onMounted(() => {
-    cargarTipoCertificados();
-    cargarTipoPagos();
-    cargarSucursals();
+    // cargarTipoCertificados();
+    // cargarTipoPagos();
+    // cargarSucursals();
     appStore.stopLoading();
 });
 

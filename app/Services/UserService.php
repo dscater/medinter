@@ -9,14 +9,74 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserService
 {
+
+    private const CACHE_TTL = 28800; // 8 horas
+
     private $modulo = "USUARIOS";
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
+    public function listado()
+    {
+        return Cache::remember(
+            'usuarios_listado',
+            self::CACHE_TTL,
+            function () {
+                return User::where('id', '!=', 1)
+                    ->where('status', 1)
+                    ->get();
+            }
+        );
+    }
+    public function listadoByTipo(
+        $tipo = null,
+        $order = null,
+        $order_ad = 'asc'
+    ) {
+        $version = Cache::get('usuarios_cache_version', 1);
+
+        $key = 'usuarios_v' . $version . '_tipo_' . md5(serialize([
+            'tipo' => $tipo,
+            'order' => $order,
+            'order_ad' => $order_ad,
+        ]));
+
+        return Cache::remember(
+            $key,
+            self::CACHE_TTL,
+            function () use ($tipo, $order, $order_ad) {
+                $usuarios = User::where('id', '!=', 1);
+
+                if ($tipo) {
+                    if (is_array($tipo)) {
+                        $usuarios->whereIn('tipo', $tipo);
+                    } else {
+                        $usuarios->where('tipo', $tipo);
+                    }
+                }
+
+                if ($order !== null) {
+                    $usuarios->orderBy('users.id', $order_ad);
+                }
+
+                return $usuarios->where('status', 1)->get();
+            }
+        );
+    }
+
+    public function limpiarCacheListado(): void
+    {
+        Cache::forget('usuarios_listado');
+
+        $version = Cache::get('usuarios_cache_version', 1);
+
+        Cache::forever('usuarios_cache_version', $version + 1);
+    }
 
     /**
      * Lista de users paginado con filtros
@@ -160,6 +220,8 @@ class UserService
         if (isset($datos["foto"]) && !is_string($datos["foto"])) {
             $this->cargarFoto($user, $datos["foto"]);
         }
+
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN USUARIO", $user);
         return $user;
@@ -196,6 +258,7 @@ class UserService
             $this->cargarFoto($user, $datos["foto"]);
         }
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN USUARIO", $old_user, $user->withoutRelations());
         return $user;
@@ -249,6 +312,8 @@ class UserService
         }
         $user->status = 0;
         $user->save();
+
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ AL USUARIO " . $old_user->usuario, $old_user, $user);
 
@@ -267,6 +332,7 @@ class UserService
         $user->status = 1;
         $user->save();
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "REESTABLECER", "REESTABLECIÓ EL REGISTRO DE UN USUARIO " . $old_user->usuario, $old_user, $user);
         return true;
@@ -283,6 +349,7 @@ class UserService
         $old_user = clone $user;
         $user->delete();
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN PERMANENTE", "ELIMINÓ PERMANENTEMENTE EL REGISTRO DE UN USUARIO " . $old_user->usuario, $old_user);
         return true;

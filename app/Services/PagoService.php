@@ -502,9 +502,16 @@ class PagoService
         return true;
     }
 
-    public function actualizarPagoCertificadoDetalle(CertificadoDetalle $certificado_detalle, $old_cancelado, $nuevo_saldo)
-    {
-        $pago = $this->obtienePagoAnuladoExistente($certificado_detalle);
+    public function actualizarPagoCertificadoDetalle(
+        CertificadoDetalle $certificado_detalle,
+        $old_cancelado,
+        $nuevo_saldo,
+        ?Pago $pago = null
+    ) {
+        $pago ??= $this->obtienePagoAnuladoExistente($certificado_detalle);
+        if (!$pago) {
+            return;
+        }
         if ($pago) {
             // si el monto del pago es diferente al cancelado del detalle, actualizar el monto del pago
             $pago->tipo_pago = $certificado_detalle->certificado->tipo_pago;
@@ -568,13 +575,9 @@ class PagoService
 
     public function obtienePagoAnuladoExistente(CertificadoDetalle $certificado_detalle)
     {
-        $pago = Pago::where("modulo", "CertificadoDetalle")
+        return Pago::where("modulo", "CertificadoDetalle")
             ->where("registro_id", $certificado_detalle->id)
-            ->get()->first();
-        if ($pago) {
-            return $pago;
-        }
-        return null;
+            ->first();
     }
 
     /**

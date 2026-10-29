@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CobroRequest;
 use App\Models\Certificado;
 use App\Services\CobroService;
+use App\Services\TramitadorService;
 use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,10 +17,16 @@ use Illuminate\Support\Facades\Response;
 
 class CobroController extends Controller
 {
-    public function __construct(private CobroService $cobro_service) {}
+    public function __construct(
+        private CobroService $cobro_service,
+        private TramitadorService $tramitador_service
+    ) {}
     public function index()
     {
-        return Inertia::render("Admin/Cobros/Index");
+        $tramitadors = $this->tramitador_service->listado();
+        return Inertia::render("Admin/Cobros/Index", [
+            "tramitadors" => $tramitadors
+        ]);
     }
 
     public function registrarPago(CobroRequest $request, Certificado $certificado): RedirectResponse|Response

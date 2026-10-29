@@ -36,32 +36,15 @@ class UsuarioController extends Controller
 
     public function listado(Request $request): JsonResponse
     {
-        $usuarios = User::where("id", "!=", 1);
-        $usuarios = $usuarios->where("status", 1)->get();
         return response()->JSON([
-            "usuarios" => $usuarios
+            "usuarios" => $this->userService->listado()
         ]);
     }
 
     public function byTipo(Request $request)
     {
-        $usuarios = User::where("id", "!=", 1);
-        if (isset($request->tipo)) {
-            if (is_array($request->tipo)) {
-                $usuarios = $usuarios->whereIn("tipo", $request->tipo);
-            } else {
-                $usuarios = $usuarios->where("tipo", $request->tipo);
-            }
-        }
-
-        if ($request->order && $request->order == "desc") {
-            $usuarios->orderBy("users.id", "desc");
-        }
-
-        $usuarios = $usuarios->where("status", 1)->get();
-
         return response()->JSON([
-            "usuarios" => $usuarios
+            "usuarios" => $this->userService->listadoByTipo(["MÉDICO", "GERENTE"], $request->input("order", null), $request->input("order", null))
         ]);
     }
     public function paginado(Request $request)

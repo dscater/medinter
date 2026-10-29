@@ -174,11 +174,21 @@ class CertificadoController extends Controller
     {
         DB::beginTransaction();
         try {
+
+            $inicio = microtime(true);
             // crear el Certificado
             $datos = $request->validated();
             $datos["estado"] = 1;
-            $this->certificadoService->crear($datos);
+            $certificado = $this->certificadoService->crear($datos);
             DB::commit();
+
+            $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+            Log::info('Rendimiento creacion certificado', [
+                'certificado_id' => $certificado->id,
+                'duracion_ms' => $duracionMs,
+                'detalles' => count($datos['certificado_detalles'] ?? []),
+                'eliminados' => count($datos['eliminados'] ?? []),
+            ]);
             return redirect()->route("certificados.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
             DB::rollBack();
@@ -217,8 +227,11 @@ class CertificadoController extends Controller
      */
     public function edit(Certificado $certificado): ResponseInertia
     {
+        $certificado = $certificado->load([
+            "cliente",
+            "certificado_detalles.pago"
+        ]);
         $cliente = $certificado->cliente;
-        $certificado = $certificado->load(["certificado_detalles.pago"]);
         return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
     }
 
@@ -257,9 +270,20 @@ class CertificadoController extends Controller
     {
         DB::beginTransaction();
         try {
+            $inicio = microtime(true);
             // actualizar certificado
             $this->certificadoService->actualizar($request->validated(), $certificado);
             DB::commit();
+
+            $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+
+            Log::info('Rendimiento actualización certificado', [
+                'certificado_id' => $certificado->id,
+                'duracion_ms' => $duracionMs,
+                'detalles' => count($datos['certificado_detalles'] ?? []),
+                'eliminados' => count($datos['eliminados'] ?? []),
+            ]);
+
             return redirect()->route("certificados.index")->with("bien", "Registro actualizado");
         } catch (\Exception $e) {
             DB::rollBack();

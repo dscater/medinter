@@ -12,6 +12,26 @@ import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 const { props: props_page } = usePage();
 const appStore = useAppStore();
+
+const props = defineProps({
+    tipo_pagos: {
+        type: Array,
+        default: () => [],
+    },
+    sucursals: {
+        type: Array,
+        default: () => [],
+    },
+    usuarios: {
+        type: Array,
+        default: () => [],
+    },
+    medicos: {
+        type: Array,
+        default: () => [],
+    },
+});
+
 onBeforeMount(() => {
     appStore.startLoading();
 });
@@ -148,77 +168,42 @@ const obtenerFechaActual = () => {
     return `${anio}-${mes}-${dia}`;
 };
 
-const listSucursals = ref([]);
-const cargarSucursals = () => {
-    axios.get(route("sucursals.listado")).then((response) => {
-        listSucursals.value = response.data.sucursals;
-        listSucursals.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
-};
-
-const listTipoPagos = ref([]);
-const cargarTipoPagos = async () => {
-    axios.get(route("tipo_pagos.listado")).then(async (response) => {
-        listTipoPagos.value = response.data;
-        // crear columnas dinamicas
-        if (!colsIniciado.value)
-            listTipoPagos.value.forEach((elem) => {
-                headers1.value.push({
-                    label: elem.value,
-                    key: "monto",
-                    fixed: "right",
-                    sortable: true,
-                    classTd: (item) => {
-                        return "justify-content-end";
-                    },
-                    width: "100px",
-                    render: (item, index) => {
-                        if (item.tipo_pago != elem.value) return "-";
-                        // if (item.tipo !== elem.value) return "";
-                        return item.monto || "";
-                    },
-                });
+const cargarTablasPorPagos = async () => {
+    // crear columnas dinamicas
+    if (!colsIniciado.value)
+        props.tipo_pagos.forEach((elem) => {
+            headers1.value.push({
+                label: elem.value,
+                key: "monto",
+                fixed: "right",
+                sortable: true,
+                classTd: (item) => {
+                    return "justify-content-end";
+                },
+                width: "100px",
+                render: (item, index) => {
+                    if (item.tipo_pago != elem.value) return "-";
+                    // if (item.tipo !== elem.value) return "";
+                    return item.monto || "";
+                },
             });
-
-        colsIniciado.value = true;
-
-        await nextTick();
-        if (miTable1.value) {
-            miTable1.value.cargarDatos();
-        }
-
-        if (miTable2.value) {
-            miTable2.value.cargarDatos();
-        }
-    });
-};
-
-const listMedicos = ref([]);
-const cargarMedicos = () => {
-    axios
-        .get(route("usuarios.byTipo"), {
-            params: {
-                tipo: "MÉDICO",
-            },
-        })
-        .then((response) => {
-            listMedicos.value = response.data.usuarios;
         });
-};
 
-const listUsers = ref([]);
-const cargarUsers = () => {
-    axios.get(route("usuarios.listado")).then((response) => {
-        listUsers.value = response.data.usuarios;
-    });
+    colsIniciado.value = true;
+
+    await nextTick();
+    if (miTable1.value) {
+        miTable1.value.cargarDatos();
+    }
+
+    if (miTable2.value) {
+        miTable2.value.cargarDatos();
+    }
 };
 
 const txtUsuarioRecepcion = computed(() => {
     if (!filtros.value.user_id) return "";
-    const user = listUsers.value.find((u) => u.id === filtros.value.user_id);
+    const user = props.usuarios.find((u) => u.id === filtros.value.user_id);
     console.log("Usuario seleccionado:", user);
     return user
         ? `Pagos recepcionados por ${user.nombre} ${user.paterno} ${user.materno} - ${user.tipo}`
@@ -322,10 +307,7 @@ watch(
 onMounted(() => {});
 
 onBeforeMount(() => {
-    cargarSucursals();
-    cargarTipoPagos();
-    cargarMedicos();
-    cargarUsers();
+    cargarTablasPorPagos();
 });
 </script>
 <template>
@@ -405,8 +387,9 @@ onBeforeMount(() => {
                             size="large"
                             @change="cargarRegistrosPagos"
                         >
+                            <el-option value="todos" label="Todos" />
                             <el-option
-                                v-for="item in listSucursals"
+                                v-for="item in sucursals"
                                 :key="item.id"
                                 :value="item.id"
                                 :label="item.nombre"
@@ -425,13 +408,14 @@ onBeforeMount(() => {
                         <el-select
                             v-model="filtros.medico_id"
                             filterable
-                            placeholder="- Seleccione -"
+                            placeholder="Todos"
                             size="large"
                             clearable
                             @change="cargarRegistrosPagos"
                         >
+                            <el-option value="" label="Todos" />
                             <el-option
-                                v-for="item in listMedicos"
+                                v-for="item in medicos"
                                 :key="item.id"
                                 :value="item.id"
                                 :label="`${item.nombre} ${item.paterno} ${item.materno}`"
@@ -454,13 +438,14 @@ onBeforeMount(() => {
                         <el-select
                             v-model="filtros.user_id"
                             filterable
-                            placeholder="- Seleccione -"
+                            placeholder="Todos"
                             size="large"
                             clearable
                             @change="cargarRegistrosPagos"
                         >
+                            <el-option value="" label="Todos" />
                             <el-option
-                                v-for="item in listUsers"
+                                v-for="item in usuarios"
                                 :key="item.id"
                                 :value="item.id"
                                 :label="`${item.nombre} ${item.paterno} ${item.materno} - ${item.tipo}`"
@@ -623,7 +608,7 @@ onBeforeMount(() => {
                         >
                             TOTALES
                         </td>
-                        <template v-for="(tipo_pago, index) in listTipoPagos">
+                        <template v-for="(tipo_pago, index) in tipo_pagos">
                             <td
                                 class="bg-principal p-3 text-right text-md font-weight-bold fixed-column-ext-right"
                             >
@@ -771,9 +756,7 @@ onBeforeMount(() => {
                             >
                                 TOTALES
                             </td>
-                            <template
-                                v-for="(tipo_pago, index) in listTipoPagos"
-                            >
+                            <template v-for="(tipo_pago, index) in tipo_pagos">
                                 <td
                                     class="bg-danger p-3 text-right text-md font-weight-bold fixed-column-ext-right"
                                     style="
@@ -823,7 +806,7 @@ onBeforeMount(() => {
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="tipo_pago in listTipoPagos"
+                                    v-for="tipo_pago in tipo_pagos"
                                     :key="tipo_pago.value"
                                 >
                                     <td class="font-weight-bold">

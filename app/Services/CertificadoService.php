@@ -10,6 +10,9 @@ use App\Services\HistorialAccionService;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use RuntimeException;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -274,7 +277,10 @@ class CertificadoService
     public function actualizar(array $datos, Certificado $certificado): Certificado
     {
         $old_certificado = clone $certificado;
-
+        $datos_original_detalles = $certificado
+            ->certificado_detalles()
+            ->get()
+            ->toArray();
 
         $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
         $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
@@ -308,8 +314,6 @@ class CertificadoService
             $certificado->estado = 1;
             $certificado->save();
         }
-
-
 
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
@@ -415,7 +419,12 @@ class CertificadoService
                     ]);
                 } else {
                     // si hay pago registrado, verificar si el monto del pago es diferente al cancelado del detalle, si es diferente actualizar el monto del pago
-                    $this->pago_service->actualizarPagoCertificadoDetalle($certificado_detalle, $old_cancelado, $saldo);
+                    $this->pago_service->actualizarPagoCertificadoDetalle(
+                        $certificado_detalle,
+                        $old_cancelado,
+                        $saldo,
+                        $existe_pago
+                    );
                 }
             }
         }
@@ -638,14 +647,57 @@ class CertificadoService
      * @param UploadedFile $archivo
      * @return void
      */
-    public function cargarArchivoDetalle(CertificadoDetalle $certificado_detalle, UploadedFile $archivo, int $index): void
-    {
-        if ($certificado_detalle->archivo) {
-            \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+
+    public function cargarArchivoDetalle(
+        CertificadoDetalle $certificado_detalle,
+        UploadedFile $archivo,
+        int $index
+    ): void {
+        $inicio = microtime(true);
+
+        // Obtener el tamaño antes de mover el archivo temporal.
+        $tamanoBytes = $archivo->getSize();
+
+        $directorio = public_path('files/certificados');
+
+        if (!File::isDirectory($directorio)) {
+            File::makeDirectory($directorio, 0755, true);
         }
 
-        $nombre = $index . $certificado_detalle->id . time();
-        $certificado_detalle->archivo = $this->cargarArchivoService->cargarArchivo($archivo, public_path("files/certificados"), $nombre);
+        $nombre = $certificado_detalle->id . '_' . Str::uuid();
+
+        // Guardar el nuevo archivo.
+        $nuevoArchivo = $this->cargarArchivoService->cargarArchivo(
+            $archivo,
+            $directorio,
+            $nombre
+        );
+
+        if (!$nuevoArchivo) {
+            throw new RuntimeException(
+                'No se pudo guardar el archivo del certificado.'
+            );
+        }
+
+        $archivoAnterior = $certificado_detalle->archivo;
+
+        // Actualizar la referencia en la base de datos.
+        $certificado_detalle->archivo = $nuevoArchivo;
         $certificado_detalle->save();
+
+        // Eliminar el archivo anterior después de guardar el nuevo.
+        if ($archivoAnterior && $archivoAnterior !== $nuevoArchivo) {
+            File::delete(
+                $directorio . DIRECTORY_SEPARATOR . $archivoAnterior
+            );
+        }
+
+        $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+
+        Log::info('Rendimiento carga archivo certificado', [
+            'certificado_detalle_id' => $certificado_detalle->id,
+            'tamano_bytes' => $tamanoBytes,
+            'duracion_ms' => $duracionMs,
+        ]);
     }
 }

@@ -26,7 +26,7 @@ Highcharts.setOptions({
 });
 const cargarListas = async () => {
     await Promise.all([
-        cargarClientes(),
+        // cargarClientes(),
         cargarSucursals(),
         cargarUsers(),
         cargarTipoPagos(),

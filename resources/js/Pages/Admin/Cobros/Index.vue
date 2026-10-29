@@ -13,6 +13,13 @@ onBeforeMount(() => {
     appStore.startLoading();
 });
 
+const props = defineProps({
+    tramitadors: {
+        type: Array,
+        default: () => [],
+    },
+});
+
 onMounted(() => {
     appStore.stopLoading();
 });
@@ -110,22 +117,13 @@ const detectaNuevoPago = () => {
     updateDatatable();
 };
 
-const listTramitadors = ref([]);
-const cargarTramitadores = () => {
-    axios.get(route("tramitadors.listado")).then((response) => {
-        listTramitadors.value = response.data.tramitadors;
-    });
-};
-
 const updateDatatable = async () => {
     if (miTable.value) {
         await miTable.value.cargarDatos();
     }
 };
 
-onBeforeMount(() => {
-    cargarTramitadores();
-});
+onBeforeMount(() => {});
 </script>
 <template>
     <Head title="Cobros"></Head>
@@ -197,13 +195,14 @@ onBeforeMount(() => {
                                 <el-select
                                     class="el-select-input-group-right"
                                     v-model="multiSearch.tramitador_id"
-                                    placeholder="Tramitador"
+                                    placeholder="Todos los tramitadores"
                                     size="large"
                                     filterable
                                     clearable
                                 >
+                                    <el-option value="" label="Todos" />
                                     <el-option
-                                        v-for="item in listTramitadors"
+                                        v-for="item in tramitadors"
                                         :key="item.id"
                                         :value="item.id"
                                         :label="item.nombre"

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Pago;
 use App\Services\LoginUserService;
 use App\Services\PagoService;
+use App\Services\SucursalService;
 use App\Services\TipoPagoService;
+use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +17,28 @@ use Inertia\Inertia;
 
 class PagoController extends Controller
 {
-    public function __construct(private PagoService $pagoService) {}
+    public function __construct(
+        private PagoService $pagoService,
+        private TipoPagoService $tipo_pago_service,
+        private SucursalService $sucursal_service,
+        private UserService $user_service
+    ) {}
 
     public function index()
     {
-        return Inertia::render("Admin/Pagos/Index");
+
+        $tipo_pagos = $this->tipo_pago_service->listado();
+        $sucursals = $this->sucursal_service->listado();
+
+        $usuarios = $this->user_service->listado();
+        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+
+        return Inertia::render("Admin/Pagos/Index", [
+            "tipo_pagos" => $tipo_pagos,
+            "sucursals" => $sucursals,
+            "usuarios" => $usuarios,
+            "medicos" => $medicos,
+        ]);
     }
 
     public function verificados(Request $request)

@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
+use RuntimeException;
 use Illuminate\Support\Facades\Log;
 
 class CargarArchivoService
@@ -15,16 +17,27 @@ class CargarArchivoService
      * @param string|null $nombre
      * @return string
      */
-    public function cargarArchivo(UploadedFile $file, string $ruta, string $nombre = null): string
-    {
-        $nombre_archivo = time();
-        if ($nombre) {
-            $nombre_archivo = $nombre;
+    public function cargarArchivo(
+        UploadedFile $file,
+        string $ruta,
+        ?string $nombre = null
+    ): string {
+        if (!$file->isValid()) {
+            throw new RuntimeException('El archivo recibido no es válido.');
         }
-        $extension = "." . $file->getClientOriginalExtension();
-        $nombre_archivo .= $extension;
-        $file->move($ruta, $nombre_archivo);
 
-        return $nombre_archivo;
+        if (!is_dir($ruta) && !mkdir($ruta, 0755, true) && !is_dir($ruta)) {
+            throw new RuntimeException('No se pudo crear el directorio de destino.');
+        }
+
+        // Usar la extensión detectada por Laravel/Symfony.
+        $extension = $file->extension();
+
+        $nombreArchivo = ($nombre ?: (string) Str::uuid())
+            . ($extension ? ".{$extension}" : '');
+
+        $file->move($ruta, $nombreArchivo);
+
+        return $nombreArchivo;
     }
 }

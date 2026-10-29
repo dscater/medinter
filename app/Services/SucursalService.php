@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class SucursalService
@@ -20,9 +21,18 @@ class SucursalService
 
     public function listado(): Collection
     {
-        $sucursals = Sucursal::select("sucursals.*")->get();
-        return $sucursals;
+        return Cache::remember(
+            'sucursales_listado',
+            now()->addHours(8),
+            fn() => Sucursal::all()
+        );
     }
+
+    public function limpiarCacheListado(): void
+    {
+        Cache::forget('sucursales_listado');
+    }
+
     /**
      * Lista de sucursals paginado con filtros
      *
@@ -86,6 +96,7 @@ class SucursalService
             "fecha_registro" => date("Y-m-d")
         ]);
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UNA SUCURSAL", $sucursal);
 
@@ -108,6 +119,7 @@ class SucursalService
             "descripcion" => mb_strtoupper($datos["descripcion"]) ?? null,
         ]);
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UNA SUCURSAL", $old_sucursal, $sucursal->withoutRelations());
 
@@ -125,6 +137,7 @@ class SucursalService
         $old_sucursal = clone $sucursal;
         $sucursal->delete();
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UNA SUCURSAL", $old_sucursal, $sucursal);
 

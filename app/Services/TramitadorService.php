@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class TramitadorService
@@ -22,9 +23,18 @@ class TramitadorService
 
     public function listado(): Collection
     {
-        $tramitadors = Tramitador::select("tramitadors.*")->get();
-        return $tramitadors;
+        return Cache::remember(
+            "tramitadores_listado",
+            now()->addHours(8),
+            fn() => Tramitador::all()
+        );
     }
+
+    public function limpiarCacheListado()
+    {
+        Cache::forget("tramitadores_listado");
+    }
+
     /**
      * Lista de tramitadors paginado con filtros
      *
@@ -78,6 +88,8 @@ class TramitadorService
             "user_id" => Auth::user()->id,
         ]);
 
+
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN TRAMITADOR", $tramitador);
 
@@ -102,6 +114,7 @@ class TramitadorService
             "cel" => $datos['cel'],
         ]);
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN TRAMITADOR", $old_tramitador, $tramitador->withoutRelations());
 
@@ -125,6 +138,7 @@ class TramitadorService
 
         $tramitador->delete();
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN TRAMITADOR", $old_tramitador, $tramitador);
 

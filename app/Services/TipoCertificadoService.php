@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
 class TipoCertificadoService
@@ -23,9 +24,19 @@ class TipoCertificadoService
 
     public function listado(): Collection
     {
-        $tipo_certificados = TipoCertificado::select("tipo_certificados.*")->get();
-        return $tipo_certificados;
+
+        return Cache::remember(
+            "tipo_certificados_listado",
+            now()->addHours(8),
+            fn() => TipoCertificado::all()
+        );
     }
+
+    public function limpiarCacheListado()
+    {
+        Cache::forget("tipo_certificados_listado");
+    }
+
     /**
      * Lista de tipo_certificados paginado con filtros
      *
@@ -90,6 +101,7 @@ class TipoCertificadoService
             "fecha_registro" => date("Y-m-d")
         ]);
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN TIPO DE CERTIFICADO", $tipo_certificado);
 
@@ -113,6 +125,7 @@ class TipoCertificadoService
             "descripcion" => mb_strtoupper($datos["descripcion"]) ?? null,
         ]);
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN TIPO DE CERTIFICADO", $old_tipo_certificado, $tipo_certificado->withoutRelations());
 
@@ -144,6 +157,7 @@ class TipoCertificadoService
         $old_tipo_certificado = clone $tipo_certificado;
         $tipo_certificado->delete();
 
+        $this->limpiarCacheListado();
         // registrar accion
         $this->historialAccionService->registrarAccion($this->modulo, "ELIMINACIÓN", "ELIMINÓ UN TIPO DE CERTIFICADO", $old_tipo_certificado, $tipo_certificado);
 
