@@ -75,8 +75,7 @@ class User extends Authenticatable
 
     public function getPermisosAttribute()
     {
-        $permisoService = new PermisoService();
-        return $permisoService->getPermisosUser();
+        return app(PermisoService::class)->getPermisosUser($this);
     }
 
     public function getFechaRegistroTAttribute()

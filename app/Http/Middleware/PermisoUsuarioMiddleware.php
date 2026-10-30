@@ -32,7 +32,7 @@ class PermisoUsuarioMiddleware
                 "profile.edit",
                 "profile.update",
                 "profile.update_foto",
-                
+
                 "users.getUser",
             ];
 
@@ -48,6 +48,14 @@ class PermisoUsuarioMiddleware
                 abort(401, "Acceso denegado");
             }
         }
+
+        logger()->info('DIAGNOSTICO INICIO LARAVEL', [
+            'ruta' => $request->path(),
+            'tiempo_desde_inicio_ms' => round(
+                (microtime(true) - $GLOBALS['inicioLaravel']) * 1000,
+                2
+            ),
+        ]);
 
         return $next($request);
     }

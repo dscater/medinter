@@ -32,6 +32,13 @@ Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
 
+Route::get('/diagnostico-servidor', function () {
+    return response()->json([
+        'estado' => 'OK',
+        'hora' => now()->toDateTimeString(),
+    ]);
+});
+
 Route::get('/login', function () {
     if (Auth::check()) {
         return redirect()->route('inicio');
