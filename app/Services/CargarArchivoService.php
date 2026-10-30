@@ -22,6 +22,7 @@ class CargarArchivoService
         string $ruta,
         ?string $nombre = null
     ): string {
+
         if (!$file->isValid()) {
             throw new RuntimeException('El archivo recibido no es válido.');
         }
@@ -30,8 +31,8 @@ class CargarArchivoService
             throw new RuntimeException('No se pudo crear el directorio de destino.');
         }
 
-        // Usar la extensión detectada por Laravel/Symfony.
-        $extension = $file->extension();
+        // Obtener la extensión original del archivo
+        $extension = strtolower($file->getClientOriginalExtension());
 
         $nombreArchivo = ($nombre ?: (string) Str::uuid())
             . ($extension ? ".{$extension}" : '');
