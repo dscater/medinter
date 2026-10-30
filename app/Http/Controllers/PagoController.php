@@ -26,12 +26,24 @@ class PagoController extends Controller
 
     public function index()
     {
-
+        $inicio = microtime(true);
         $tipo_pagos = $this->tipo_pago_service->listado();
+        $t1 = microtime(true);
         $sucursals = $this->sucursal_service->listado();
-
+        $t2 = microtime(true);
         $usuarios = $this->user_service->listado();
+        $t3 = microtime(true);
         $medicos = $this->user_service->listadoByTipo("MÉDICO");
+
+        $t4 = microtime(true);
+        logger()->info("RENDIMIENTO PAGOS INDEX", [
+            "tipo_pagos_ms" => round(($t1 - $inicio) * 1000, 2),
+            "sucursals_ms" => round(($t2 - $t1) * 1000, 2),
+            "usuarios_ms" => round(($t3 - $t2) * 1000, 2),
+            "medicos_ms" => round(($t4 - $t3) * 1000, 2),
+            "total_ms" => round(($t4 - $inicio) * 1000, 2),
+            "memoria_kb" => round(memory_get_usage(true) / 1024, 2),
+        ]);
 
         return Inertia::render("Admin/Pagos/Index", [
             "tipo_pagos" => $tipo_pagos,
