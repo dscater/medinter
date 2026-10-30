@@ -156,6 +156,7 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
 
     // PAGOS
     Route::get("pagos/verificados", [PagoController::class, 'verificados'])->name("pagos.verificados");
+    Route::get("pagos/no-verificados", [PagoController::class, 'noVerificados'])->name("pagos.noVerificados");
     Route::get("pagos", [PagoController::class, 'index'])->name("pagos.index");
     Route::post("pagos", [PagoController::class, 'registrarPagos'])->name("pagos.registrarPagos");
 

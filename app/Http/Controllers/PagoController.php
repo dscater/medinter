@@ -41,24 +41,37 @@ class PagoController extends Controller
         ]);
     }
 
+    /**
+     * PAGOS VERIFICADOS
+     */
     public function verificados(Request $request)
     {
-        $fecha_ini = $request->fecha_ini;
-        $fecha_fin = $request->fecha_fin;
-        $sucursal_id = $request->sucursal_id;
-        $medico_id = $request->medico_id;
-        $user_id = $request->user_id;
-
-        $array_res = $this->pagoService->listadoArqueoPaginado(
-            $fecha_ini,
-            $fecha_fin,
-            $sucursal_id,
-            $medico_id,
-            $user_id
+        $resultado = $this->pagoService->listadoPagosVerificados(
+            $request->input('fecha_ini', ""),
+            $request->input('fecha_fin', ""),
+            $request->input('sucursal_id', "") ?? null,
+            $request->input('medico_id', "") ?? null,
+            $request->input('user_id', "") ?? null,
+            max(1, $request->integer('pagina_verificados', 1))
         );
 
+        return response()->json($resultado);
+    }
 
-        return response()->JSON($array_res);
+    /**
+     * PAGOS SIN VERIFICAR
+     */
+    public function noVerificados(Request $request)
+    {
+        $resultado = $this->pagoService->listadoPagosSinVerificar(
+            $request->input('fecha_ini', ""),
+            $request->input('fecha_fin', ""),
+            $request->input('sucursal_id', "") ?? null,
+            $request->input('medico_id', "") ?? null,
+            max(1, $request->integer('pagina_sin_verificar', 1))
+        );
+
+        return response()->json($resultado);
     }
 
     public function registrarPagos(Request $request)

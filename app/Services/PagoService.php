@@ -22,6 +22,89 @@ class PagoService
 
     public function __construct(private HistorialAccionService $historialAccionService, private LoginUserService $login_user_service, private TipoPagoService $tipo_pago_service) {}
 
+
+
+    /**
+     * LISTADO DE PAGOS VERIFICADOS
+     */
+    public function listadoPagosVerificados(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $user_id,
+        $pagina = 1
+    ) {
+        $query = $this->consultaPagosVerificados(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id,
+            $user_id
+        );
+
+        // Calcular sumas únicamente de pagos verificados.
+        $sumas = (clone $query)
+            ->selectRaw('tipo_pago, SUM(monto) AS total')
+            ->groupBy('tipo_pago')
+            ->pluck('total', 'tipo_pago')
+            ->toArray();
+
+        // Obtener solamente los registros de la página solicitada.
+        $pagos = $this->relacionesPagos($query)
+            ->paginate(
+                20,
+                ['*'],
+                'pagina_verificados',
+                $pagina
+            );
+
+        return [
+            'pagos' => $pagos,
+            'suma_tipos' => $sumas,
+        ];
+    }
+
+    /**
+     * LISTADO DE PAGOS SIN VERIFICAR
+     */
+    public function listadoPagosSinVerificar(
+        $fecha_ini,
+        $fecha_fin,
+        $sucursal_id,
+        $medico_id,
+        $pagina = 1
+    ) {
+        $query = $this->consultaPagosSinVerificar(
+            $fecha_ini,
+            $fecha_fin,
+            $sucursal_id,
+            $medico_id
+        );
+
+        // Calcular sumas únicamente de pagos pendientes.
+        $sumas = (clone $query)
+            ->selectRaw('tipo_pago, SUM(monto) AS total')
+            ->groupBy('tipo_pago')
+            ->pluck('total', 'tipo_pago')
+            ->toArray();
+
+        // Obtener solamente los registros de la página solicitada.
+        $pagos = $this->relacionesPagos($query)
+            ->paginate(
+                20,
+                ['*'],
+                'pagina_sin_verificar',
+                $pagina
+            );
+
+        return [
+            'pagos' => $pagos,
+            'suma_tipos_sin_verificar' => $sumas,
+        ];
+    }
+
+
     private function consultaPagos(
         $fecha_ini,
         $fecha_fin,

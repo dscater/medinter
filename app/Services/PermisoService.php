@@ -100,6 +100,7 @@ class PermisoService
 
             "pagos.index",
             "pagos.verificados",
+            "pagos.noVerificados",
             "pagos.registrarPagos",
 
             "configuracions.index",
@@ -214,6 +215,7 @@ class PermisoService
 
             "pagos.index",
             "pagos.verificados",
+            "pagos.noVerificados",
             // "pagos.registrarPagos",
 
             // "configuracions.index",
@@ -302,6 +304,7 @@ class PermisoService
 
             "pagos.index",
             "pagos.verificados",
+            "pagos.noVerificados",
             "pagos.registrarPagos",
 
             "certificadosEmitidosLinea",
@@ -368,6 +371,7 @@ class PermisoService
 
             "pagos.index",
             "pagos.verificados",
+            "pagos.noVerificados",
             // "pagos.registrarPagos",
 
             "certificadosEmitidosLinea",

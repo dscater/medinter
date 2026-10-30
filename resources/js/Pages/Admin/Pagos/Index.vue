@@ -2,16 +2,23 @@
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import MiTable from "@/Components/MiTable.vue";
-import { ref, onMounted, onBeforeMount, computed, nextTick, watch } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
-const loginUserStore = useLoginUserStore();
 
-// TOAST
+import {
+    ref,
+    onMounted,
+    onBeforeUnmount,
+    computed,
+    nextTick,
+    watch,
+} from "vue";
+
+import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
+
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+
+const loginUserStore = useLoginUserStore();
 const { props: props_page } = usePage();
-const appStore = useAppStore();
 
 const props = defineProps({
     tipo_pagos: {
@@ -32,9 +39,9 @@ const props = defineProps({
     },
 });
 
-onBeforeMount(() => {
-    appStore.startLoading();
-});
+// =====================================================
+// NAVEGACIÓN
+// =====================================================
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -44,8 +51,13 @@ const goBack = () => {
     }
 };
 
+// =====================================================
+// REFERENCIAS DE TABLAS
+// =====================================================
+
 const miTable1 = ref(null);
 const miTable2 = ref(null);
+
 const headers1 = ref([
     {
         label: "Nro.",
@@ -76,21 +88,54 @@ const headers1 = ref([
     },
 ]);
 
+const colsIniciado = ref(false);
+
+// =====================================================
+// DATOS
+// =====================================================
+
 const listPagosVerificados = ref([]);
 const listPagosSinVerificar = ref([]);
-const sumaPorTipos = ref([]);
-const sumaPorTiposSinVerificar = ref([]);
-const suma_total_tipos = ref([]);
-const colsIniciado = ref(false);
-const loadingPagos = ref(false);
-const intervalCargaPagos = ref(null);
-const cargarRegistrosPagos = async () => {
-    clearInterval(intervalCargaPagos.value);
-    loadingPagos.value = true;
-    intervalCargaPagos.value = setTimeout(async () => {
-        await cargarPagosVerificados();
-    }, 400);
-};
+
+const sumaPorTipos = ref({});
+const sumaPorTiposSinVerificar = ref({});
+
+// Los totales generales se construyen en Vue.
+// Ya no necesitamos un tercer endpoint de sumas.
+
+const suma_total_tipos = computed(() => {
+    const resultado = {};
+
+    Object.entries(sumaPorTipos.value || {}).forEach(([tipo, monto]) => {
+        resultado[tipo] = Number(monto || 0);
+    });
+
+    Object.entries(sumaPorTiposSinVerificar.value || {}).forEach(
+        ([tipo, monto]) => {
+            resultado[tipo] = (resultado[tipo] || 0) + Number(monto || 0);
+        },
+    );
+
+    return resultado;
+});
+
+// =====================================================
+// ESTADOS DE CARGA INDEPENDIENTES
+// =====================================================
+
+const loadingVerificados = ref(false);
+const loadingSinVerificar = ref(false);
+
+const errorVerificados = ref(false);
+const errorSinVerificar = ref(false);
+
+const loadingPagos = computed(() => {
+    return loadingVerificados.value || loadingSinVerificar.value;
+});
+
+// =====================================================
+// PAGINACIÓN
+// =====================================================
 
 const paginacionVerificados = ref({
     current_page: 1,
@@ -110,113 +155,8 @@ const paginacionSinVerificar = ref({
     to: null,
 });
 
-const cargarPagosVerificados = async () => {
-    if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
-        return;
-    }
-    axios
-        .get(route("pagos.verificados"), {
-            params: {
-                fecha_ini: filtros.value.fecha_ini,
-                fecha_fin: filtros.value.fecha_fin,
-                sucursal_id: filtros.value.sucursal_id,
-                medico_id: filtros.value.medico_id,
-                user_id: filtros.value.user_id,
-                pagina_verificados: paginaVerificados.value,
-                pagina_sin_verificar: paginaSinVerificar.value,
-            },
-        })
-        .then(async (response) => {
-            listPagosVerificados.value = response.data.pagos.data;
-            sumaPorTipos.value = response.data.suma_tipos;
-            listPagosSinVerificar.value =
-                response.data.pagos_sin_verificar.data;
-            sumaPorTiposSinVerificar.value =
-                response.data.suma_tipos_sin_verificar;
-            suma_total_tipos.value = response.data.suma_total_tipos;
-
-            paginacionVerificados.value = {
-                current_page: response.data.pagos.current_page,
-                last_page: response.data.pagos.last_page,
-                per_page: response.data.pagos.per_page,
-                total: response.data.pagos.total,
-                from: response.data.pagos.from,
-                to: response.data.pagos.to,
-            };
-
-            paginacionSinVerificar.value = {
-                current_page: response.data.pagos_sin_verificar.current_page,
-                last_page: response.data.pagos_sin_verificar.last_page,
-                per_page: response.data.pagos_sin_verificar.per_page,
-                total: response.data.pagos_sin_verificar.total,
-                from: response.data.pagos_sin_verificar.from,
-                to: response.data.pagos_sin_verificar.to,
-            };
-
-            appStore.stopLoading();
-        })
-        .finally(() => {
-            loadingPagos.value = false;
-        });
-};
-
-const obtenerFechaActual = () => {
-    const fecha = new Date();
-    const anio = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Mes empieza desde 0
-    const dia = String(fecha.getDate()).padStart(2, "0"); // Día del mes
-    return `${anio}-${mes}-${dia}`;
-};
-
-const cargarTablasPorPagos = async () => {
-    // crear columnas dinamicas
-    if (!colsIniciado.value)
-        props.tipo_pagos.forEach((elem) => {
-            headers1.value.push({
-                label: elem.value,
-                key: "monto",
-                fixed: "right",
-                sortable: true,
-                classTd: (item) => {
-                    return "justify-content-end";
-                },
-                width: "100px",
-                render: (item, index) => {
-                    if (item.tipo_pago != elem.value) return "-";
-                    // if (item.tipo !== elem.value) return "";
-                    return item.monto || "";
-                },
-            });
-        });
-
-    colsIniciado.value = true;
-
-    await nextTick();
-    if (miTable1.value) {
-        miTable1.value.cargarDatos();
-    }
-
-    if (miTable2.value) {
-        miTable2.value.cargarDatos();
-    }
-};
-
-const txtUsuarioRecepcion = computed(() => {
-    if (!filtros.value.user_id) return "";
-    const user = props.usuarios.find((u) => u.id === filtros.value.user_id);
-    console.log("Usuario seleccionado:", user);
-    return user
-        ? `Pagos recepcionados por ${user.nombre} ${user.paterno} ${user.materno} - ${user.tipo}`
-        : "";
-});
-
-const filtros = ref({
-    fecha_ini: obtenerFechaActual(),
-    fecha_fin: obtenerFechaActual(),
-    sucursal_id: "",
-    medico_id: "",
-    user_id: "",
-});
+const paginaVerificados = ref(1);
+const paginaSinVerificar = ref(1);
 
 const rangoVerificados = computed(() => {
     const p = paginacionVerificados.value;
@@ -230,16 +170,201 @@ const rangoSinVerificar = computed(() => {
     return p.total > 0 ? `${p.from}–${p.to} de ${p.total}` : "0 de 0";
 });
 
-const paginaVerificados = ref(1);
-const paginaSinVerificar = ref(1);
+// =====================================================
+// FILTROS
+// =====================================================
+
+const obtenerFechaActual = () => {
+    const fecha = new Date();
+
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+};
+
+const filtros = ref({
+    fecha_ini: obtenerFechaActual(),
+    fecha_fin: obtenerFechaActual(),
+    sucursal_id: "",
+    medico_id: "",
+    user_id: "",
+});
+
+const parametrosFiltros = () => ({
+    fecha_ini: filtros.value.fecha_ini,
+    fecha_fin: filtros.value.fecha_fin,
+    sucursal_id: filtros.value.sucursal_id,
+    medico_id: filtros.value.medico_id,
+    user_id: filtros.value.user_id,
+});
+
+// =====================================================
+// CONTROL DE PETICIONES
+// =====================================================
+
+let peticionVerificados = null;
+let peticionSinVerificar = null;
+let timerCargaPagos = null;
+
+// =====================================================
+// CARGAR PAGOS VERIFICADOS
+// =====================================================
+
+const cargarPagosVerificados = async () => {
+    if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
+        return;
+    }
+
+    if (peticionVerificados) {
+        peticionVerificados.abort();
+    }
+
+    const controller = new AbortController();
+    peticionVerificados = controller;
+
+    loadingVerificados.value = true;
+    errorVerificados.value = false;
+
+    try {
+        const response = await axios.get(route("pagos.verificados"), {
+            params: {
+                ...parametrosFiltros(),
+                pagina_verificados: paginaVerificados.value,
+            },
+            signal: controller.signal,
+        });
+
+        const data = response.data;
+
+        listPagosVerificados.value = data.pagos.data;
+
+        sumaPorTipos.value = data.suma_tipos || {};
+
+        paginacionVerificados.value = {
+            current_page: data.pagos.current_page,
+            last_page: data.pagos.last_page,
+            per_page: data.pagos.per_page,
+            total: data.pagos.total,
+            from: data.pagos.from,
+            to: data.pagos.to,
+        };
+    } catch (error) {
+        if (error.code !== "ERR_CANCELED") {
+            console.error("Error cargando pagos verificados:", error);
+
+            errorVerificados.value = true;
+
+            toast.error("No se pudieron cargar los pagos verificados");
+        }
+    } finally {
+        if (peticionVerificados === controller) {
+            loadingVerificados.value = false;
+            peticionVerificados = null;
+        }
+    }
+};
+
+// =====================================================
+// CARGAR PAGOS SIN VERIFICAR
+// =====================================================
+
+const cargarPagosSinVerificar = async () => {
+    if (!filtros.value.fecha_ini || !filtros.value.fecha_fin) {
+        return;
+    }
+
+    if (peticionSinVerificar) {
+        peticionSinVerificar.abort();
+    }
+
+    const controller = new AbortController();
+    peticionSinVerificar = controller;
+
+    loadingSinVerificar.value = true;
+    errorSinVerificar.value = false;
+
+    try {
+        const response = await axios.get(route("pagos.noVerificados"), {
+            params: {
+                ...parametrosFiltros(),
+                pagina_sin_verificar: paginaSinVerificar.value,
+            },
+            signal: controller.signal,
+        });
+
+        const data = response.data;
+
+        listPagosSinVerificar.value = data.pagos.data;
+
+        sumaPorTiposSinVerificar.value = data.suma_tipos_sin_verificar || {};
+
+        paginacionSinVerificar.value = {
+            current_page: data.pagos.current_page,
+            last_page: data.pagos.last_page,
+            per_page: data.pagos.per_page,
+            total: data.pagos.total,
+            from: data.pagos.from,
+            to: data.pagos.to,
+        };
+    } catch (error) {
+        if (error.code !== "ERR_CANCELED") {
+            console.error("Error cargando pagos sin verificar:", error);
+
+            errorSinVerificar.value = true;
+
+            toast.error("No se pudieron cargar los pagos pendientes");
+        }
+    } finally {
+        if (peticionSinVerificar === controller) {
+            loadingSinVerificar.value = false;
+            peticionSinVerificar = null;
+        }
+    }
+};
+
+// =====================================================
+// CARGAR AMBAS TABLAS
+// =====================================================
+
+const cargarTodo = () => {
+    cargarPagosVerificados();
+    cargarPagosSinVerificar();
+};
+
+// Aplicar filtros: volver a la primera página
+// y cargar ambas tablas.
+
+const aplicarFiltros = () => {
+    paginaVerificados.value = 1;
+    paginaSinVerificar.value = 1;
+
+    cargarTodo();
+};
+
+// Debounce para los filtros y botones de búsqueda.
+
+const cargarRegistrosPagos = () => {
+    clearTimeout(timerCargaPagos);
+
+    timerCargaPagos = setTimeout(() => {
+        aplicarFiltros();
+    }, 350);
+};
+
+// =====================================================
+// CAMBIAR PÁGINAS
+// =====================================================
 
 const cambiarPaginaVerificados = (pagina) => {
-    console.log(pagina);
     if (pagina < 1 || pagina > paginacionVerificados.value.last_page) {
         return;
     }
 
     paginaVerificados.value = pagina;
+
+    // Solo consulta pagos verificados.
     cargarPagosVerificados();
 };
 
@@ -249,32 +374,99 @@ const cambiarPaginaSinVerificar = (pagina) => {
     }
 
     paginaSinVerificar.value = pagina;
-    cargarPagosVerificados();
+
+    // Solo consulta pagos pendientes.
+    cargarPagosSinVerificar();
 };
 
+// =====================================================
+// TOTALES
+// =====================================================
+
 const total = computed(() => {
-    return Object.values(suma_total_tipos.value ?? {})
+    return Object.values(suma_total_tipos.value)
         .reduce((sum, monto) => sum + Number(monto || 0), 0)
         .toFixed(2);
 });
 
 const totalSinVerificar = computed(() => {
-    return Object.values(sumaPorTiposSinVerificar.value ?? {})
+    return Object.values(sumaPorTiposSinVerificar.value)
         .reduce((sum, monto) => sum + Number(monto || 0), 0)
         .toFixed(2);
 });
-const totalGeneral = computed(() => {
-    const total = Object.values(suma_total_tipos.value).reduce(
-        (sum, value) => sum + Number(value || 0),
-        0,
-    );
 
-    return total.toFixed(2);
+const totalGeneral = computed(() => {
+    return Object.values(suma_total_tipos.value)
+        .reduce((sum, monto) => sum + Number(monto || 0), 0)
+        .toFixed(2);
 });
 
+// =====================================================
+// USUARIO RECEPCIONISTA
+// =====================================================
+
+const txtUsuarioRecepcion = computed(() => {
+    if (!filtros.value.user_id) {
+        return "";
+    }
+
+    const user = props.usuarios.find(
+        (u) => String(u.id) === String(filtros.value.user_id),
+    );
+
+    return user
+        ? `Pagos recepcionados por ${user.nombre} ${user.paterno} ${user.materno} - ${user.tipo}`
+        : "";
+});
+
+// =====================================================
+// COLUMNAS DINÁMICAS
+// =====================================================
+
+const cargarTablasPorPagos = async () => {
+    if (!colsIniciado.value) {
+        const columnasDinamicas = props.tipo_pagos.map((elem) => ({
+            label: elem.value,
+            key: "monto",
+            fixed: "right",
+            sortable: true,
+            classTd: () => "justify-content-end",
+            width: "100px",
+
+            render: (item) => {
+                if (item.tipo_pago !== elem.value) {
+                    return "-";
+                }
+
+                return item.monto || "";
+            },
+        }));
+
+        headers1.value = [...headers1.value, ...columnasDinamicas];
+
+        colsIniciado.value = true;
+    }
+
+    await nextTick();
+
+    if (miTable1.value) {
+        miTable1.value.cargarDatos();
+    }
+
+    if (miTable2.value) {
+        miTable2.value.cargarDatos();
+    }
+};
+
+// =====================================================
+// EXPORTAR
+// =====================================================
+
 const generando = ref(false);
+
 const exportar = (formato) => {
     generando.value = true;
+
     const url = route("reportes.exportarCaja", {
         fecha_ini: filtros.value.fecha_ini,
         fecha_fin: filtros.value.fecha_fin,
@@ -283,33 +475,51 @@ const exportar = (formato) => {
         user_id: filtros.value.user_id,
         formato,
     });
+
     window.open(url, "_blank");
+
     setTimeout(() => {
         generando.value = false;
     }, 500);
 };
 
+// =====================================================
+// INICIALIZACIÓN
+// =====================================================
+
 watch(
     () => loginUserStore.login_user,
     (newVal) => {
-        if (newVal) {
-            filtros.value.sucursal_id =
-                props_page.auth.user.tipo == "ADMINISTRADOR" ||
-                props_page.auth.user.tipo == "GERENTE"
-                    ? "todos"
-                    : newVal.sucursal_id;
-            cargarPagosVerificados();
-        }
+        if (!newVal) return;
+
+        filtros.value.sucursal_id =
+            props_page.auth.user.tipo === "ADMINISTRADOR" ||
+            props_page.auth.user.tipo === "GERENTE"
+                ? "todos"
+                : newVal.sucursal_id;
+
+        cargarRegistrosPagos();
     },
     { immediate: true },
 );
 
-onMounted(() => {});
+onMounted(async () => {
+    await cargarTablasPorPagos();
+});
 
-onBeforeMount(() => {
-    cargarTablasPorPagos();
+onBeforeUnmount(() => {
+    clearTimeout(timerCargaPagos);
+
+    if (peticionVerificados) {
+        peticionVerificados.abort();
+    }
+
+    if (peticionSinVerificar) {
+        peticionSinVerificar.abort();
+    }
 });
 </script>
+
 <template>
     <Head title="Arqueo de Caja"></Head>
     <Content>
