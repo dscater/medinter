@@ -371,7 +371,8 @@ class CertificadoService
                 // cargar archivo
                 if (isset($item["archivo"]) && !is_string($item["archivo"])) {
                     $archivo = $item["archivo"];
-                    \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+                    // \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
+                    // Log::debug("ACTUALIZARA ARCHIVO");
                     $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
                     if ($certificado_detalle->estado == 0) {
                         // ATENDIDO
@@ -385,6 +386,8 @@ class CertificadoService
                         $certificado_detalle->save();
                     }
                 }
+
+                // Log::debug("PASO CARGA ARCHIVO");
 
                 if ($old_certificado->estado == 1) {
                     // previamente atendido
