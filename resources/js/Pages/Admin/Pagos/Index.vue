@@ -58,7 +58,7 @@ const goBack = () => {
 const miTable1 = ref(null);
 const miTable2 = ref(null);
 
-const headers1 = ref([
+const columnasFijas = [
     {
         label: "Nro.",
         width: "2%",
@@ -66,28 +66,14 @@ const headers1 = ref([
         key: "id",
         fixed: true,
     },
-    {
-        label: "Fecha",
-        key: "fecha_verificado",
-    },
-    {
-        label: "Sucursal",
-        key: "sucursal.nombre",
-    },
-    {
-        label: "Paciente",
-        key: "cliente",
-    },
-    {
-        label: "Descripción",
-        key: "descripcion",
-    },
-    {
-        label: "Médico",
-        key: "medico",
-    },
-]);
+    { label: "Fecha", key: "fecha_verificado" },
+    { label: "Sucursal", key: "sucursal.nombre" },
+    { label: "Paciente", key: "cliente" },
+    { label: "Descripción", key: "descripcion" },
+    { label: "Médico", key: "medico" },
+];
 
+const headers1 = ref([...columnasFijas]);
 const colsIniciado = ref(false);
 
 // =====================================================
@@ -383,20 +369,23 @@ const cambiarPaginaSinVerificar = (pagina) => {
 // TOTALES
 // =====================================================
 
+// Total de pagos verificados
 const total = computed(() => {
-    return Object.values(suma_total_tipos.value)
+    return Object.values(sumaPorTipos.value || {})
         .reduce((sum, monto) => sum + Number(monto || 0), 0)
         .toFixed(2);
 });
 
+// Total de pagos sin verificar
 const totalSinVerificar = computed(() => {
-    return Object.values(sumaPorTiposSinVerificar.value)
+    return Object.values(sumaPorTiposSinVerificar.value || {})
         .reduce((sum, monto) => sum + Number(monto || 0), 0)
         .toFixed(2);
 });
 
+// Total general: verificados + sin verificar
 const totalGeneral = computed(() => {
-    return Object.values(suma_total_tipos.value)
+    return Object.values(suma_total_tipos.value || {})
         .reduce((sum, monto) => sum + Number(monto || 0), 0)
         .toFixed(2);
 });
@@ -424,40 +413,27 @@ const txtUsuarioRecepcion = computed(() => {
 // =====================================================
 
 const cargarTablasPorPagos = async () => {
-    if (!colsIniciado.value) {
-        const columnasDinamicas = props.tipo_pagos.map((elem) => ({
-            label: elem.value,
-            key: "monto",
-            fixed: "right",
-            sortable: true,
-            classTd: () => "justify-content-end",
-            width: "100px",
+    const columnasDinamicas = props.tipo_pagos.map((elem) => ({
+        label: elem.value,
+        key: "monto",
+        fixed: "right",
+        sortable: true,
+        classTd: () => "justify-content-end",
+        width: "100px",
+        render: (item) => {
+            return String(item.tipo_pago ?? "").trim() ===
+                String(elem.value ?? "").trim()
+                ? (item.monto ?? "")
+                : "-";
+        },
+    }));
 
-            render: (item) => {
-                if (item.tipo_pago !== elem.value) {
-                    return "-";
-                }
+    headers1.value = [...columnasFijas, ...columnasDinamicas];
 
-                return item.monto || "";
-            },
-        }));
-
-        headers1.value = [...headers1.value, ...columnasDinamicas];
-
-        colsIniciado.value = true;
-    }
+    // console.log("COLUMNAS FINALES:", headers1.value);
 
     await nextTick();
-
-    if (miTable1.value) {
-        miTable1.value.cargarDatos();
-    }
-
-    if (miTable2.value) {
-        miTable2.value.cargarDatos();
-    }
 };
-
 // =====================================================
 // EXPORTAR
 // =====================================================
@@ -822,7 +798,11 @@ onBeforeUnmount(() => {
                             <td
                                 class="bg-principal p-3 text-right text-md font-weight-bold fixed-column-ext-right"
                             >
-                                {{ sumaPorTipos[tipo_pago.value] }}
+                                {{
+                                    Number(
+                                        sumaPorTipos[tipo_pago.value] || 0,
+                                    ).toFixed(2)
+                                }}
                             </td>
                         </template>
                     </tr>
@@ -975,9 +955,11 @@ onBeforeUnmount(() => {
                                     "
                                 >
                                     {{
-                                        sumaPorTiposSinVerificar[
-                                            tipo_pago.value
-                                        ]
+                                        Number(
+                                            sumaPorTiposSinVerificar[
+                                                tipo_pago.value
+                                            ] || 0,
+                                        ).toFixed(2)
                                     }}
                                 </td>
                             </template>
