@@ -1,58 +1,14 @@
 <script setup>
 import Content from "@/Components/Content.vue";
+import MiTableSkeleton from "@/Components/MiTableSkeleton.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useCertificados } from "@/composables/certificados/useCertificados";
 import { useAxios } from "@/composables/axios/useAxios";
-import { ref, onMounted, onBeforeMount } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { ref } from "vue";
 import Reporte from "./Reporte.vue";
 import CertificadoDetalle from "./CertificadoDetalle.vue";
 const { props: props_page } = usePage();
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-const listTipoCertificados = ref([]);
-const listTipoPagos = ref([]);
-const listSucursals = ref([]);
-const cargarTipoCertificados = () => {
-    axios.get(route("tipo_certificados.listado")).then((response) => {
-        listTipoCertificados.value = response.data.tipo_certificados;
-        // listTipoCertificados.value.unshift({
-        //     id: "todos",
-        //     nombre: "TODOS",
-        // });
-    });
-};
-
-const cargarTipoPagos = () => {
-    axios.get(route("tipo_pagos.listado")).then((response) => {
-        listTipoPagos.value = response.data;
-        listTipoPagos.value.unshift({
-            value: "todos",
-            label: "TODOS",
-        });
-    });
-};
-
-const cargarSucursals = () => {
-    axios.get(route("sucursals.listado")).then((response) => {
-        listSucursals.value = response.data.sucursals;
-        listSucursals.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
-};
-
-onMounted(() => {
-    // cargarTipoCertificados();
-    // cargarTipoPagos();
-    // cargarSucursals();
-    appStore.stopLoading();
-});
 
 const { setCertificado, limpiarCertificado, form } = useCertificados();
 const { axiosDelete } = useAxios();
@@ -170,6 +126,18 @@ const editarDetalle = (item) => {
     setCertificado({ ...item });
     muestra_formulario.value = true;
 };
+
+const tablaLista = ref(false);
+const tablaError = ref(false);
+
+function tablaPreparada() {
+    tablaLista.value = true;
+    tablaError.value = false;
+}
+
+function tablaConError() {
+    tablaError.value = true;
+}
 </script>
 <template>
     <Head title="Certificados"></Head>
@@ -268,7 +236,25 @@ const editarDetalle = (item) => {
                 </div>
                 <div class="row">
                     <div class="col-12">
+                        <div
+                            v-if="!tablaLista && !tablaError"
+                            class="table-loading-overlay"
+                        >
+                            <MiTableSkeleton
+                                theme="light"
+                                :rows="8"
+                                :columns="headers.length || 5"
+                                :show-toolbar="true"
+                                :show-pagination="true"
+                            />
+                        </div>
+
+                        <div v-if="tablaError" class="table-error-message">
+                            No se pudieron cargar los registros.
+                        </div>
+
                         <MiTable
+                            v-show="tablaLista"
                             :tableClass="'bg-white mitabla'"
                             ref="miTable"
                             :cols="headers"
@@ -281,6 +267,8 @@ const editarDetalle = (item) => {
                             table-responsive
                             :header-class="'bg__primary'"
                             fixed-header
+                            @ready="tablaPreparada"
+                            @load-error="tablaConError"
                         >
                             <template #certificados="{ item }">
                                 <div>

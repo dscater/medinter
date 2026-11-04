@@ -14,7 +14,8 @@ class RecepcionPagoController extends Controller
 
     public function index()
     {
-        $pagos = $this->pago_service->listadoRecepcionPagos();
-        return Inertia::render("Admin/RecepcionPagos/Index", compact("pagos"));
+        return Inertia::render("Admin/RecepcionPagos/Index", [
+            "pagos" => Inertia::defer(fn() => $this->pago_service->listadoRecepcionPagos()),
+        ]);
     }
 }

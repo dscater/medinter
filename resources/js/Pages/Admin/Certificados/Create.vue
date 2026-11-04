@@ -2,13 +2,23 @@
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useCertificados } from "@/composables/certificados/useCertificados";
-import { ref, onMounted, onBeforeMount } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { ref, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
 const { props: props_page } = usePage();
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
+
+const props = defineProps({
+    tipo_pagos: {
+        type: Array,
+        default: [],
+    },
+    tipo_certificados: {
+        type: Array,
+        default: [],
+    },
+    tramitadors: {
+        type: Array,
+        default: [],
+    },
 });
 
 const { limpiarCertificado, form, setCertificado } = useCertificados();
@@ -23,10 +33,6 @@ const goBack = () => {
 
 onBeforeMount(() => {
     limpiarCertificado();
-});
-
-onMounted(() => {
-    appStore.stopLoading();
 });
 </script>
 <template>
@@ -74,6 +80,9 @@ onMounted(() => {
                     <div class="col-12">
                         <Formulario
                             :form="form"
+                            :tipo_certificados="tipo_certificados"
+                            :tipo_pagos="tipo_pagos"
+                            :tramitadors="tramitadors"
                             :setCertificado="setCertificado"
                             :limpiarCertificado="limpiarCertificado"
                         ></Formulario>

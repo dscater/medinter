@@ -2,7 +2,7 @@
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import MiTable from "@/Components/MiTable.vue";
-
+import MiTableSkeleton from "@/Components/MiTableSkeleton.vue";
 import {
     ref,
     onMounted,
@@ -62,11 +62,18 @@ const columnasFijas = [
     {
         label: "Nro.",
         width: "2%",
+        width: "50px",
+        maxWidth: "50px",
+        fitContent: true,
         isIndex: true,
         key: "id",
-        fixed: true,
     },
-    { label: "Fecha", key: "fecha_verificado" },
+    {
+        label: "Fecha",
+        key: "fecha_verificado",
+        minWidth: "95px",
+        fitContent: true,
+    },
     { label: "Sucursal", key: "sucursal.nombre" },
     { label: "Paciente", key: "cliente" },
     { label: "Descripción", key: "descripcion" },
@@ -419,7 +426,7 @@ const cargarTablasPorPagos = async () => {
         fixed: "right",
         sortable: true,
         classTd: () => "justify-content-end",
-        width: "100px",
+        minWidth: "60px",
         render: (item) => {
             return String(item.tipo_pago ?? "").trim() ===
                 String(elem.value ?? "").trim()
@@ -494,6 +501,17 @@ onBeforeUnmount(() => {
         peticionSinVerificar.abort();
     }
 });
+const tablaLista = ref(false);
+const tablaError = ref(false);
+
+function tablaPreparada() {
+    tablaLista.value = true;
+    tablaError.value = false;
+}
+
+function tablaConError() {
+    tablaError.value = true;
+}
 </script>
 
 <template>
@@ -735,9 +753,25 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
             </div>
+            <div
+                v-if="!tablaLista && !tablaError"
+                class="table-loading-overlay"
+            >
+                <MiTableSkeleton
+                    theme="light"
+                    :rows="8"
+                    :columns="headers1.length || 5"
+                    :show-toolbar="true"
+                    :show-pagination="true"
+                />
+            </div>
+
+            <div v-if="tablaError" class="table-error-message">
+                No se pudieron cargar los registros.
+            </div>
 
             <MiTable
-                v-show="listPagosVerificados.length > 0"
+                v-show="tablaLista"
                 ref="miTable1"
                 :tableClass="'bg-white mitabla'"
                 :header-class="'bg__primary'"
@@ -748,6 +782,8 @@ onBeforeUnmount(() => {
                 fixed-header
                 table-height="40vh"
                 :loading="loadingPagos"
+                @ready="tablaPreparada"
+                @load-error="tablaConError"
             >
                 <template #fecha_verificado="{ item }">
                     <span>{{ item.fecha_verificado_t }} {{ item.hora }}</span>
@@ -822,12 +858,9 @@ onBeforeUnmount(() => {
                     </tr>
                 </template>
             </MiTable>
-            <div class="col-12 mt-2" v-show="listPagosVerificados.length == 0">
-                <h4 class="text-muted">No se encontrarón registros</h4>
-            </div>
             <div
                 class="col-12 overflow-auto mt-5"
-                v-show="listPagosSinVerificar.length > 0"
+                v-if="listPagosSinVerificar.length > 0"
             >
                 <div class="row">
                     <div class="col-12">

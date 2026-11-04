@@ -23,7 +23,7 @@ class UserController extends Controller
     {
         $permisoService = new PermisoService();
         return response()->JSON([
-            "permisos" => $permisoService->getPermisosUser()
+            "permisos" => $permisoService->getPermisosUser($request->user())
         ]);
     }
 
@@ -38,9 +38,9 @@ class UserController extends Controller
     {
         $permisos = [];
         $array_infos = [];
-        if (Auth::check()) {
-            $oUser = new User();
-            $permisos = $oUser->permisos;
+        $user = Auth::user();
+        if ($user) {
+            $permisos = $user->permisos;
             if ($permisos == '*' || (is_array($permisos) && in_array('usuarios.index', $permisos))) {
                 $array_infos[] = [
                     'label' => 'USUARIOS',

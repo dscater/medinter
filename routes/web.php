@@ -39,6 +39,27 @@ Route::get('/diagnostico-servidor', function () {
     ]);
 });
 
+/*
+Route::get('/test-db-connection', function () {
+    try {
+        DB::connection()->getPdo();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Conexión MySQL correcta',
+            'host' => config('database.connections.mysql.host'),
+            'port' => config('database.connections.mysql.port'),
+            'persistent' => config('database.connections.mysql.options')[PDO::ATTR_PERSISTENT] ?? false,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
+*/
+
 Route::get('/login', function () {
     if (Auth::check()) {
         return redirect()->route('inicio');

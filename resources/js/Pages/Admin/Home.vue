@@ -5,8 +5,7 @@ defineOptions({
 });
 import Content from "@/Components/Content.vue";
 import { usePage, Head, Link } from "@inertiajs/vue3";
-import { onMounted, onBeforeMount, ref, computed, nextTick } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { onMounted, ref, computed, nextTick } from "vue";
 import Highcharts from "highcharts";
 import "highcharts/modules/exporting";
 import "highcharts/modules/accessibility";
@@ -26,18 +25,11 @@ Highcharts.setOptions({
 const { auth } = usePage().props;
 const user = ref(auth.user);
 
-const props_page = defineProps({
+const props = defineProps({
     array_infos: {
         type: Array,
     },
 });
-
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-const { props } = usePage();
 
 const filtroGrafico1 = ref([
     {
@@ -249,7 +241,6 @@ const renderChart2 = (containerId, categories, total_final, data) => {
 onMounted(() => {
     generarReporte1();
     generarReporte2();
-    appStore.stopLoading();
 });
 </script>
 <template>

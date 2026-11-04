@@ -1,24 +1,7 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onBeforeMount, onMounted, ref } from "vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
-
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-const cargarListas = () => {
-    cargarTipos();
-};
-
-const listSucursals = ref([]);
-
-onMounted(() => {
-    cargarListas();
-    appStore.stopLoading();
-});
+import { computed, ref } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 
 const getFechaAtual = () => {
     const today = new Date();
@@ -54,8 +37,6 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listTipos = ref([]);
-
 const generarReporte = () => {
     generando.value = true;
     const url = route("reportes.r_clientes", form.value);
@@ -63,20 +44,6 @@ const generarReporte = () => {
     setTimeout(() => {
         generando.value = false;
     }, 500);
-};
-
-const cargarTipos = () => {
-    axios.get(route("tipo_usuarios.listado")).then((response) => {
-        listTipos.value = response.data.map((item) => ({
-            id: item,
-            nombre: item,
-        }));
-
-        listTipos.value.unshift({
-            id: "todos",
-            nombre: "TODOS",
-        });
-    });
 };
 </script>
 <template>

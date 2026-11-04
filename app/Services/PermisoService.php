@@ -2,8 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Permiso;
-use App\Models\Role;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class PermisoService
@@ -397,14 +396,11 @@ class PermisoService
      *
      * @return array
      */
-    public function getPermisosUser(): array|string
+    public function getPermisosUser(User $user): array|string
     {
-        $user = Auth::user();
-        $permisos = [];
-        if ($user) {
-            return $this->arrayPermisos[$user->tipo];
+        if ($user->id == 1) {
+            return '*';
         }
-
-        return $permisos;
+        return $this->arrayPermisos[$user->tipo] ?? [];
     }
 }

@@ -1,83 +1,22 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onBeforeMount, onMounted, ref } from "vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
+import { computed, ref, defineProps } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 
-onBeforeMount(() => {
-    appStore.startLoading();
+const props = defineProps({
+    sucursals: {
+        type: Array,
+        default: () => [],
+    },
+    medicos: {
+        type: Array,
+        default: () => [],
+    },
+    tipo_certificados: {
+        type: Array,
+        default: () => [],
+    },
 });
-
-const cargarListas = async () => {
-    await Promise.all([
-        cargarSucursals(),
-        cargarUsers(),
-        cargarTipoCertificados(),
-        // cargarClientes(),
-        // cargarTipoPagos(),
-    ]);
-};
-
-const listClientes = ref([]);
-const listSucursals = ref([]);
-const listUsers = ref([]);
-const listTipoPagos = ref([]);
-const listTipoCertificados = ref([]);
-
-const cargarClientes = async () => {
-    const response = await axios.get(route("clientes.listado"));
-    listClientes.value = response.data.clientes;
-    listClientes.value.unshift({
-        id: "todos",
-        full_name: "TODOS",
-        full_ci: "",
-    });
-};
-
-const cargarSucursals = async () => {
-    const response = await axios.get(route("sucursals.listado"));
-    listSucursals.value = response.data.sucursals;
-    listSucursals.value.unshift({
-        id: "todos",
-        nombre: "TODOS",
-    });
-};
-const cargarUsers = async () => {
-    const response = await axios.get(route("usuarios.byTipo"), {
-        params: {
-            tipo: ["MÉDICO", "GERENTE"],
-        },
-    });
-    listUsers.value = response.data.usuarios;
-    listUsers.value.unshift({
-        id: "todos",
-        full_name: "TODOS",
-    });
-};
-const cargarTipoPagos = async () => {
-    const response = await axios.get(route("tipo_pagos.listado"));
-    listTipoPagos.value = response.data;
-    listTipoPagos.value.unshift({
-        value: "todos",
-        label: "TODOS",
-    });
-};
-const cargarTipoCertificados = async () => {
-    const response = await axios.get(route("tipo_certificados.listado"));
-    listTipoCertificados.value = response.data.tipo_certificados;
-    listTipoCertificados.value.unshift({
-        id: "todos",
-        nombre: "TODOS",
-    });
-};
-
-onMounted(async () => {
-    await cargarListas();
-    appStore.stopLoading();
-});
-
-onBeforeMount(() => {});
 
 const listFormatos = ref([
     {
@@ -177,9 +116,14 @@ const generarReporte = () => {
                                     <el-select
                                         v-model="form.sucursal_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listSucursals"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in sucursals"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.nombre"
@@ -192,9 +136,14 @@ const generarReporte = () => {
                                     <el-select
                                         v-model="form.user_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listUsers"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in medicos"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.full_name"
@@ -222,9 +171,14 @@ const generarReporte = () => {
                                     <el-select
                                         v-model="form.tipo_certificado_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listTipoCertificados"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in tipo_certificados"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.nombre"

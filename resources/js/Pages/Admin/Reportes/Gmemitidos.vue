@@ -1,19 +1,12 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
+import { computed, nextTick, ref } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 import Highcharts from "highcharts";
 import { useFormater } from "@/composables/useFormater";
 const { getFormatoMoneda } = useFormater();
 import "highcharts/modules/exporting";
 import "highcharts/modules/accessibility";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
-
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
 // exporting(Highcharts);
 // accessibility(Highcharts);
 Highcharts.setOptions({
@@ -28,72 +21,20 @@ Highcharts.setOptions({
         exitFullscreen: "Salir de pantalla completa",
     },
 });
-const cargarListas = async () => {
-    await Promise.all([
-        // cargarClientes(),
-        cargarSucursals(),
-        cargarUsers(),
-        cargarTipoPagos(),
-        cargarTipoCertificados(),
-    ]);
-};
 
-const listClientes = ref([]);
-const listSucursals = ref([]);
-const listUsers = ref([]);
-const listTipoPagos = ref([]);
-const listTipoCertificados = ref([]);
-
-const cargarClientes = async () => {
-    const response = await axios.get(route("clientes.listado"));
-    listClientes.value = response.data.clientes;
-    listClientes.value.unshift({
-        id: "todos",
-        full_name: "TODOS",
-        full_ci: "",
-    });
-};
-
-const cargarSucursals = async () => {
-    const response = await axios.get(route("sucursals.listado"));
-    listSucursals.value = response.data.sucursals;
-    listSucursals.value.unshift({
-        id: "todos",
-        nombre: "TODOS",
-    });
-};
-const cargarUsers = async () => {
-    const response = await axios.get(route("usuarios.byTipo"), {
-        params: {
-            tipo: "MÉDICO",
-        },
-    });
-    listUsers.value = response.data.usuarios;
-    listUsers.value.unshift({
-        id: "todos",
-        full_name: "TODOS",
-    });
-};
-const cargarTipoPagos = async () => {
-    const response = await axios.get(route("tipo_pagos.listado"));
-    listTipoPagos.value = response.data;
-    listTipoPagos.value.unshift({
-        value: "todos",
-        label: "TODOS",
-    });
-};
-const cargarTipoCertificados = async () => {
-    const response = await axios.get(route("tipo_certificados.listado"));
-    listTipoCertificados.value = response.data.tipo_certificados;
-    listTipoCertificados.value.unshift({
-        id: "todos",
-        nombre: "TODOS",
-    });
-};
-
-onMounted(async () => {
-    await cargarListas();
-    appStore.stopLoading();
+const props = defineProps({
+    sucursals: {
+        type: Array,
+        default: () => [],
+    },
+    medicos: {
+        type: Array,
+        default: () => [],
+    },
+    tipo_pagos: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const obtenerFechaActual = () => {
@@ -272,9 +213,14 @@ const renderChart = (containerId, categories, total_final, data) => {
                                     <el-select
                                         v-model="form.sucursal_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listSucursals"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in sucursals"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.nombre"
@@ -287,9 +233,14 @@ const renderChart = (containerId, categories, total_final, data) => {
                                     <el-select
                                         v-model="form.user_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listUsers"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in medicos"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.full_name"
@@ -302,9 +253,14 @@ const renderChart = (containerId, categories, total_final, data) => {
                                     <el-select
                                         v-model="form.tipo_pago"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listTipoPagos"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in tipo_pagos"
                                             :key="item.value"
                                             :value="item.value"
                                             :label="item.label"

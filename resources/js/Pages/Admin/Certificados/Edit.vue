@@ -2,8 +2,7 @@
 import Content from "@/Components/Content.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useCertificados } from "@/composables/certificados/useCertificados";
-import { ref, onMounted, onBeforeMount } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { ref, onBeforeMount } from "vue";
 import Formulario from "./Formulario.vue";
 const props = defineProps({
     certificado: {
@@ -15,17 +14,22 @@ const props = defineProps({
         type: Object,
         default: {},
     },
+    tipo_pagos: {
+        type: Array,
+        default: [],
+    },
+    tipo_certificados: {
+        type: Array,
+        default: [],
+    },
+    tramitadors: {
+        type: Array,
+        default: [],
+    },
 });
 const { props: props_page } = usePage();
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
-});
 
 const { form, setCertificado } = useCertificados();
-onMounted(() => {
-    appStore.stopLoading();
-});
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -84,6 +88,9 @@ onBeforeMount(() => {
                     <div class="col-12">
                         <Formulario
                             :form="form"
+                            :tipo_certificados="tipo_certificados"
+                            :tipo_pagos="tipo_pagos"
+                            :tramitadors="tramitadors"
                             :cliente="cliente"
                             :setCertificado="setCertificado"
                         ></Formulario>

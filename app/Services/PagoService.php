@@ -666,7 +666,6 @@ class PagoService
     /**
      * LISTADO DE PAGOS PARA EL MODULO DE RECEPCION
      *
-     * @return void
      */
     public function listadoRecepcionPagos()
     {

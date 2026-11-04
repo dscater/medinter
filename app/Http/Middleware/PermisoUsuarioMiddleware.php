@@ -17,45 +17,32 @@ class PermisoUsuarioMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $user = $request->user();
 
-        if (Auth::check()) {
-            $permisos = Auth::user()->permisos;
-            // Log::debug($request->route()->getName());
-            // Log::debug($request->route()->getPrefix());
+        if ($user) {
+            $permisos = $user->permisos;
+
             $prefijo = $request->route()->getPrefix();
             $nom_ruta = $request->route()->getName();
-            $continuar = true;
 
-            $exepciones = [
-                "inicio",
-
-                "profile.edit",
-                "profile.update",
-                "profile.update_foto",
-
-                "users.getUser",
+            $excepciones = [
+                'inicio',
+                'profile.edit',
+                'profile.update',
+                'profile.update_foto',
+                'users.getUser',
             ];
 
-            if ($prefijo == 'admin') {
-                if (!in_array($nom_ruta, $permisos)) {
-                    $continuar = false;
+            if (!is_string($permisos) && $permisos !== '*') {
+                if (
+                    ($prefijo === 'admin') &&
+                    !in_array($nom_ruta, $permisos) &&
+                    !in_array($nom_ruta, $excepciones)
+                ) {
+                    abort(401, 'Acceso denegado');
                 }
-                if (in_array($nom_ruta, $exepciones)) {
-                    $continuar = true;
-                }
-            }
-            if (!$continuar) {
-                abort(401, "Acceso denegado");
             }
         }
-
-        logger()->info('DIAGNOSTICO INICIO LARAVEL', [
-            'ruta' => $request->path(),
-            'tiempo_desde_inicio_ms' => round(
-                (microtime(true) - $GLOBALS['inicioLaravel']) * 1000,
-                2
-            ),
-        ]);
 
         return $next($request);
     }

@@ -1,21 +1,13 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onBeforeMount, onMounted, ref } from "vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
+import { computed, ref } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-const cargarListas = () => {
-    cargarUsuarios();
-};
-
-onMounted(() => {
-    cargarListas();
-    appStore.stopLoading();
+const props = defineProps({
+    usuarios: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const getFechaAtual = () => {
@@ -88,8 +80,6 @@ const txtBtn = computed(() => {
     return "Generar Reporte";
 });
 
-const listUsers = ref([]);
-
 const generarReporte = () => {
     generando.value = true;
     const url = route("reportes.r_historial_accions", form.value);
@@ -97,17 +87,6 @@ const generarReporte = () => {
     setTimeout(() => {
         generando.value = false;
     }, 500);
-};
-
-const cargarUsuarios = () => {
-    axios.get(route("usuarios.listado")).then((response) => {
-        listUsers.value = response.data.usuarios;
-        listUsers.value.unshift({
-            id: "todos",
-            full_name: "TODOS",
-            tipo: "",
-        });
-    });
 };
 </script>
 <template>
@@ -144,9 +123,14 @@ const cargarUsuarios = () => {
                                     <el-select
                                         v-model="form.user_id"
                                         filterable
+                                        placeholder="TODOS"
                                     >
                                         <el-option
-                                            v-for="item in listUsers"
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in usuarios"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="`${item.full_name} ${item.tipo ? ' - ' + item.tipo : ''}`"

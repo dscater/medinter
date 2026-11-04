@@ -1,13 +1,11 @@
 <script setup>
-import { useForm, usePage } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import { watch, ref, computed, onMounted, nextTick, onBeforeMount } from "vue";
 import { useClientes } from "@/composables/clientes/useClientes";
 import Formulario from "../Clientes/Formulario.vue";
-import { useLoginUserStore } from "@/stores/login_users/loginUserStore";
 import axios from "axios";
 import { useVerificaCertificados } from "@/composables/certificados/useVerificaPendientes";
 const { props: propsPage } = usePage();
-const loginUserStore = useLoginUserStore();
 const { verificarPendiente } = useVerificaCertificados();
 const props = defineProps({
     form: {
@@ -21,6 +19,19 @@ const props = defineProps({
     limpiarCertificado: {
         type: Function,
         default: null,
+    },
+    tipo_pagos: {
+        type: Array,
+        default: [],
+    },
+    tipo_certificados: {
+        type: Array,
+        default: [],
+        required: true,
+    },
+    tramitadors: {
+        type: Array,
+        default: [],
     },
 });
 
@@ -106,27 +117,6 @@ const enviarFormulario = () => {
 };
 
 const emits = defineEmits(["envio-formulario"]);
-
-const listTipoPagos = ref([]);
-const cargarTipoPagos = () => {
-    axios.get(route("tipo_pagos.listado")).then((response) => {
-        listTipoPagos.value = response.data;
-    });
-};
-
-const listTipoCertificados = ref([]);
-const cargarTipoCertificados = () => {
-    axios.get(route("tipo_certificados.listado")).then((response) => {
-        listTipoCertificados.value = response.data.tipo_certificados;
-    });
-};
-
-const listTramitadors = ref([]);
-const cargarTramitadors = () => {
-    axios.get(route("tramitadors.listado")).then((response) => {
-        listTramitadors.value = response.data.tramitadors;
-    });
-};
 
 const cargarArchivo = (e, key, index) => {
     form[key] = null;
@@ -235,9 +225,7 @@ const detectarTipoCertificado = (value, index) => {
         return;
     }
 
-    const item = listTipoCertificados.value.filter(
-        (item) => item.id == value,
-    )[0];
+    const item = props.tipo_certificados.filter((item) => item.id == value)[0];
     if (!item) return;
     form.certificado_detalles[index].tipo_certificado = item;
     form.certificado_detalles[index].precio = item.precio;
@@ -315,12 +303,6 @@ onMounted(() => {
     } else {
         agregarCertificado();
     }
-});
-
-onBeforeMount(() => {
-    cargarTipoCertificados();
-    cargarTipoPagos();
-    cargarTramitadors();
 });
 </script>
 
@@ -591,7 +573,7 @@ onBeforeMount(() => {
                                         :disabled="form.id != 0"
                                     >
                                         <el-option
-                                            v-for="item in listTramitadors"
+                                            v-for="item in tramitadors"
                                             :key="item.id"
                                             :value="item.id"
                                             :label="item.nombre"
@@ -784,7 +766,7 @@ onBeforeMount(() => {
                                                     "
                                                 >
                                                     <el-option
-                                                        v-for="item in listTipoCertificados"
+                                                        v-for="item in tipo_certificados"
                                                         :key="item.id"
                                                         :value="item.id"
                                                         :label="item.nombre"
@@ -954,7 +936,7 @@ onBeforeMount(() => {
                                             "
                                         >
                                             <el-radio
-                                                v-for="item in listTipoPagos"
+                                                v-for="item in tipo_pagos"
                                                 :value="item.value"
                                                 size="large"
                                                 ><i :class="item.icon"></i>

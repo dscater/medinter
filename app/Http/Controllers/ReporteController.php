@@ -12,9 +12,13 @@ use App\Models\Pago;
 use App\Models\TipoCertificado;
 use App\Models\User;
 use App\Services\PagoService;
+use App\Services\PermisoService;
 use App\Services\ReporteService;
 use App\Services\ReporteServiceTcpdf;
+use App\Services\SucursalService;
+use App\Services\TipoCertificadoService;
 use App\Services\TipoPagoService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -176,8 +180,15 @@ class ReporteController extends Controller
     ];
 
     private $configuracion = null;
-    public function __construct(private PagoService $pagoService, private TipoPagoService $tipo_pago_service)
-    {
+    public function __construct(
+        private PagoService $pagoService,
+        private TipoPagoService $tipo_pago_service,
+        private SucursalService $sucursal_service,
+        private UserService $user_service,
+        private TipoCertificadoService $tipo_certificado_service,
+        private PermisoService $permiso_service
+
+    ) {
         $this->configuracion = Configuracion::first();
         if (!$this->configuracion) {
             $this->configuracion = new Configuracion([
@@ -192,7 +203,8 @@ class ReporteController extends Controller
 
     public function usuarios()
     {
-        return Inertia::render("Admin/Reportes/Usuarios");
+        $tipo_usuarios = $this->permiso_service->getTiposUsuarios();
+        return Inertia::render("Admin/Reportes/Usuarios", ["tipo_usuarios" => $tipo_usuarios]);
     }
 
     public function r_usuarios(Request $request)
@@ -1100,7 +1112,15 @@ class ReporteController extends Controller
 
     public function certificados()
     {
-        return Inertia::render("Admin/Reportes/Certificados");
+        $sucursals = $this->sucursal_service->listado();
+        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $tipo_certificados = $this->tipo_certificado_service->listado();
+
+        return Inertia::render("Admin/Reportes/Certificados", [
+            "sucursals" => $sucursals,
+            "medicos" => $medicos,
+            "tipo_certificados" => $tipo_certificados,
+        ]);
     }
 
     public function r_certificados(Request $request)
@@ -1275,7 +1295,15 @@ class ReporteController extends Controller
 
     public function certificados_interno()
     {
-        return Inertia::render("Admin/Reportes/CertificadosInterno");
+        $sucursals = $this->sucursal_service->listado();
+        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $tipo_certificados = $this->tipo_certificado_service->listado();
+
+        return Inertia::render("Admin/Reportes/CertificadosInterno", [
+            "sucursals" => $sucursals,
+            "medicos" => $medicos,
+            "tipo_certificados" => $tipo_certificados,
+        ]);
     }
 
     public function r_certificados_interno(Request $request)
@@ -1627,7 +1655,8 @@ class ReporteController extends Controller
 
     public function historial_accions()
     {
-        return Inertia::render("Admin/Reportes/HistorialAccions");
+        $usuarios = $this->user_service->listado();
+        return Inertia::render("Admin/Reportes/HistorialAccions", ["usuarios" => $usuarios]);
     }
 
     public function r_historial_accions(Request $request)
@@ -1761,7 +1790,15 @@ class ReporteController extends Controller
 
     public function gcemitidos()
     {
-        return Inertia::render("Admin/Reportes/Gcemitidos");
+        $sucursals = $this->sucursal_service->listado();
+        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $tipo_certificados = $this->tipo_certificado_service->listado();
+
+        return Inertia::render("Admin/Reportes/Gcemitidos", [
+            "sucursals" => $sucursals,
+            "medicos" => $medicos,
+            "tipo_certificados" => $tipo_certificados,
+        ]);
     }
     public function r_gcemitidos(Request $request)
     {
@@ -1832,7 +1869,14 @@ class ReporteController extends Controller
 
     public function gmemitidos()
     {
-        return Inertia::render("Admin/Reportes/Gmemitidos");
+        $sucursals = $this->sucursal_service->listado();
+        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $tipo_pagos = $this->tipo_pago_service->listado();
+        return Inertia::render("Admin/Reportes/Gmemitidos", [
+            "sucursals" => $sucursals,
+            "medicos" => $medicos,
+            "tipo_pagos" => $tipo_pagos
+        ]);
     }
     public function r_gmemitidos(Request $request)
     {

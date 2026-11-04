@@ -10,6 +10,9 @@ use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\User;
 use App\Services\CertificadoService;
+use App\Services\TipoCertificadoService;
+use App\Services\TipoPagoService;
+use App\Services\TramitadorService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -24,7 +27,12 @@ use Inertia\Response as ResponseInertia;
 
 class CertificadoController extends Controller
 {
-    public function __construct(private CertificadoService $certificadoService) {}
+    public function __construct(
+        private CertificadoService $certificadoService,
+        private TipoPagoService $tipo_pago_service,
+        private TipoCertificadoService $tipo_certificado_service,
+        private TramitadorService $tramitador_service
+    ) {}
 
     /**
      * Página index
@@ -161,7 +169,15 @@ class CertificadoController extends Controller
 
     public function create()
     {
-        return Inertia::render("Admin/Certificados/Create");
+        $tipo_certificados = $this->tipo_certificado_service->listado();
+        $tipo_pagos = $this->tipo_pago_service->listado();
+        $tramitadors = $this->tramitador_service->listado();
+
+        return Inertia::render("Admin/Certificados/Create", [
+            "tipo_certificados" => $tipo_certificados,
+            "tipo_pagos" => $tipo_pagos,
+            "tramitadors" => $tramitadors,
+        ]);
     }
 
     /**
@@ -232,7 +248,18 @@ class CertificadoController extends Controller
             "certificado_detalles.pago"
         ]);
         $cliente = $certificado->cliente;
-        return Inertia::render("Admin/Certificados/Edit", compact("certificado", "cliente"));
+
+        $tipo_certificados = $this->tipo_certificado_service->listado();
+        $tipo_pagos = $this->tipo_pago_service->listado();
+        $tramitadors = $this->tramitador_service->listado();
+
+        return Inertia::render("Admin/Certificados/Edit", [
+            "certificado" => $certificado,
+            "cliente" => $cliente,
+            "tipo_certificados" => $tipo_certificados,
+            "tipo_pagos" => $tipo_pagos,
+            "tramitadors" => $tramitadors,
+        ]);
     }
 
 

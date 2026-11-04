@@ -1,24 +1,15 @@
 <script setup>
 import Content from "@/Components/Content.vue";
+import MiTableSkeleton from "@/Components/MiTableSkeleton.vue";
 import MiTable from "@/Components/MiTable.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { useTramitadors } from "@/composables/tramitadors/useTramitadors";
 import { useAxios } from "@/composables/axios/useAxios";
-import { ref, onMounted, onBeforeMount } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { ref } from "vue";
 // import { useMenu } from "@/composables/useMenu";
 import Formulario from "./Formulario.vue";
-import { buttonProps } from "element-plus";
 // const { mobile, identificaDispositivo } = useMenu();
 const { props: props_page } = usePage();
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-onMounted(() => {
-    appStore.stopLoading();
-});
 
 const { setTramitador, limpiarTramitador, form } = useTramitadors();
 const { axiosDelete } = useAxios();
@@ -144,6 +135,18 @@ const eliminarTramitador = (item) => {
         }
     });
 };
+
+const tablaLista = ref(false);
+const tablaError = ref(false);
+
+function tablaPreparada() {
+    tablaLista.value = true;
+    tablaError.value = false;
+}
+
+function tablaConError() {
+    tablaError.value = true;
+}
 </script>
 <template>
     <Head title="Tramitadores"></Head>
@@ -213,7 +216,24 @@ const eliminarTramitador = (item) => {
                 </div>
                 <div class="row">
                     <div class="col-12">
+                        <div
+                            v-if="!tablaLista && !tablaError"
+                            class="table-loading-overlay"
+                        >
+                            <MiTableSkeleton
+                                theme="light"
+                                :rows="8"
+                                :columns="headers.length || 5"
+                                :show-toolbar="true"
+                                :show-pagination="true"
+                            />
+                        </div>
+
+                        <div v-if="tablaError" class="table-error-message">
+                            No se pudieron cargar los registros.
+                        </div>
                         <MiTable
+                            v-show="tablaLista"
                             :tableClass="'bg-white mitabla'"
                             ref="miTable"
                             :cols="headers"
@@ -226,6 +246,8 @@ const eliminarTramitador = (item) => {
                             table-responsive
                             :header-class="'bg__primary'"
                             fixed-header
+                            @ready="tablaPreparada"
+                            @load-error="tablaConError"
                         >
                             <template #user="{ item }">
                                 <span

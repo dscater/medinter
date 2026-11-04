@@ -40,6 +40,7 @@ const resetTimer = () => {
 onMounted(() => {
     // Inicializar info de usuario
     appStore.initUserInfo();
+    appStore.stopLoading();
 
     // Eventos que consideran actividad del usuario
     // window.addEventListener("mousemove", resetTimer);
@@ -57,6 +58,7 @@ const verificaSucursalUSuario = async () => {
 };
 
 onBeforeMount(async () => {
+    appStore.setLoading(true);
     appStore.initUserInfo();
     await verificaSucursalUSuario();
     // window.removeEventListener("mousemove", resetTimer);

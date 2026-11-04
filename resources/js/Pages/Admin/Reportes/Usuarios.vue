@@ -1,23 +1,13 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { computed, onBeforeMount, onMounted, ref } from "vue";
-import { Head, usePage, Link } from "@inertiajs/vue3";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
+import { computed, ref } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
 
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-const cargarListas = () => {
-    cargarTipos();
-};
-
-const listSucursals = ref([]);
-
-onMounted(() => {
-    cargarListas();
-    appStore.stopLoading();
+const props = defineProps({
+    tipo_usuarios: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const listFormatos = ref([
@@ -102,17 +92,20 @@ const cargarTipos = () => {
                             <div class="row">
                                 <div class="col-md-12">
                                     <label>Seleccionar tipo de usuario*</label>
-                                    <select
+                                    <el-select
                                         v-model="form.tipo"
-                                        class="form-control"
+                                        placeholder="TODOS"
                                     >
-                                        <option
-                                            v-for="item in listTipos"
-                                            :value="item.id"
-                                        >
-                                            {{ item.nombre }}
-                                        </option>
-                                    </select>
+                                        <el-option
+                                            value="todos"
+                                            label="TODOS"
+                                        />
+                                        <el-option
+                                            v-for="item in tipo_usuarios"
+                                            :value="item"
+                                            :label="item"
+                                        />
+                                    </el-select>
                                 </div>
                                 <div class="col-md-12 text-center mt-2">
                                     <el-radio-group v-model="form.formato">

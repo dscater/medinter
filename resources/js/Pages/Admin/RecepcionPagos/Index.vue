@@ -1,8 +1,8 @@
 <script setup>
 import Content from "@/Components/Content.vue";
-import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import { ref, onMounted, onBeforeMount, computed } from "vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
+import { Head, Link, router, Deferred } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
+import MiTableSkeleton from "@/Components/MiTableSkeleton.vue";
 // TOAST
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -12,23 +12,6 @@ const props = defineProps({
         default: [],
     },
 });
-const { props: props_page } = usePage();
-const appStore = useAppStore();
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-onMounted(() => {
-    appStore.stopLoading();
-});
-
-const goBack = () => {
-    if (window.history.length > 1) {
-        window.history.back();
-    } else {
-        router.visit(route("inicio"));
-    }
-};
 
 const filtros = ref({
     codigo: "",
@@ -89,8 +72,6 @@ const toggleAll = () => {
         p.verificado = checkAll.value ? 1 : 0;
     });
 };
-
-onBeforeMount(() => {});
 </script>
 <template>
     <Head title="Recepción de Pagos"></Head>
@@ -140,90 +121,107 @@ onBeforeMount(() => {});
                     </div>
                 </div>
             </div> -->
-            <div class="col-12 overflow-auto" v-if="pagos.length > 0">
-                <h4 class="text-lg">{{ pagos.length }} Pagos sin verificar</h4>
-                <table class="table table-bordered table-hover bg-white">
-                    <thead>
-                        <tr class="bg-principal">
-                            <th width="5%">Fecha</th>
-                            <th>Sucursal</th>
-                            <th>Descripción</th>
-                            <th>Usuario</th>
-                            <th>Tipo de Pago</th>
-                            <th class="text-right">Monto Bs.</th>
-                            <th>
-                                <input
-                                    class="checkboxTable"
-                                    type="checkbox"
-                                    :checked="checkAll"
-                                    @click="toggleAll"
-                                />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="item in pagos" class="text-xs">
-                            <td>{{ item.fecha_t }}<br />{{ item.hora }}</td>
-                            <td>{{ item.sucursal?.nombre }}</td>
-                            <td>{{ item.descripcion }}</td>
-                            <td>
-                                {{ item.user?.nombre }} {{ item.user?.paterno }}
-                                {{ item.user?.materno }}
-                            </td>
-                            <td class="">{{ item.tipo_pago }}</td>
-                            <td class="text-right">{{ item.monto }}</td>
-                            <td>
-                                <input
-                                    class="checkboxTable"
-                                    type="checkbox"
-                                    :true-value="1"
-                                    :false-value="0"
-                                    v-model="item.verificado"
-                                />
-                            </td>
-                        </tr>
-                        <tr class="bgVerificado">
-                            <td
-                                class="text-lg font-weight-bold text-right"
-                                colspan="5"
+
+            <Deferred data="pagos">
+                <template #fallback>
+                    <MiTableSkeleton
+                        theme="light"
+                        :rows="8"
+                        :columns="6"
+                        :show-toolbar="true"
+                        :show-pagination="true"
+                    />
+                </template>
+
+                <div class="col-12 overflow-auto" v-if="pagos.length > 0">
+                    <h4 class="text-lg">
+                        {{ pagos.length }} Pagos sin verificar
+                    </h4>
+
+                    <table class="table table-bordered table-hover bg-white">
+                        <thead>
+                            <tr class="bg-principal">
+                                <th width="5%">Fecha</th>
+                                <th>Sucursal</th>
+                                <th>Descripción</th>
+                                <th>Usuario</th>
+                                <th>Tipo de Pago</th>
+                                <th class="text-right">Monto Bs.</th>
+                                <th>
+                                    <input
+                                        class="checkboxTable"
+                                        type="checkbox"
+                                        :checked="checkAll"
+                                        @click="toggleAll"
+                                    />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in pagos" class="text-xs">
+                                <td>{{ item.fecha_t }}<br />{{ item.hora }}</td>
+                                <td>{{ item.sucursal?.nombre }}</td>
+                                <td>{{ item.descripcion }}</td>
+                                <td>
+                                    {{ item.user?.nombre }}
+                                    {{ item.user?.paterno }}
+                                    {{ item.user?.materno }}
+                                </td>
+                                <td class="">{{ item.tipo_pago }}</td>
+                                <td class="text-right">{{ item.monto }}</td>
+                                <td>
+                                    <input
+                                        class="checkboxTable"
+                                        type="checkbox"
+                                        :true-value="1"
+                                        :false-value="0"
+                                        v-model="item.verificado"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="bgVerificado">
+                                <td
+                                    class="text-lg font-weight-bold text-right"
+                                    colspan="5"
+                                >
+                                    TOTAL VERIFICADO Bs.
+                                </td>
+                                <td class="text-lg font-weight-bold text-right">
+                                    {{ totalVerificado }}
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr class="bg-principal">
+                                <td
+                                    class="text-lg font-weight-bold text-right"
+                                    colspan="5"
+                                >
+                                    TOTAL SIN VERIFICAR Bs.
+                                </td>
+                                <td class="text-lg font-weight-bold text-right">
+                                    {{ total }}
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-4 offset-md-8 text-right">
+                            <button
+                                class="btn btn-primary w-100"
+                                @click="registrarPagos"
                             >
-                                TOTAL VERIFICADO Bs.
-                            </td>
-                            <td class="text-lg font-weight-bold text-right">
-                                {{ totalVerificado }}
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr class="bg-principal">
-                            <td
-                                class="text-lg font-weight-bold text-right"
-                                colspan="5"
-                            >
-                                TOTAL SIN VERIFICAR Bs.
-                            </td>
-                            <td class="text-lg font-weight-bold text-right">
-                                {{ total }}
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="row">
-                    <div class="col-md-4 offset-md-8 text-right">
-                        <button
-                            class="btn btn-primary w-100"
-                            @click="registrarPagos"
-                        >
-                            <i class="fa fa-save"></i> Registrar Pagos
-                        </button>
+                                <i class="fa fa-save"></i> Registrar Pagos
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 mt-2" v-else>
-                <h4 class="text-muted">
-                    No se encontrarón pagos sin verificar
-                </h4>
-            </div>
+                <div class="col-12 mt-2" v-else>
+                    <h4 class="text-muted">
+                        No se encontrarón pagos sin verificar
+                    </h4>
+                </div>
+            </Deferred>
         </div>
     </Content>
 </template>

@@ -3,17 +3,6 @@ import { ref, onMounted, onBeforeMount } from "vue";
 import { router, useForm, usePage, Head, Link } from "@inertiajs/vue3";
 import { useUser } from "@/composables/useUser";
 import Content from "@/Components/Content.vue";
-import { useAppStore } from "@/stores/aplicacion/appStore";
-const appStore = useAppStore();
-
-onBeforeMount(() => {
-    appStore.startLoading();
-});
-
-onMounted(() => {
-    appStore.stopLoading();
-});
-
 const props = defineProps({
     user: {
         type: Object,
