@@ -44,7 +44,7 @@ class UsuarioController extends Controller
     public function byTipo(Request $request)
     {
         return response()->JSON([
-            "usuarios" => $this->userService->listadoByTipo(["MÉDICO", "GERENTE"], $request->input("order", null), $request->input("order", null))
+            "usuarios" => $this->userService->listadoByTipo(["MÉDICO", "GERENTE"], $request->input("order", null), $request->input("order", null), ['permisos', 'foto_b64'])
         ]);
     }
     public function paginado(Request $request)
