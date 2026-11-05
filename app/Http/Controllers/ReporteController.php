@@ -1113,7 +1113,7 @@ class ReporteController extends Controller
     public function certificados()
     {
         $sucursals = $this->sucursal_service->listado();
-        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $medicos = $this->user_service->listadoByTipo("MÉDICO", null, 'asc', ["permisos", "foto_b64"]);
         $tipo_certificados = $this->tipo_certificado_service->listado();
 
         return Inertia::render("Admin/Reportes/Certificados", [
@@ -1296,7 +1296,7 @@ class ReporteController extends Controller
     public function certificados_interno()
     {
         $sucursals = $this->sucursal_service->listado();
-        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $medicos = $this->user_service->listadoByTipo("MÉDICO", null, 'asc', ["permisos", "foto_b64"]);
         $tipo_certificados = $this->tipo_certificado_service->listado();
 
         return Inertia::render("Admin/Reportes/CertificadosInterno", [
@@ -1655,7 +1655,7 @@ class ReporteController extends Controller
 
     public function historial_accions()
     {
-        $usuarios = $this->user_service->listado();
+        $usuarios = $this->user_service->listado(["permisos", "foto_b64"]);
         return Inertia::render("Admin/Reportes/HistorialAccions", ["usuarios" => $usuarios]);
     }
 
@@ -1791,7 +1791,7 @@ class ReporteController extends Controller
     public function gcemitidos()
     {
         $sucursals = $this->sucursal_service->listado();
-        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $medicos = $this->user_service->listadoByTipo("MÉDICO", null, 'asc', ["permisos", "foto_b64"]);
         $tipo_certificados = $this->tipo_certificado_service->listado();
 
         return Inertia::render("Admin/Reportes/Gcemitidos", [
@@ -1870,7 +1870,7 @@ class ReporteController extends Controller
     public function gmemitidos()
     {
         $sucursals = $this->sucursal_service->listado();
-        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $medicos = $this->user_service->listadoByTipo("MÉDICO", null, 'asc', ["permisos", "foto_b64"]);
         $tipo_pagos = $this->tipo_pago_service->listado();
         return Inertia::render("Admin/Reportes/Gmemitidos", [
             "sucursals" => $sucursals,

@@ -21,22 +21,24 @@ class UserService
     private $modulo = "USUARIOS";
     public function __construct(private  CargarArchivoService $cargarArchivoService, private HistorialAccionService $historialAccionService) {}
 
-    public function listado()
+    public function listado(array $hidden = [])
     {
         return Cache::remember(
             'usuarios_listado',
             self::CACHE_TTL,
-            function () {
+            function () use ($hidden) {
                 return User::where('id', '!=', 1)
                     ->where('status', 1)
-                    ->get();
+                    ->get()
+                    ->makeHidden($hidden);
             }
         );
     }
     public function listadoByTipo(
         $tipo = null,
         $order = null,
-        $order_ad = 'asc'
+        $order_ad = 'asc',
+        array $hidden = []
     ) {
         $version = Cache::get('usuarios_cache_version', 1);
 
@@ -49,7 +51,7 @@ class UserService
         return Cache::remember(
             $key,
             self::CACHE_TTL,
-            function () use ($tipo, $order, $order_ad) {
+            function () use ($tipo, $order, $order_ad, $hidden) {
                 $usuarios = User::where('id', '!=', 1);
 
                 if ($tipo) {
@@ -64,7 +66,9 @@ class UserService
                     $usuarios->orderBy('users.id', $order_ad);
                 }
 
-                return $usuarios->where('status', 1)->get();
+                return $usuarios->where('status', 1)
+                    ->get()
+                    ->makeHidden($hidden);
             }
         );
     }

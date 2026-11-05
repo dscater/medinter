@@ -31,9 +31,9 @@ class PagoController extends Controller
         $t1 = microtime(true);
         $sucursals = $this->sucursal_service->listado();
         $t2 = microtime(true);
-        $usuarios = $this->user_service->listado();
+        $usuarios = $this->user_service->listado(["permisos", "foto_b64"]);
         $t3 = microtime(true);
-        $medicos = $this->user_service->listadoByTipo("MÉDICO");
+        $medicos = $this->user_service->listadoByTipo("MÉDICO", null, 'asc', ["permisos", "foto_b64"]);
 
         $t4 = microtime(true);
         logger()->info("RENDIMIENTO PAGOS INDEX", [
