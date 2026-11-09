@@ -36,35 +36,72 @@ class ClienteService
      * @param array $columnsFilter
      * @return LengthAwarePaginator
      */
-    public function listadoPaginado(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
-    {
-        $clientes = Cliente::select("clientes.*")
-            ->with("user:id,nombre,paterno,materno")
-            ->where("status", 1);
+    public function listadoPaginado(
+        int $length,
+        int $page,
+        string $search = '',
+        array $columnsSearchLike = [],
+        array $columnsFilter = [],
+        array $columnsBetweenFilter = [],
+        array $orderBy = []
+    ): LengthAwarePaginator {
+        $search = trim($search);
 
-        $clientes->where(function ($query) use ($search) {
+        $clientes = Cliente::query()
+            ->select([
+                'clientes.id',
+                'clientes.user_id',
+                'clientes.status',
+                'clientes.nombre',
+                'clientes.paterno',
+                'clientes.materno',
+                'clientes.fecha_nac',
+                'clientes.fecha_registro',
+                'clientes.ci',
+                'clientes.complemento',
+                'clientes.ci_exp',
+            ])
+            ->with('user:id,nombre,paterno,materno')
+            ->where('clientes.status', 1);
 
-            $query->buscarNombre($search);
-
-            $query->orWhereHas("user", function ($sub) use ($search) {
-                $sub->whereRaw(
-                    "CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?",
-                    ["%{$search}%"]
-                );
+        if ($search !== '') {
+            $clientes->where(function ($query) use ($search) {
+                $query->where('clientes.nombre', 'like', "{$search}%")
+                    ->orWhere('clientes.paterno', 'like', "{$search}%")
+                    ->orWhere('clientes.materno', 'like', "{$search}%")
+                    ->orWhere('clientes.ci', 'like', "{$search}%")
+                    ->orWhereHas('user', function ($sub) use ($search) {
+                        $sub->where('nombre', 'like', "{$search}%")
+                            ->orWhere('paterno', 'like', "{$search}%")
+                            ->orWhere('materno', 'like', "{$search}%");
+                    });
             });
-        });
+        }
 
-        // Ordenamiento
-        foreach ($orderBy as $value) {
-            if (isset($value[0], $value[1])) {
-                $clientes->orderBy($value[0], $value[1]);
+        $allowedOrderColumns = [
+            'nombre',
+            'paterno',
+            'materno',
+            'ci',
+            'created_at',
+        ];
+
+        foreach ($orderBy as [$column, $direction]) {
+            if (
+                in_array($column, $allowedOrderColumns, true) &&
+                in_array(strtolower($direction), ['asc', 'desc'], true)
+            ) {
+                $clientes->orderBy($column, strtolower($direction));
             }
         }
 
-        $clientes = $clientes->paginate($length, ['*'], 'page', $page);
-        return $clientes;
+        return $clientes->paginate(
+            min($length, 100),
+            ['*'],
+            'page',
+            max($page, 1)
+        );
     }
-
     public function listadoPaginadoEliminados(int $length, int $page, string $search, array $columnsSerachLike = [], array $columnsFilter = [], array $columnsBetweenFilter = [], array $orderBy = []): LengthAwarePaginator
     {
         $clientes = Cliente::select("clientes.*")

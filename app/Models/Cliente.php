@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class Cliente extends Model
 {
@@ -24,25 +25,36 @@ class Cliente extends Model
 
     protected $appends = ["fecha_registro_t", "full_ci", "fecha_nac_t", "full_name"];
 
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
-        return $this->nombre . ' ' . $this->paterno . ($this->materno ? ' ' . $this->materno : '');
-    }
-    public function getFechaNacTAttribute()
-    {
-        if ($this->fecha_nac) {
-            return date("d/m/Y", strtotime($this->fecha_nac));
-        }
-        return "";
-    }
-    public function getFullCiAttribute()
-    {
-        return $this->ci . ($this->complemento ? '-' . $this->complemento : '') . ' ' . $this->ci_exp;
+        return trim(implode(' ', array_filter([
+            $this->nombre,
+            $this->paterno,
+            $this->materno,
+        ])));
     }
 
-    public function getFechaRegistroTAttribute()
+    public function getFechaNacTAttribute(): string
     {
-        return date("d/m/Y", strtotime($this->fecha_registro));
+        return $this->fecha_nac
+            ? Carbon::parse($this->fecha_nac)->format('d/m/Y')
+            : '';
+    }
+
+    public function getFullCiAttribute(): string
+    {
+        return trim(
+            $this->ci .
+                ($this->complemento ? '-' . $this->complemento : '') .
+                ($this->ci_exp ? ' ' . $this->ci_exp : '')
+        );
+    }
+
+    public function getFechaRegistroTAttribute(): string
+    {
+        return $this->fecha_registro
+            ? Carbon::parse($this->fecha_registro)->format('d/m/Y')
+            : '';
     }
 
     public function scopeBuscarNombre($query, $texto)

@@ -38,7 +38,7 @@ class User extends Authenticatable
         "status",
     ];
 
-    protected $appends = ["permisos", "url_foto", "foto_b64", "full_name", "full_ci", "fecha_registro_t", "usuario_abrev"];
+    protected $appends = ["url_foto", "full_name", "full_ci", "fecha_registro_t"];
 
     /**
      * The attributes that should be hidden for serialization.

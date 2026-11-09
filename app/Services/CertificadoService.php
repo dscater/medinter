@@ -41,37 +41,126 @@ class CertificadoService
      * @param array $columnsFilter
      * @return LengthAwarePaginator
      */
+
     public function listadoPaginado(
         int $length,
         int $page,
         array $orderBy = [],
-        $cliente,
-        $ci,
+        ?string $cliente = null,
+        ?string $ci = null,
     ): LengthAwarePaginator {
-        $certificados = Certificado::select("certificados.*")
-            ->with(["cliente:id,nombre,paterno,materno,ci,ci_exp,complemento", "sucursal:id,nombre", "user:id,nombre,paterno,materno", "inicio:id,nombre,paterno,materno", "certificado_detalles.tipo_certificado", "certificado_detalles.user", "tramitador:id,nombre"])->where("status", 1);
+        $length = min(max($length, 1), 50);
+        $page = max($page, 1);
 
-        // FILTROS
-        $certificados->when($cliente, function ($q) use ($cliente) {
-            $q->whereHas('cliente', function ($sub) use ($cliente) {
-                $sub->whereRaw("CONCAT(nombre, ' ', paterno, ' ', materno) LIKE ?", ["%$cliente%"]);
-            });
-        })
-            ->when($ci, function ($q) use ($ci) {
-                $q->whereHas('cliente', function ($sub) use ($ci) {
-                    $sub->where('ci', 'like', "%$ci%");
+        $certificados = Certificado::query()
+            ->select('certificados.*')
+            ->with([
+                /*
+             * Estas columnas son necesarias para los appends del modelo Cliente:
+             *
+             * fecha_nac_t
+             * fecha_registro_t
+             * full_ci
+             * full_name
+             */
+                'cliente:id,nombre,paterno,materno,fecha_nac,fecha_registro,ci,ci_exp,complemento',
+
+                'sucursal:id,nombre',
+
+                'user:id,nombre,paterno,materno',
+
+                'inicio:id,nombre,paterno,materno',
+
+                'certificado_detalles.tipo_certificado',
+
+                'certificado_detalles.user',
+
+                'tramitador:id,nombre',
+            ])
+            ->where('certificados.status', 1);
+
+        /*
+     * Búsqueda por nombre del cliente.
+     *
+     * Se evita CONCAT() y el comodín inicial %, porque impide
+     * que MySQL aproveche correctamente los índices.
+     */
+        $cliente = trim((string) $cliente);
+
+        if ($cliente !== '') {
+            $certificados->whereHas('cliente', function ($query) use ($cliente) {
+                $query->where(function ($q) use ($cliente) {
+                    $q->where('nombre', 'like', "{$cliente}%")
+                        ->orWhere('paterno', 'like', "{$cliente}%")
+                        ->orWhere('materno', 'like', "{$cliente}%")
+                        ->orWhere('ci', 'like', "{$cliente}%");
                 });
             });
+        }
 
-        // Ordenamiento
+        /*
+     * Búsqueda por CI.
+     */
+        $ci = trim((string) $ci);
+
+        if ($ci !== '') {
+            $certificados->whereHas('cliente', function ($query) use ($ci) {
+                $query->where('ci', 'like', "{$ci}%");
+            });
+        }
+
+        /*
+     * Columnas permitidas para ordenar.
+     *
+     * Nunca utilices directamente una columna recibida del frontend.
+     */
+        $allowedOrderColumns = [
+            'id',
+            'fecha_registro',
+            'status',
+            'cliente_id',
+            'sucursal_id',
+            'user_id',
+        ];
+
+        $hasOrder = false;
+
         foreach ($orderBy as $value) {
-            if (isset($value[0], $value[1])) {
-                $certificados->orderBy($value[0], $value[1]);
+            $column = $value[0] ?? null;
+            $direction = strtolower($value[1] ?? 'asc');
+
+            if (
+                in_array($column, $allowedOrderColumns, true) &&
+                in_array($direction, ['asc', 'desc'], true)
+            ) {
+                $certificados->orderBy(
+                    "certificados.{$column}",
+                    $direction
+                );
+
+                $hasOrder = true;
             }
         }
 
-        $certificados = $certificados->paginate($length, ['*'], 'page', $page);
-        return $certificados;
+        /*
+     * Orden por defecto.
+     *
+     * Permite aprovechar:
+     * certificados_status_fecha_registro_index
+     */
+        if (! $hasOrder) {
+            $certificados->orderBy(
+                'certificados.fecha_registro',
+                'desc'
+            );
+        }
+
+        return $certificados->paginate(
+            $length,
+            ['*'],
+            'page',
+            $page
+        );
     }
 
     public function listadoPaginadoEliminados(
