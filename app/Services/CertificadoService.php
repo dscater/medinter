@@ -992,10 +992,10 @@ class CertificadoService
         UploadedFile $archivo,
         int $index
     ): void {
-        $inicio = microtime(true);
+        // $inicio = microtime(true);
 
         // Obtener el tamaño antes de mover el archivo temporal.
-        $tamanoBytes = $archivo->getSize();
+        // $tamanoBytes = $archivo->getSize();
 
         $directorio = public_path('files/certificados');
 
@@ -1031,12 +1031,12 @@ class CertificadoService
             );
         }
 
-        $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+        // $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
 
-        Log::info('Rendimiento carga archivo certificado', [
-            'certificado_detalle_id' => $certificado_detalle->id,
-            'tamano_bytes' => $tamanoBytes,
-            'duracion_ms' => $duracionMs,
-        ]);
+        // Log::info('Rendimiento carga archivo certificado', [
+        //     'certificado_detalle_id' => $certificado_detalle->id,
+        //     'tamano_bytes' => $tamanoBytes,
+        //     'duracion_ms' => $duracionMs,
+        // ]);
     }
 }

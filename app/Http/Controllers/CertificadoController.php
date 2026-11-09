@@ -190,21 +190,12 @@ class CertificadoController extends Controller
     {
         DB::beginTransaction();
         try {
-
-            $inicio = microtime(true);
             // crear el Certificado
             $datos = $request->validated();
             $datos["estado"] = 1;
             $certificado = $this->certificadoService->crear($datos);
             DB::commit();
 
-            $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
-            Log::info('Rendimiento creacion certificado', [
-                'certificado_id' => $certificado->id,
-                'duracion_ms' => $duracionMs,
-                'detalles' => count($datos['certificado_detalles'] ?? []),
-                'eliminados' => count($datos['eliminados'] ?? []),
-            ]);
             return redirect()->route("certificados.index")->with("bien", "Registro realizado");
         } catch (\Exception $e) {
             DB::rollBack();
@@ -302,8 +293,6 @@ class CertificadoController extends Controller
         DB::beginTransaction();
 
         try {
-            $inicio = hrtime(true);
-
             $certificadoActualizado =
                 $this->certificadoService->actualizar(
                     $datos,
@@ -311,29 +300,6 @@ class CertificadoController extends Controller
                 );
 
             DB::commit();
-
-            $duracionMs = round(
-                (hrtime(true) - $inicio) / 1_000_000,
-                2
-            );
-
-            Log::info(
-                "Rendimiento actualización certificado",
-                [
-                    "certificado_id" =>
-                    $certificadoActualizado->id,
-
-                    "duracion_ms" => $duracionMs,
-
-                    "detalles" => count(
-                        $datos["certificado_detalles"] ?? []
-                    ),
-
-                    "eliminados" => count(
-                        $datos["eliminados"] ?? []
-                    ),
-                ]
-            );
 
             return redirect()
                 ->route("certificados.index")
