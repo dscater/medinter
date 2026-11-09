@@ -179,32 +179,52 @@ class CertificadoService
             throw new Exception("Error no se encontró la sucursal del usuario");
         }
         $sucursal_id = $login_user->sucursal_id;
-        $certificado = Certificado::create([
+        $userId = Auth::id();
+
+        $estado = $datos["estado"] ?? 1;
+
+        $certificadoData = [
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
-            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : $datos["total"],
-            "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
+            "cancelado" => $datos["cancelado"] ?? $datos["total"],
+            "saldo" => $datos["saldo"] ?? 0,
             "tipo_pago" => $datos["tipo_pago"],
             "tramitador_id" => $datos["tramitador_id"] ?? null,
-            "inicio_id" => Auth::user()->id,
-            "user_id" => $datos["estado"] == 1 ? Auth::user()->id : NULL,
+            "inicio_id" => $userId,
+            "user_id" => $estado == 1 ? $userId : null,
             "sucursal_id" => $sucursal_id,
-            "estado" => isset($datos["estado"]) ? $datos["estado"] : 1,
+            "estado" => $estado,
             "fecha_registro" => $fecha_actual,
             "hora_registro" => $hora_actual,
-            "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
-        ]);
+            "tipo" => $datos["tipo"] ?? "NORMAL",
+        ];
+
+        // $certificado = Certificado::create([
+        //     "cliente_id" => $datos["cliente_id"],
+        //     "total" => $datos["total"],
+        //     "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : $datos["total"],
+        //     "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
+        //     "tipo_pago" => $datos["tipo_pago"],
+        //     "tramitador_id" => $datos["tramitador_id"] ?? null,
+        //     "inicio_id" => Auth::user()->id,
+        //     "user_id" => $datos["estado"] == 1 ? Auth::user()->id : NULL,
+        //     "sucursal_id" => $sucursal_id,
+        //     "estado" => isset($datos["estado"]) ? $datos["estado"] : 1,
+        //     "fecha_registro" => $fecha_actual,
+        //     "hora_registro" => $hora_actual,
+        //     "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
+        // ]);
 
         // HORA INICIO-FIN
         // atendido
-        if ($certificado->estado == 1) {
-            $certificado->fecha_inicio = $datos["fecha_inicio"];
-            $certificado->hora_inicio = $datos["hora_inicio"];
-
-            $certificado->fecha_fin = $fecha_actual;
-            $certificado->hora_fin = $hora_actual;
-            $certificado->save();
+        if ($estado == 1) {
+            $certificadoData["fecha_inicio"] = $datos["fecha_inicio"];
+            $certificadoData["hora_inicio"] = $datos["hora_inicio"];
+            $certificadoData["fecha_fin"] = $fecha_actual;
+            $certificadoData["hora_fin"] = $hora_actual;
         }
+
+        $certificado = Certificado::create($certificadoData);
 
         // detalles
         foreach ($datos["certificado_detalles"] as $key => $item) {
@@ -274,185 +294,412 @@ class CertificadoService
      * @param Certificado $certificado
      * @return Certificado
      */
-    public function actualizar(array $datos, Certificado $certificado): Certificado
-    {
-        $old_certificado = clone $certificado;
-        $datos_original_detalles = $certificado
+
+    public function actualizar(
+        array $datos,
+        Certificado $certificado
+    ): Certificado {
+
+        $userId = Auth::id();
+
+        $now = Carbon::now("America/La_Paz");
+
+        $fechaActual = $now->toDateString();
+        $horaActual = $now->format("H:i:s");
+
+        $estadoAnterior = (int) $certificado->estado;
+        $oldCertificado = clone $certificado;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Guardar detalles originales para auditoría
+        |--------------------------------------------------------------------------
+        */
+
+        $datosOriginalDetalles = $certificado
             ->certificado_detalles()
             ->get()
             ->toArray();
 
-        $fecha_actual = Carbon::now("America/La_Paz")->format("Y-m-d");
-        $hora_actual = Carbon::now("America/La_Paz")->format("H:i:s");
+        /*
+        |--------------------------------------------------------------------------
+        | Preparar datos del certificado
+        |--------------------------------------------------------------------------
+        */
 
-        $certificado->update([
+        $certificadoData = [
             "cliente_id" => $datos["cliente_id"],
             "total" => $datos["total"],
-            "cancelado" => isset($datos["cancelado"]) ? $datos["cancelado"] : 0,
-            "saldo" => isset($datos["saldo"]) ? $datos["saldo"] : 0,
+            "cancelado" => $datos["cancelado"] ?? 0,
+            "saldo" => $datos["saldo"] ?? 0,
             "tipo_pago" => $datos["tipo_pago"],
-            "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
+            "tipo" => $datos["tipo"] ?? "NORMAL",
             "tramitador_id" => $datos["tramitador_id"] ?? null,
-            // "user_id" => Auth::user()->id,
-            "tipo" => isset($datos["tipo"]) ? $datos["tipo"] : 'NORMAL',
-        ]);
+        ];
 
-        $login_user = $this->login_user_service->verificaSucursal();
-        if (!$login_user) {
-            throw new Exception("Error no se encontró la sucursal del usuario");
+        /*
+        |--------------------------------------------------------------------------
+        | Cambio de pendiente a atendido
+        |--------------------------------------------------------------------------
+        */
+
+        if ($estadoAnterior === 0) {
+            $certificadoData = array_merge(
+                $certificadoData,
+                [
+                    "fecha_inicio" => $datos["fecha_inicio"],
+                    "hora_inicio" => $datos["hora_inicio"],
+                    "user_id" => $userId,
+                    "fecha_fin" => $fechaActual,
+                    "hora_fin" => $horaActual,
+                    "estado" => 1,
+                ]
+            );
         }
-        $sucursal_id = $login_user->sucursal_id;
 
-        // HORA INICIO-FIN
-        // ATENDIDO
-        if ($old_certificado->estado == 0) {
-            $certificado->fecha_inicio = $datos["fecha_inicio"];
-            $certificado->hora_inicio = $datos["hora_inicio"];
-            $certificado->user_id = Auth::user()->id;
-            $certificado->fecha_fin = $fecha_actual;
-            $certificado->hora_fin = $hora_actual;
-            $certificado->estado = 1;
-            $certificado->save();
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Un solo UPDATE del certificado
+        |--------------------------------------------------------------------------
+        */
 
-        // detalles
-        foreach ($datos["certificado_detalles"] as $key => $item) {
-            $saldo = 0;
-            $cancelado = $item["precio"];
-            if (!$item["con_saldo"]) {
-                // CHECKBOX DESMARCADO == FALSE | 1
-                $saldo = $item["precio"];
-                $cancelado = 0;
+        $certificado->update($certificadoData);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Precargar detalles existentes
+        |--------------------------------------------------------------------------
+        */
+
+        $detalleIds = collect(
+            $datos["certificado_detalles"] ?? []
+        )
+            ->pluck("id")
+            ->filter(fn($id) => (int) $id > 0)
+            ->map(fn($id) => (int) $id)
+            ->values();
+
+        $detallesExistentes = $detalleIds->isEmpty()
+            ? collect()
+            : CertificadoDetalle::query()
+            ->where("certificado_id", $certificado->id)
+            ->whereIn("id", $detalleIds)
+            ->get()
+            ->keyBy("id");
+
+        $sucursalId = null;
+
+        $obtenerSucursalId = function () use (
+            &$sucursalId
+        ) {
+            if ($sucursalId !== null) {
+                return $sucursalId;
             }
-            if ($item["id"] == 0) {
-                $certificado_detalle = $certificado->certificado_detalles()->create([
-                    "categoria" => $item["categoria"] ?? '',
-                    "precio" => $item["precio"],
-                    "cancelado" => $cancelado,
-                    "saldo" => $saldo,
-                    "tipo_certificado_id" => $item["tipo_certificado_id"],
-                ]);
 
-                // cargar archivo
-                if (!is_string($item["archivo"])) {
+            $loginUser = $this
+                ->login_user_service
+                ->verificaSucursal();
+
+            if (!$loginUser) {
+                throw new Exception(
+                    "Error: no se encontró la sucursal del usuario"
+                );
+            }
+
+            $sucursalId = $loginUser->sucursal_id;
+
+            return $sucursalId;
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | Procesar detalles
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (
+            $datos["certificado_detalles"] ?? []
+            as $key => $item
+        ) {
+            $precio = $item["precio"];
+
+            $saldo = $item["con_saldo"]
+                ? 0
+                : $precio;
+
+            $cancelado = $item["con_saldo"]
+                ? $precio
+                : 0;
+
+            $detalleId = (int) ($item["id"] ?? 0);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Detalle nuevo
+            |--------------------------------------------------------------------------
+            */
+
+            if ($detalleId === 0) {
+                $certificadoDetalle = $certificado
+                    ->certificado_detalles()
+                    ->create([
+                        "categoria" => $item["categoria"] ?? "",
+                        "precio" => $precio,
+                        "cancelado" => $cancelado,
+                        "saldo" => $saldo,
+                        "tipo_certificado_id" =>
+                        $item["tipo_certificado_id"],
+                    ]);
+
+                if (
+                    isset($item["archivo"]) &&
+                    !is_string($item["archivo"])
+                ) {
                     $archivo = $item["archivo"];
-                    $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
-                    if ($certificado_detalle->estado == 0) {
-                        // ATENDIDO
-                        $certificado_detalle->sucursal_id = $sucursal_id;
-                        $certificado_detalle->estado = 1;
-                        $certificado_detalle->user_id = Auth::user()->id;
-                        $certificado_detalle->fecha_inicio = $datos["fecha_inicio"];
-                        $certificado_detalle->hora_inicio = $datos["hora_inicio"];
-                        $certificado_detalle->fecha_fin = $fecha_actual;
-                        $certificado_detalle->hora_fin = $hora_actual;
-                        $certificado_detalle->save();
+
+                    $this->cargarArchivoDetalle(
+                        $certificadoDetalle,
+                        $archivo,
+                        $key
+                    );
+
+                    if ($certificadoDetalle->estado == 0) {
+                        $certificadoDetalle->update([
+                            "sucursal_id" =>
+                            $obtenerSucursalId(),
+                            "estado" => 1,
+                            "user_id" => $userId,
+                            "fecha_inicio" =>
+                            $datos["fecha_inicio"],
+                            "hora_inicio" =>
+                            $datos["hora_inicio"],
+                            "fecha_fin" => $fechaActual,
+                            "hora_fin" => $horaActual,
+                        ]);
                     }
                 }
 
-                if ($old_certificado->estado == 1) {
-                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
+                if ($estadoAnterior === 1) {
+                    $this
+                        ->certificado_emitido_service
+                        ->actualizarCertificadoEmitido(
+                            $item["tipo_certificado_id"],
+                            $certificado->fecha_registro,
+                            $userId
+                        );
                 }
 
-                // PAGO POR DETALLE
                 if ($cancelado > 0) {
                     $this->pago_service->crear([
-                        "registro_id" => $certificado_detalle->id,
-                        "modulo" => "CertificadoDetalle",
+                        "registro_id" =>
+                        $certificadoDetalle->id,
+                        "modulo" =>
+                        "CertificadoDetalle",
                         "monto" => $cancelado,
-                        "tipo_pago" => $certificado->tipo_pago,
-                        "descripcion" => "PAGO POR CERTIFICADO",
-                        "cliente_id" => $certificado->cliente_id,
-                        "certificado_atendido" => $certificado->estado,
+                        "tipo_pago" =>
+                        $certificado->tipo_pago,
+                        "descripcion" =>
+                        "PAGO POR CERTIFICADO",
+                        "cliente_id" =>
+                        $certificado->cliente_id,
+                        "certificado_atendido" =>
+                        $certificado->estado,
                     ]);
                 }
-            } else {
-                $certificado_detalle = CertificadoDetalle::find($item["id"]);
-                // cargar archivo
-                if (isset($item["archivo"]) && !is_string($item["archivo"])) {
-                    $archivo = $item["archivo"];
-                    // \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
-                    // Log::debug("ACTUALIZARA ARCHIVO");
-                    $this->cargarArchivoDetalle($certificado_detalle, $archivo, $key);
-                    if ($certificado_detalle->estado == 0) {
-                        // ATENDIDO
-                        $certificado_detalle->sucursal_id = $sucursal_id;
-                        $certificado_detalle->estado = 1;
-                        $certificado_detalle->user_id = Auth::user()->id;
-                        $certificado_detalle->fecha_inicio = $datos["fecha_inicio"];
-                        $certificado_detalle->hora_inicio = $datos["hora_inicio"];
-                        $certificado_detalle->fecha_fin = $fecha_actual;
-                        $certificado_detalle->hora_fin = $hora_actual;
-                        $certificado_detalle->save();
-                    }
-                }
 
-                // Log::debug("PASO CARGA ARCHIVO");
+                continue;
+            }
 
-                if ($old_certificado->estado == 1) {
-                    // previamente atendido
-                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, $certificado->user_id, $certificado_detalle->tipo_certificado_id);
-                } else {
-                    $this->pago_service->asignarMedicoPago($certificado_detalle);
-                    $this->certificado_emitido_service->actualizarCertificadoEmitido($item["tipo_certificado_id"], $certificado->fecha_registro, Auth::user()->id);
-                }
+            /*
+            |--------------------------------------------------------------------------
+            | Detalle existente
+            |--------------------------------------------------------------------------
+            */
 
-                $old_cancelado = $certificado_detalle->cancelado;
+            $certificadoDetalle =
+                $detallesExistentes->get($detalleId);
 
-                $certificado_detalle->update([
-                    "categoria" => $item["categoria"] ?? '',
-                    "precio" => $item["precio"],
-                    "cancelado" => $cancelado,
-                    "saldo" => $saldo,
-                    "tipo_certificado_id" => $item["tipo_certificado_id"],
-                ]);
+            if (!$certificadoDetalle) {
+                throw new Exception(
+                    "El detalle {$detalleId} no pertenece al certificado"
+                );
+            }
 
-                // PAGO POR DETALLE
-                $existe_pago = $this->pago_service->obtienePagoAnuladoExistente($certificado_detalle);
-                if (!$existe_pago  && $cancelado > 0) {
-                    // si no hay pago registrado y el cancelado es mayor a 0, crear el pago
-                    $this->pago_service->crear([
-                        "registro_id" => $certificado_detalle->id,
-                        "modulo" => "CertificadoDetalle",
-                        "monto" => $cancelado,
-                        "tipo_pago" => $certificado->tipo_pago,
-                        "descripcion" => "PAGO POR CERTIFICADO",
-                        "cliente_id" => $certificado->cliente_id,
-                        "certificado_atendido" => $certificado->estado,
+            $oldCancelado = $certificadoDetalle->cancelado;
+
+            if (
+                isset($item["archivo"]) &&
+                !is_string($item["archivo"])
+            ) {
+                $this->cargarArchivoDetalle(
+                    $certificadoDetalle,
+                    $item["archivo"],
+                    $key
+                );
+
+                if ($certificadoDetalle->estado == 0) {
+                    $certificadoDetalle->update([
+                        "sucursal_id" =>
+                        $obtenerSucursalId(),
+                        "estado" => 1,
+                        "user_id" => $userId,
+                        "fecha_inicio" =>
+                        $datos["fecha_inicio"],
+                        "hora_inicio" =>
+                        $datos["hora_inicio"],
+                        "fecha_fin" => $fechaActual,
+                        "hora_fin" => $horaActual,
                     ]);
-                } else {
-                    // si hay pago registrado, verificar si el monto del pago es diferente al cancelado del detalle, si es diferente actualizar el monto del pago
-                    $this->pago_service->actualizarPagoCertificadoDetalle(
-                        $certificado_detalle,
-                        $old_cancelado,
-                        $saldo,
-                        $existe_pago
+                }
+            }
+
+            if ($estadoAnterior === 1) {
+                $this
+                    ->certificado_emitido_service
+                    ->actualizarCertificadoEmitido(
+                        $item["tipo_certificado_id"],
+                        $certificado->fecha_registro,
+                        $certificado->user_id,
+                        $certificadoDetalle
+                            ->tipo_certificado_id
                     );
-                }
+            } else {
+                $this
+                    ->pago_service
+                    ->asignarMedicoPago(
+                        $certificadoDetalle
+                    );
+
+                $this
+                    ->certificado_emitido_service
+                    ->actualizarCertificadoEmitido(
+                        $item["tipo_certificado_id"],
+                        $certificado->fecha_registro,
+                        $userId
+                    );
+            }
+
+            $certificadoDetalle->update([
+                "categoria" => $item["categoria"] ?? "",
+                "precio" => $precio,
+                "cancelado" => $cancelado,
+                "saldo" => $saldo,
+                "tipo_certificado_id" =>
+                $item["tipo_certificado_id"],
+            ]);
+
+            $existePago = $this
+                ->pago_service
+                ->obtienePagoAnuladoExistente(
+                    $certificadoDetalle
+                );
+
+            if (!$existePago && $cancelado > 0) {
+                $this->pago_service->crear([
+                    "registro_id" =>
+                    $certificadoDetalle->id,
+                    "modulo" =>
+                    "CertificadoDetalle",
+                    "monto" => $cancelado,
+                    "tipo_pago" =>
+                    $certificado->tipo_pago,
+                    "descripcion" =>
+                    "PAGO POR CERTIFICADO",
+                    "cliente_id" =>
+                    $certificado->cliente_id,
+                    "certificado_atendido" =>
+                    $certificado->estado,
+                ]);
+            } else {
+                $this
+                    ->pago_service
+                    ->actualizarPagoCertificadoDetalle(
+                        $certificadoDetalle,
+                        $oldCancelado,
+                        $saldo,
+                        $existePago
+                    );
             }
         }
 
-        if (isset($datos["eliminados"])) {
-            foreach ($datos["eliminados"] as $value) {
-                $certificado_detalle = CertificadoDetalle::find($value);
-                $this->certificado_emitido_service->descontarCertificadoEmitido($certificado_detalle->tipo_certificado_id, $certificado->fecha_registro, Auth::user()->id);
-                \File::delete(public_path("files/certificados/" . $certificado_detalle->archivo));
-                $this->pago_service->eliminarPagoCertificadoDetalle($certificado_detalle);
-                $certificado_detalle->delete();
+        /*
+        |--------------------------------------------------------------------------
+        | Eliminar detalles
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($datos["eliminados"] ?? [] as $detalleId) {
+            $detalle = $certificado
+                ->certificado_detalles()
+                ->whereKey($detalleId)
+                ->first();
+
+            if (!$detalle) {
+                continue;
             }
+
+            $this
+                ->certificado_emitido_service
+                ->descontarCertificadoEmitido(
+                    $detalle->tipo_certificado_id,
+                    $certificado->fecha_registro,
+                    $userId
+                );
+
+            if ($detalle->archivo) {
+                File::delete(
+                    public_path(
+                        "files/certificados/{$detalle->archivo}"
+                    )
+                );
+            }
+
+            $this
+                ->pago_service
+                ->eliminarPagoCertificadoDetalle($detalle);
+
+            $detalle->delete();
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Actualizar estado final
+        |--------------------------------------------------------------------------
+        */
 
         $this->actualizaEstadoCertificado($certificado);
 
-        // registrar accion
-        if ($old_certificado->estado == 0) {
-            // registrar accion
-            $this->historialAccionService->registrarAccion($this->modulo, "CREACIÓN", "REGISTRO UN CERTIFICADO", $certificado, null, ["certificado_detalles"]);
+        /*
+        |--------------------------------------------------------------------------
+        | Historial
+        |--------------------------------------------------------------------------
+        */
+
+        if ($estadoAnterior === 0) {
+            $this
+                ->historialAccionService
+                ->registrarAccion(
+                    $this->modulo,
+                    "CREACIÓN",
+                    "REGISTRO UN CERTIFICADO",
+                    $certificado,
+                    null,
+                    ["certificado_detalles"]
+                );
         } else {
-            $this->historialAccionService->registrarAccion($this->modulo, "MODIFICACIÓN", "ACTUALIZÓ UN CERTIFICADO", $old_certificado, $certificado, ["certificado_detalles"]);
+            $this
+                ->historialAccionService
+                ->registrarAccion(
+                    $this->modulo,
+                    "MODIFICACIÓN",
+                    "ACTUALIZÓ UN CERTIFICADO",
+                    $oldCertificado,
+                    $certificado,
+                    ["certificado_detalles"]
+                );
         }
 
-        return $certificado;
+        return $certificado->fresh();
     }
 
     public function actualizaEstadoCertificado(Certificado $certificado)

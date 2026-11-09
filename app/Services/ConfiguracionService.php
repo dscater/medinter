@@ -78,7 +78,7 @@ class ConfiguracionService
     {
         return Cache::rememberForever(self::CACHE_KEY, function () {
             return Configuracion::first()
-                ?->append('url_logo');
+                ?->append('url_logo')->makeHidden("logo_b64");
         });
     }
 
@@ -89,7 +89,7 @@ class ConfiguracionService
     public function actualizarCache()
     {
         $configuracion = Configuracion::first()
-            ?->append('url_logo');
+            ?->append('url_logo')->makeHidden("logo_b64");
 
         Cache::forever(self::CACHE_KEY, $configuracion);
 

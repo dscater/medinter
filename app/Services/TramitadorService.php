@@ -26,7 +26,9 @@ class TramitadorService
         return Cache::remember(
             "tramitadores_listado",
             now()->addHours(8),
-            fn() => Tramitador::all()
+            fn() => Tramitador::query()
+                ->select(["id", "nombre"])
+                ->get()
         );
     }
 

@@ -293,31 +293,67 @@ class CertificadoController extends Controller
         );
     }
 
-    public function update(Certificado $certificado, CertificadoUpdateRequest $request)
-    {
+    public function update(
+        CertificadoUpdateRequest $request,
+        Certificado $certificado
+    ) {
+        $datos = $request->validated();
+
         DB::beginTransaction();
+
         try {
-            $inicio = microtime(true);
-            // actualizar certificado
-            $this->certificadoService->actualizar($request->validated(), $certificado);
+            $inicio = hrtime(true);
+
+            $certificadoActualizado =
+                $this->certificadoService->actualizar(
+                    $datos,
+                    $certificado
+                );
+
             DB::commit();
 
-            $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+            $duracionMs = round(
+                (hrtime(true) - $inicio) / 1_000_000,
+                2
+            );
 
-            Log::info('Rendimiento actualización certificado', [
-                'certificado_id' => $certificado->id,
-                'duracion_ms' => $duracionMs,
-                'detalles' => count($datos['certificado_detalles'] ?? []),
-                'eliminados' => count($datos['eliminados'] ?? []),
-            ]);
+            Log::info(
+                "Rendimiento actualización certificado",
+                [
+                    "certificado_id" =>
+                    $certificadoActualizado->id,
 
-            return redirect()->route("certificados.index")->with("bien", "Registro actualizado");
-        } catch (\Exception $e) {
+                    "duracion_ms" => $duracionMs,
+
+                    "detalles" => count(
+                        $datos["certificado_detalles"] ?? []
+                    ),
+
+                    "eliminados" => count(
+                        $datos["eliminados"] ?? []
+                    ),
+                ]
+            );
+
+            return redirect()
+                ->route("certificados.index")
+                ->with(
+                    "bien",
+                    "Registro actualizado"
+                );
+        } catch (\Throwable $e) {
             DB::rollBack();
-            // Log::debug($e->getMessage());
-            throw ValidationException::withMessages([
-                'error' =>  $e->getMessage(),
-            ]);
+
+            Log::error(
+                "Error actualizando certificado",
+                [
+                    "certificado_id" => $certificado->id,
+                    "mensaje" => $e->getMessage(),
+                    "trace" => $e->getTraceAsString(),
+                ]
+            );
+
+            throw $e;
         }
     }
 
