@@ -39,66 +39,167 @@ class ClienteService
     public function listadoPaginado(
         int $length,
         int $page,
-        string $search = '',
-        array $columnsSearchLike = [],
-        array $columnsFilter = [],
-        array $columnsBetweenFilter = [],
-        array $orderBy = []
+        array $orderBy = [],
+        ?string $cliente = null,
+        ?string $ci = null,
+        ?string $fecha_ini = null,
+        ?string $fecha_fin = null,
     ): LengthAwarePaginator {
-        $search = trim($search);
+        $cliente = trim((string) $cliente);
+        $ci = trim((string) $ci);
+
+        $buscarPorNombre = $cliente !== "";
+        $buscarPorCi = $ci !== "";
+
+        $buscarRegistroEspecifico =
+            $buscarPorNombre || $buscarPorCi;
 
         $clientes = Cliente::query()
             ->select([
-                'clientes.id',
-                'clientes.user_id',
-                'clientes.status',
-                'clientes.nombre',
-                'clientes.paterno',
-                'clientes.materno',
-                'clientes.fecha_nac',
-                'clientes.fecha_registro',
-                'clientes.ci',
-                'clientes.complemento',
-                'clientes.ci_exp',
+                "clientes.id",
+                "clientes.user_id",
+                "clientes.status",
+                "clientes.nombre",
+                "clientes.paterno",
+                "clientes.materno",
+                "clientes.fecha_nac",
+                "clientes.fecha_registro",
+                "clientes.ci",
+                "clientes.complemento",
+                "clientes.ci_exp",
             ])
-            ->with('user:id,nombre,paterno,materno')
-            ->where('clientes.status', 1);
+            ->with("user:id,nombre,paterno,materno")
+            ->where("clientes.status", 1);
 
-        if ($search !== '') {
-            $clientes->where(function ($query) use ($search) {
-                $query->where('clientes.nombre', 'like', "{$search}%")
-                    ->orWhere('clientes.paterno', 'like', "{$search}%")
-                    ->orWhere('clientes.materno', 'like', "{$search}%")
-                    ->orWhere('clientes.ci', 'like', "{$search}%")
-                    ->orWhereHas('user', function ($sub) use ($search) {
-                        $sub->where('nombre', 'like', "{$search}%")
-                            ->orWhere('paterno', 'like', "{$search}%")
-                            ->orWhere('materno', 'like', "{$search}%");
-                    });
+        /*
+    |--------------------------------------------------------------------------
+    | Búsqueda por nombre, paterno o materno
+    |--------------------------------------------------------------------------
+    */
+
+        if ($buscarPorNombre) {
+            $clientes->where(function ($query) use ($cliente) {
+                $query
+                    ->where(
+                        "clientes.nombre",
+                        "like",
+                        "{$cliente}%"
+                    )
+                    ->orWhere(
+                        "clientes.paterno",
+                        "like",
+                        "{$cliente}%"
+                    )
+                    ->orWhere(
+                        "clientes.materno",
+                        "like",
+                        "{$cliente}%"
+                    );
             });
         }
 
-        $allowedOrderColumns = [
-            'nombre',
-            'paterno',
-            'materno',
-            'ci',
-            'created_at',
-        ];
+        /*
+    |--------------------------------------------------------------------------
+    | Búsqueda por CI
+    |--------------------------------------------------------------------------
+    */
 
-        foreach ($orderBy as [$column, $direction]) {
-            if (
-                in_array($column, $allowedOrderColumns, true) &&
-                in_array(strtolower($direction), ['asc', 'desc'], true)
-            ) {
-                $clientes->orderBy($column, strtolower($direction));
+        if ($buscarPorCi) {
+            $clientes->where(
+                "clientes.ci",
+                "like",
+                "{$ci}%"
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Fechas solamente cuando no hay búsqueda específica
+    |--------------------------------------------------------------------------
+    */
+
+        if (!$buscarRegistroEspecifico) {
+            if ($fecha_ini && $fecha_fin) {
+                $clientes->whereBetween(
+                    "clientes.fecha_registro",
+                    [
+                        $fecha_ini,
+                        $fecha_fin,
+                    ]
+                );
+            } else {
+                /*
+            | Si no llegan fechas, se limita automáticamente
+            | a los últimos 7 días.
+            */
+
+                $fecha_fin = now("America/La_Paz")
+                    ->toDateString();
+
+                $fecha_ini = now("America/La_Paz")
+                    ->subDays(6)
+                    ->toDateString();
+
+                $clientes->whereBetween(
+                    "clientes.fecha_registro",
+                    [
+                        $fecha_ini,
+                        $fecha_fin,
+                    ]
+                );
             }
         }
 
+        /*
+    |--------------------------------------------------------------------------
+    | Ordenación segura
+    |--------------------------------------------------------------------------
+    */
+
+        $allowedOrderColumns = [
+            "nombre",
+            "paterno",
+            "materno",
+            "ci",
+            "fecha_registro",
+        ];
+
+        foreach ($orderBy as $order) {
+            $column = $order[0] ?? null;
+            $direction = strtolower(
+                $order[1] ?? "asc"
+            );
+
+            if (
+                in_array(
+                    $column,
+                    $allowedOrderColumns,
+                    true
+                ) &&
+                in_array(
+                    $direction,
+                    ["asc", "desc"],
+                    true
+                )
+            ) {
+                $clientes->orderBy(
+                    "clientes.{$column}",
+                    $direction
+                );
+            }
+        }
+
+        if (empty($orderBy)) {
+            $clientes->orderBy(
+                "clientes.fecha_registro",
+                "desc"
+            );
+        }
+
         return $clientes->paginate(
-            min($length, 100),
-            ['*'],
-            'page',
+            min(max($length, 1), 100),
+            ["*"],
+            "page",
             max($page, 1)
         );
     }

@@ -48,90 +48,125 @@ class CertificadoService
         array $orderBy = [],
         ?string $cliente = null,
         ?string $ci = null,
+        ?string $fecha_ini = null,
+        ?string $fecha_fin = null,
     ): LengthAwarePaginator {
         $length = min(max($length, 1), 50);
         $page = max($page, 1);
 
-        $certificados = Certificado::query()
-            ->select('certificados.*')
-            ->with([
-                /*
-             * Estas columnas son necesarias para los appends del modelo Cliente:
-             *
-             * fecha_nac_t
-             * fecha_registro_t
-             * full_ci
-             * full_name
-             */
-                'cliente:id,nombre,paterno,materno,fecha_nac,fecha_registro,ci,ci_exp,complemento',
-
-                'sucursal:id,nombre',
-
-                'user:id,nombre,paterno,materno',
-
-                'inicio:id,nombre,paterno,materno',
-
-                'certificado_detalles.tipo_certificado',
-
-                'certificado_detalles.user',
-
-                'tramitador:id,nombre',
-            ])
-            ->where('certificados.status', 1);
-
-        /*
-     * Búsqueda por nombre del cliente.
-     *
-     * Se evita CONCAT() y el comodín inicial %, porque impide
-     * que MySQL aproveche correctamente los índices.
-     */
         $cliente = trim((string) $cliente);
-
-        if ($cliente !== '') {
-            $certificados->whereHas('cliente', function ($query) use ($cliente) {
-                $query->where(function ($q) use ($cliente) {
-                    $q->where('nombre', 'like', "{$cliente}%")
-                        ->orWhere('paterno', 'like', "{$cliente}%")
-                        ->orWhere('materno', 'like', "{$cliente}%")
-                        ->orWhere('ci', 'like', "{$cliente}%");
-                });
-            });
-        }
-
-        /*
-     * Búsqueda por CI.
-     */
         $ci = trim((string) $ci);
 
-        if ($ci !== '') {
-            $certificados->whereHas('cliente', function ($query) use ($ci) {
-                $query->where('ci', 'like', "{$ci}%");
-            });
+        $buscarPorCliente = $cliente !== '';
+        $buscarPorCi = $ci !== '';
+
+        $buscarRegistroEspecifico =
+            $buscarPorCliente || $buscarPorCi;
+
+        $certificados = Certificado::query()
+            ->select("certificados.*")
+            ->with([
+                "cliente:id,nombre,paterno,materno,fecha_nac,fecha_registro,ci,ci_exp,complemento",
+                "sucursal:id,nombre",
+                "user:id,nombre,paterno,materno",
+                "inicio:id,nombre,paterno,materno",
+                "certificado_detalles.tipo_certificado",
+                "certificado_detalles.user",
+                "tramitador:id,nombre",
+            ])
+            ->where("certificados.status", 1);
+
+        if ($buscarPorCliente) {
+            $certificados->whereHas(
+                "cliente",
+                function ($query) use ($cliente) {
+                    $query->where(function ($q) use ($cliente) {
+                        $q->where(
+                            "nombre",
+                            "like",
+                            "{$cliente}%"
+                        )
+                            ->orWhere(
+                                "paterno",
+                                "like",
+                                "{$cliente}%"
+                            )
+                            ->orWhere(
+                                "materno",
+                                "like",
+                                "{$cliente}%"
+                            );
+                    });
+                }
+            );
+        }
+
+        if ($buscarPorCi) {
+            $certificados->whereHas(
+                "cliente",
+                function ($query) use ($ci) {
+                    $query->where(
+                        "ci",
+                        "like",
+                        "{$ci}%"
+                    );
+                }
+            );
         }
 
         /*
-     * Columnas permitidas para ordenar.
-     *
-     * Nunca utilices directamente una columna recibida del frontend.
-     */
+    |--------------------------------------------------------------------------
+    | Las fechas solo se aplican cuando no se busca por cliente o CI
+    |--------------------------------------------------------------------------
+    */
+
+        if (!$buscarRegistroEspecifico) {
+            if (!$fecha_ini || !$fecha_fin) {
+                $fecha_fin = now("America/La_Paz")
+                    ->toDateString();
+
+                $fecha_ini = now("America/La_Paz")
+                    ->subDays(6)
+                    ->toDateString();
+            }
+
+            $certificados->whereBetween(
+                "certificados.fecha_registro",
+                [
+                    $fecha_ini,
+                    $fecha_fin,
+                ]
+            );
+        }
+
         $allowedOrderColumns = [
-            'id',
-            'fecha_registro',
-            'status',
-            'cliente_id',
-            'sucursal_id',
-            'user_id',
+            "id",
+            "fecha_registro",
+            "status",
+            "cliente_id",
+            "sucursal_id",
+            "user_id",
         ];
 
         $hasOrder = false;
 
         foreach ($orderBy as $value) {
             $column = $value[0] ?? null;
-            $direction = strtolower($value[1] ?? 'asc');
+            $direction = strtolower(
+                $value[1] ?? "asc"
+            );
 
             if (
-                in_array($column, $allowedOrderColumns, true) &&
-                in_array($direction, ['asc', 'desc'], true)
+                in_array(
+                    $column,
+                    $allowedOrderColumns,
+                    true
+                ) &&
+                in_array(
+                    $direction,
+                    ["asc", "desc"],
+                    true
+                )
             ) {
                 $certificados->orderBy(
                     "certificados.{$column}",
@@ -142,23 +177,17 @@ class CertificadoService
             }
         }
 
-        /*
-     * Orden por defecto.
-     *
-     * Permite aprovechar:
-     * certificados_status_fecha_registro_index
-     */
-        if (! $hasOrder) {
+        if (!$hasOrder) {
             $certificados->orderBy(
-                'certificados.fecha_registro',
-                'desc'
+                "certificados.fecha_registro",
+                "desc"
             );
         }
 
         return $certificados->paginate(
             $length,
-            ['*'],
-            'page',
+            ["*"],
+            "page",
             $page
         );
     }

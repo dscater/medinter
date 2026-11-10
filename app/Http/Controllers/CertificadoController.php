@@ -71,7 +71,8 @@ class CertificadoController extends Controller
         // $tipo_pago = (string)$request->input("tipo_pago", "todos");
         // $sucursal_id = (string)$request->input("sucursal_id", "todos");
         // $medico = (string)$request->input("medico", "");
-        // $fecha = (string)$request->input("fecha", "");
+        $fecha_ini = (string)$request->input("fecha_ini", "");
+        $fecha_fin = (string)$request->input("fecha_fin", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
@@ -88,6 +89,8 @@ class CertificadoController extends Controller
             $arrayOrderBy,
             $cliente,
             $ci,
+            $fecha_ini,
+            $fecha_fin,
         );
         return response()->JSON([
             "data" => $certificados->items(),

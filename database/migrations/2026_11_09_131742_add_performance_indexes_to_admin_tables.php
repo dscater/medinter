@@ -40,6 +40,12 @@ return new class extends Migration
             'clientes_status_ci_index'
         );
 
+        $this->addIndexIfMissing(
+            'clientes',
+            ['status', 'fecha_registro'],
+            'clientes_status_fecha_registro_index'
+        );
+
         /*
          * Solo es necesario si clientes.user_id no está indexado.
          */
@@ -153,6 +159,11 @@ return new class extends Migration
         $this->dropIndexIfExists(
             'clientes',
             'clientes_status_ci_index'
+        );
+
+        $this->dropIndexIfExists(
+            'clientes',
+            'clientes_status_fecha_registro_index'
         );
 
         $this->dropIndexIfExists(

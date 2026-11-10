@@ -61,7 +61,10 @@ class ClienteController extends Controller
     {
         $perPage = $request->perPage;
         $page = (int)($request->input("page", 1));
-        $search = (string)$request->input("search", "");
+        $cliente = (string)$request->input("cliente", "");
+        $ci = (string)$request->input("ci", "");
+        $fecha_ini = (string)$request->input("fecha_ini", "");
+        $fecha_fin = (string)$request->input("fecha_fin", "");
         $orderBy = $request->orderBy;
         $orderAsc = $request->orderAsc;
 
@@ -77,7 +80,15 @@ class ClienteController extends Controller
             ];
         }
 
-        $clientes = $this->clienteService->listadoPaginado($perPage, $page, $search, $columnsSerachLike, $columnsFilter, $columnsBetweenFilter, $arrayOrderBy);
+        $clientes = $this->clienteService->listadoPaginado(
+            $perPage,
+            $page,
+            $arrayOrderBy,
+            $cliente,
+            $ci,
+            $fecha_ini,
+            $fecha_fin
+        );
         return response()->JSON([
             "data" => $clientes->items(),
             "total" => $clientes->total(),

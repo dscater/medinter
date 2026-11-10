@@ -76,14 +76,24 @@ const headers = [
     },
 ];
 
+const obtenerFechaLocal = (fecha = new Date()) => {
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
+};
+
+const hoy = new Date();
+
+const fechaInicio = new Date(hoy);
+fechaInicio.setDate(fechaInicio.getDate() - 6);
+
 const multiSearch = ref({
     cliente: "",
     ci: "",
-    // tipo_certificado_id: [],
-    // tipo_pago: "todos",
-    // sucursal_id: "todos",
-    // medico: "",
-    // fecha: "",
+    fecha_ini: obtenerFechaLocal(fechaInicio),
+    fecha_fin: obtenerFechaLocal(hoy),
     filtro: [],
 });
 
@@ -230,6 +240,30 @@ function tablaConError() {
                                     placeholder="Nro. de C.I."
                                     class="form-control border-1 border-right-0"
                                 />
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted text-xs"
+                                            >Desde</small
+                                        >
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            v-model="multiSearch.fecha_ini"
+                                        />
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted text-xs"
+                                            >Hasta</small
+                                        >
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            v-model="multiSearch.fecha_fin"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
