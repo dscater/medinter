@@ -19,6 +19,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CertificadoService
 {
@@ -1015,57 +1016,364 @@ class CertificadoService
      * @param UploadedFile $archivo
      * @return void
      */
-
     public function cargarArchivoDetalle(
         CertificadoDetalle $certificado_detalle,
         UploadedFile $archivo,
         int $index
     ): void {
-        // $inicio = microtime(true);
+        /*
+     * Verificamos el temporal antes de realizar cualquier operación.
+     */
+        $rutaTemporalInicial = $archivo->getPathname();
 
-        // Obtener el tamaño antes de mover el archivo temporal.
-        // $tamanoBytes = $archivo->getSize();
+        // Log::info('ARCHIVO AL INICIAR DETALLE', [
+        //     'certificado_detalle_id' =>
+        //     $certificado_detalle->id,
+        //     'index' => $index,
+        //     'nombre' => $archivo->getClientOriginalName(),
+        //     'ruta_temporal' => $rutaTemporalInicial,
+        //     'error' => $archivo->getError(),
+        //     'valido' => $archivo->isValid(),
+        //     'existe_temporal' => is_file(
+        //         $rutaTemporalInicial
+        //     ),
+        // ]);
 
-        $directorio = public_path('files/certificados');
-
-        if (!File::isDirectory($directorio)) {
-            File::makeDirectory($directorio, 0755, true);
+        if (
+            $archivo->getError() !== UPLOAD_ERR_OK ||
+            ! $archivo->isValid()
+        ) {
+            throw new RuntimeException(
+                'El archivo recibido no es válido. Código: '
+                    . $archivo->getError()
+            );
         }
 
-        $nombre = $certificado_detalle->id . '_' . Str::uuid();
+        if (! is_file($rutaTemporalInicial)) {
+            throw new RuntimeException(
+                'El archivo temporal no existe antes de procesarlo: '
+                    . $rutaTemporalInicial
+            );
+        }
 
-        // Guardar el nuevo archivo.
+        /*
+     * Obtenemos solo la fecha del certificado padre.
+     * Esto evita cargar el modelo completo.
+     */
+        $fechaRegistro = $certificado_detalle
+            ->certificado()
+            ->value('fecha_registro');
+
+        $nombreDirectorio = $fechaRegistro
+            ? Carbon::parse($fechaRegistro)->format('Y-m-d')
+            : now()->format('Y-m-d');
+
+        $baseDirectory = public_path(
+            'files/certificados'
+        );
+
+        $directory = $baseDirectory
+            . DIRECTORY_SEPARATOR
+            . $nombreDirectorio;
+
+        if (! File::isDirectory($directory)) {
+            File::makeDirectory(
+                $directory,
+                0755,
+                true
+            );
+        }
+
+        /*
+     * Confirmamos que la consulta y creación de carpeta
+     * no afectaron el archivo temporal.
+     */
+        if (! is_file($rutaTemporalInicial)) {
+            throw new RuntimeException(
+                'El archivo temporal desapareció antes de moverlo: '
+                    . $rutaTemporalInicial
+            );
+        }
+
+        $nombre = $certificado_detalle->id
+            . '_'
+            . Str::uuid();
+
         $nuevoArchivo = $this->cargarArchivoService->cargarArchivo(
             $archivo,
-            $directorio,
+            $directory,
             $nombre
         );
 
-        if (!$nuevoArchivo) {
+        if (! $nuevoArchivo) {
             throw new RuntimeException(
                 'No se pudo guardar el archivo del certificado.'
             );
         }
 
+        $nuevoArchivo = basename(
+            str_replace('\\', '/', $nuevoArchivo)
+        );
+
+        $nuevaRuta = $nombreDirectorio
+            . '/'
+            . $nuevoArchivo;
+
         $archivoAnterior = $certificado_detalle->archivo;
 
-        // Actualizar la referencia en la base de datos.
-        $certificado_detalle->archivo = $nuevoArchivo;
-        $certificado_detalle->save();
+        try {
+            $certificado_detalle->archivo = $nuevaRuta;
+            $certificado_detalle->save();
+        } catch (Throwable $exception) {
+            $rutaNuevoArchivo = $directory
+                . DIRECTORY_SEPARATOR
+                . $nuevoArchivo;
 
-        // Eliminar el archivo anterior después de guardar el nuevo.
-        if ($archivoAnterior && $archivoAnterior !== $nuevoArchivo) {
-            File::delete(
-                $directorio . DIRECTORY_SEPARATOR . $archivoAnterior
+            if (File::exists($rutaNuevoArchivo)) {
+                File::delete($rutaNuevoArchivo);
+            }
+
+            throw $exception;
+        }
+
+        /*
+     * Elimina el archivo anterior solo después de actualizar
+     * correctamente la referencia en la base de datos.
+     */
+        if (
+            $archivoAnterior &&
+            $archivoAnterior !== $nuevaRuta
+        ) {
+            $rutaAnterior = $this->resolverRutaArchivoCertificado(
+                $archivoAnterior,
+                $baseDirectory
+            );
+
+            if (
+                $rutaAnterior &&
+                File::exists($rutaAnterior)
+            ) {
+                File::delete($rutaAnterior);
+            }
+        }
+    }
+
+    private function resolverRutaArchivoCertificado(
+        string $rutaRelativa,
+        string $baseDirectory
+    ): ?string {
+        $rutaRelativa = ltrim(
+            str_replace('\\', '/', $rutaRelativa),
+            '/'
+        );
+
+        /*
+     * Protección contra rutas como:
+     *
+     * ../archivo.pdf
+     * ../../otro-directorio/archivo.pdf
+     */
+        if (
+            str_contains($rutaRelativa, '../') ||
+            str_contains($rutaRelativa, '..\\')
+        ) {
+            return null;
+        }
+
+        return $baseDirectory
+            . DIRECTORY_SEPARATOR
+            . str_replace(
+                '/',
+                DIRECTORY_SEPARATOR,
+                $rutaRelativa
+            );
+    }
+
+
+    public function reorganizarArchivosCertificados(
+        int $ultimoId = 0,
+        int $limite = 500
+    ): array {
+        $limite = min(max($limite, 1), 500);
+
+        $baseDirectory = public_path(
+            'files/certificados'
+        );
+
+        if (! File::isDirectory($baseDirectory)) {
+            File::makeDirectory(
+                $baseDirectory,
+                0755,
+                true
             );
         }
 
-        // $duracionMs = round((microtime(true) - $inicio) * 1000, 2);
+        $detalles = CertificadoDetalle::query()
+            ->select([
+                'id',
+                'certificado_id',
+                'archivo',
+            ])
+            ->whereNotNull('archivo')
+            ->where('archivo', '<>', '')
+            ->where('id', '>', $ultimoId)
+            ->with([
+                'certificado:id,fecha_registro',
+            ])
+            ->orderBy('id')
+            ->limit($limite)
+            ->get();
 
-        // Log::info('Rendimiento carga archivo certificado', [
-        //     'certificado_detalle_id' => $certificado_detalle->id,
-        //     'tamano_bytes' => $tamanoBytes,
-        //     'duracion_ms' => $duracionMs,
-        // ]);
+        $resultado = [
+            'procesados' => 0,
+            'movidos' => 0,
+            'ya_organizados' => 0,
+            'sin_certificado' => 0,
+            'sin_fecha' => 0,
+            'no_encontrados' => 0,
+            'conflictos' => 0,
+            'errores' => 0,
+            'ultimo_id_procesado' => $ultimoId,
+            'siguiente_id' => $ultimoId,
+            'hay_mas' => false,
+        ];
+
+        foreach ($detalles as $detalle) {
+            $resultado['procesados']++;
+            $resultado['ultimo_id_procesado'] = $detalle->id;
+
+            $estado = $this->moverArchivoDetallePorFecha(
+                $detalle,
+                $baseDirectory
+            );
+
+            if (isset($resultado[$estado])) {
+                $resultado[$estado]++;
+            }
+        }
+
+        $siguienteId = $resultado['ultimo_id_procesado'];
+
+        $resultado['siguiente_id'] = $siguienteId;
+
+        $resultado['hay_mas'] = CertificadoDetalle::query()
+            ->whereNotNull('archivo')
+            ->where('archivo', '<>', '')
+            ->where('id', '>', $siguienteId)
+            ->exists();
+
+        return $resultado;
+    }
+
+    private function moverArchivoDetallePorFecha(
+        CertificadoDetalle $detalle,
+        string $baseDirectory
+    ): string {
+        try {
+            if (! $detalle->certificado) {
+                return 'sin_certificado';
+            }
+
+            if (! $detalle->certificado->fecha_registro) {
+                return 'sin_fecha';
+            }
+
+            $nombreDirectorio = Carbon::parse(
+                $detalle->certificado->fecha_registro
+            )->format('Y-m-d');
+
+            $directory = $baseDirectory
+                . DIRECTORY_SEPARATOR
+                . $nombreDirectorio;
+
+            if (! File::isDirectory($directory)) {
+                File::makeDirectory(
+                    $directory,
+                    0755,
+                    true
+                );
+            }
+
+            $rutaActual = ltrim(
+                str_replace(
+                    '\\',
+                    '/',
+                    $detalle->archivo
+                ),
+                '/'
+            );
+
+            $nombreArchivo = basename($rutaActual);
+
+            $nuevaRutaRelativa = $nombreDirectorio
+                . '/'
+                . $nombreArchivo;
+
+            if ($rutaActual === $nuevaRutaRelativa) {
+                return 'ya_organizados';
+            }
+
+            $rutaAnterior =
+                $this->resolverRutaArchivoCertificado(
+                    $rutaActual,
+                    $baseDirectory
+                );
+
+            $rutaNueva =
+                $this->resolverRutaArchivoCertificado(
+                    $nuevaRutaRelativa,
+                    $baseDirectory
+                );
+
+            if (! $rutaAnterior || ! $rutaNueva) {
+                return 'errores';
+            }
+
+            if (! File::exists($rutaAnterior)) {
+                return 'no_encontrados';
+            }
+
+            if (File::exists($rutaNueva)) {
+                return 'conflictos';
+            }
+
+            if (! File::move($rutaAnterior, $rutaNueva)) {
+                return 'errores';
+            }
+
+            try {
+                $detalle->archivo = $nuevaRutaRelativa;
+                $detalle->save();
+            } catch (Throwable $exception) {
+                /*
+             * Si falla la base de datos, intenta devolver
+             * el archivo a su ubicación original.
+             */
+                if (
+                    File::exists($rutaNueva) &&
+                    ! File::exists($rutaAnterior)
+                ) {
+                    File::move(
+                        $rutaNueva,
+                        $rutaAnterior
+                    );
+                }
+
+                throw $exception;
+            }
+
+            return 'movidos';
+        } catch (Throwable $exception) {
+            Log::error(
+                'Error reorganizando archivo de certificado',
+                [
+                    'certificado_detalle_id' => $detalle->id,
+                    'archivo' => $detalle->archivo,
+                    'mensaje' => $exception->getMessage(),
+                ]
+            );
+
+            return 'errores';
+        }
     }
 }

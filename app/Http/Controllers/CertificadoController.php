@@ -408,4 +408,34 @@ class CertificadoController extends Controller
             ]);
         }
     }
+
+    public function directorios()
+    {
+        return Inertia::render("Admin/Reorganizacion");
+    }
+
+    public function archivosDirectorios(Request $request)
+    {
+        $datos = $request->validate([
+            'ultimo_id' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+            'limite' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'max:500',
+            ],
+        ]);
+
+        $resultado = $this->certificadoService
+            ->reorganizarArchivosCertificados(
+                ultimoId: $datos['ultimo_id'] ?? 0,
+                limite: $datos['limite'] ?? 500
+            );
+
+        return response()->json($resultado);
+    }
 }

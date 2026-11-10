@@ -155,6 +155,15 @@ Route::middleware(['auth', 'permisoUsuario'])->prefix("admin")->group(function (
     );
 
     // CERTIFICADOS
+    Route::get(
+        '/directorios',
+        [CertificadoController::class, 'directorios']
+    );
+    Route::post(
+        '/archivos-directorios',
+        [CertificadoController::class, 'archivosDirectorios']
+    )->name('admin.archivos-directorios');
+
     Route::put("certificados/updateDetalles/{certificado}", [CertificadoController::class, 'updateDetalles'])->name("certificados.updateDetalles");
     Route::patch("certificados/restaurar/{certificado}", [CertificadoController::class, 'restaurar'])->name("certificados.restaurar");
     Route::delete("certificados/eliminacionPermanente/{certificado}", [CertificadoController::class, 'eliminacionPermanente'])->name("certificados.eliminacionPermanente");

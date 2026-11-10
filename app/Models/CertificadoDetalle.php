@@ -49,9 +49,14 @@ class CertificadoDetalle extends Model
         return $this->archivo;
     }
 
-    public function getUrlArchivoAttribute()
+    public function getUrlArchivoAttribute(): ?string
     {
-        return asset("files/certificados/" . $this->archivo);
+        return $this->archivo
+            ? asset(
+                'files/certificados/'
+                    . ltrim($this->archivo, '/')
+            )
+            : null;
     }
 
     public function certificado()
